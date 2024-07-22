@@ -11,6 +11,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import CreateAccount from "./publicAuth/CreateAccount.tsx";
 import { SignIn } from "./publicAuth/SignIn.tsx";
+import { Account } from "./components/screens/Account.tsx";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },
+      {
+        path: "Account",
+        element: <Account />,
       },
     ],
   },

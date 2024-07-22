@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { AppBarTop } from "./components/navigation/appBar.tsx";
 import { Outlet } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -16,7 +16,6 @@ function App() {
       console.log(user.currentUser.uid);
       setUid(user.currentUser.uid);
     } else {
-      // Optionally, reset uid in the store if there's no user
       setUid(undefined);
     }
 
@@ -28,7 +27,6 @@ function App() {
       }
     });
 
-    // Cleanup the subscription when the component unmounts
     return () => unsubscribe();
   }, [navigate, setUid]);
 

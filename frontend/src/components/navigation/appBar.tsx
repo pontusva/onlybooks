@@ -19,30 +19,6 @@ import { useUidStore } from "../../zustand/userStore";
 const pages = ["Products", "Pricing", "Blog"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
-const handleSettingClick = (setting: string) => {
-  switch (setting) {
-    case "Profile":
-      // Navigate to profile page or perform action
-      console.log("Navigating to Profile");
-      break;
-    case "Account":
-      // Navigate to account settings or perform action
-      console.log("Navigating to Account");
-      break;
-    case "Dashboard":
-      // Navigate to dashboard or perform action
-      console.log("Navigating to Dashboard");
-      break;
-    case "Logout":
-      // Perform logout action
-      signOut(auth);
-      console.log("Logging out");
-      break;
-    default:
-      console.log("No action defined for this setting");
-  }
-};
-
 export const AppBarTop = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -67,6 +43,30 @@ export const AppBarTop = () => {
   onAuthStateChanged(auth, (user) => {
     return !user && navigate("/login");
   });
+
+  const handleSettingClick = (setting: string) => {
+    switch (setting) {
+      case "Profile":
+        // Navigate to profile page or perform action
+
+        break;
+      case "Account":
+        // Navigate to account settings or perform action
+        navigate("/account");
+        break;
+      case "Dashboard":
+        // Navigate to dashboard or perform action
+        console.log("Navigating to Dashboard");
+        break;
+      case "Logout":
+        // Perform logout action
+        signOut(auth);
+        console.log("Logging out");
+        break;
+      default:
+        console.log("No action defined for this setting");
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -128,7 +128,7 @@ export const AppBarTop = () => {
             variant="h5"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            onClick={() => navigate("/")}
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
