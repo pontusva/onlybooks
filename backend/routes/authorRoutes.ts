@@ -24,7 +24,7 @@ export const becomeAuthor = async (req: Request, res: Response) => {
 
 export const isAuthor = async (req: Request, res: Response) => {
   const { firebase_uid } = req.params;
-  console.log(firebase_uid);
+
   if (!firebase_uid) {
     return res.status(400).json({ error: "firebase_uid is required" });
   }
@@ -35,7 +35,7 @@ export const isAuthor = async (req: Request, res: Response) => {
     if (result.length > 0) {
       res.status(200).json({ is_author: result[0].is_author });
     } else {
-      res.status(404).json({ message: "User is not an author" });
+      res.status(200).json({ message: "User is not an author" });
     }
   } catch (error) {
     console.error("Error fetching author status:", error);

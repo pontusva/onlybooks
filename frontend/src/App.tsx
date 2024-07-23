@@ -13,7 +13,6 @@ function App() {
   useEffect(() => {
     const user = getAuth();
     if (user.currentUser?.uid) {
-      console.log(user.currentUser.uid);
       setUid(user.currentUser.uid);
     } else {
       setUid(undefined);
