@@ -1,15 +1,9 @@
-import {
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  getAuth,
-} from "firebase/auth";
+import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
 import { TextField, Button } from "@mui/material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import z from "zod";
 import { useForm } from "react-hook-form";
-import { auth } from "../auth/initAuth";
-import { useEffect } from "react";
 
 const schema = z.object({
   email: z.string().email(),

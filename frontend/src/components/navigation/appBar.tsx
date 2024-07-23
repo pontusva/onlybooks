@@ -23,6 +23,8 @@ export const AppBarTop = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [username, setUsername] = useState<string | null>(null);
+  const [isAuthor, setIsAuthor] = useState<boolean | null>(null);
+
   const uid = useUidStore((state) => state.uid);
   const navigate = useNavigate();
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -44,7 +46,7 @@ export const AppBarTop = () => {
     return !user && navigate("/login");
   });
 
-  const handleSettingClick = (setting: string) => {
+  const handleSettingClick = (setting: string | null) => {
     switch (setting) {
       case "Profile":
         // Navigate to profile page or perform action
@@ -69,8 +71,8 @@ export const AppBarTop = () => {
   };
 
   useEffect(() => {
+    if (!uid) return;
     (async () => {
-      if (!uid) return;
       const response = await fetch(`http://localhost:3000/user/${uid}`, {
         method: "POST",
         headers: {
@@ -80,6 +82,11 @@ export const AppBarTop = () => {
       const data = await response.json();
 
       setUsername(data.user.username);
+    })();
+    (async () => {
+      const response = await fetch(`http://localhost:3000/author/${uid}`);
+      const result = await response.json();
+      setIsAuthor(result.is_author);
     })();
   }, [uid]);
 

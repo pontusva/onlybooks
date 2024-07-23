@@ -1,0 +1,46 @@
+import { Request, Response } from "express";
+import { authorQueries } from "../queries";
+
+export const becomeAuthor = async (req: Request, res: Response) => {
+  const { firebase_uid } = req.body;
+
+  if (!firebase_uid) {
+    return res.status(400).json({ error: "firebase_uid is required" });
+  }
+
+  try {
+    const result = await authorQueries.becomeAuthor.values(firebase_uid);
+
+    if (result.length > 0) {
+      res.status(200).json({ is_author: result[0].is_author });
+    } else {
+      res.status(404).json({ message: "Failed to update to Author" });
+    }
+  } catch (error) {
+    console.error("Error updating user to author:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const isAuthor = async (req: Request, res: Response) => {
+  const { firebase_uid } = req.params;
+  console.log(firebase_uid);
+  if (!firebase_uid) {
+    return res.status(400).json({ error: "firebase_uid is required" });
+  }
+
+  try {
+    const result = await authorQueries.isAuthor.values(firebase_uid);
+
+    if (result.length > 0) {
+      res.status(200).json({ is_author: result[0].is_author });
+    } else {
+      res.status(404).json({ message: "User is not an author" });
+    }
+  } catch (error) {
+    console.error("Error fetching author status:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Don't forget to export and use this route in your Express app
