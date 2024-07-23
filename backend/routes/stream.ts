@@ -3,7 +3,11 @@ import fs from "fs";
 import path from "path";
 
 export const streamAudioBook = async (req: Request, res: Response) => {
-  const filePath = path.resolve(__dirname, "path/to/your/audiofile.mp3");
+  console.log("HELOOO AUIDIOOP");
+  const filePath = path.resolve(
+    __dirname,
+    "../audioBooks/audio-2b3e3c82-23a8-40f6-ac4d-aa1d3c0892ab.mp3"
+  );
   const stat = fs.statSync(filePath);
   const fileSize = stat.size;
   const range = req.headers.range;

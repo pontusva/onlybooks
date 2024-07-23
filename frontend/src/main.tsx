@@ -12,6 +12,7 @@ import "@fontsource/roboto/700.css";
 import CreateAccount from "./publicAuth/CreateAccount.tsx";
 import { SignIn } from "./publicAuth/SignIn.tsx";
 import { Account } from "./components/screens/Account.tsx";
+import { UserDashboard } from "./components/screens/UserDashboard.tsx";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: "Account",
         element: <Account />,
+      },
+      {
+        path: "dashboard",
+        element: <UserDashboard />,
       },
     ],
   },

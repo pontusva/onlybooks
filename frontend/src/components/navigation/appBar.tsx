@@ -57,7 +57,7 @@ export const AppBarTop = () => {
         break;
       case "Dashboard":
         // Navigate to dashboard or perform action
-        console.log("Navigating to Dashboard");
+        navigate("/dashboard");
         break;
       case "Logout":
         // Perform logout action
