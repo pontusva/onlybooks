@@ -3,10 +3,11 @@ import { useForm } from "react-hook-form";
 import { TextField, Button } from "@mui/material";
 import z from "zod";
 import { useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z.object({
   title: z.string().min(3),
-  description: z.string().email(),
+  description: z.string().min(3),
   file: z.instanceof(FileList),
 });
 
@@ -26,7 +27,7 @@ export const AuthorAccount = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Schema>();
+  } = useForm<Schema>({ resolver: zodResolver(schema) });
   const uid = useUidStore((state) => state.uid);
 
   useEffect(() => {
@@ -37,7 +38,7 @@ export const AuthorAccount = () => {
       setUser(result);
     })();
   }, []);
-  console.log(user?.user.id);
+
   const onSubmit = (data: Schema) => {
     if (!user) return;
     const formData = new FormData();

@@ -3,16 +3,7 @@ import { useUidStore } from "../../zustand/userStore";
 import { useEffect, useState } from "react";
 import { UserAccount } from "./UserAccounts";
 import { AuthorAccount } from "./AuthorAccount";
-import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
-
-export default function CircularIndeterminate() {
-  return (
-    <Box sx={{ display: "flex" }}>
-      <CircularProgress />
-    </Box>
-  );
-}
+import { Loader } from "../reuseable/Loader";
 
 export const Account = () => {
   const [isAuthor, setIsAuthor] = useState<boolean | undefined>(undefined);
@@ -36,7 +27,7 @@ export const Account = () => {
   }, [uid]);
   return loading ? (
     <div className="w-screen h-screen flex justify-center items-center">
-      <CircularIndeterminate />
+      <Loader />
     </div>
   ) : (
     <>

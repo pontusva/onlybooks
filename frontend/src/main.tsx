@@ -1,5 +1,4 @@
 import { Home } from "./components/screens/Home.tsx";
-
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -12,7 +11,8 @@ import "@fontsource/roboto/700.css";
 import CreateAccount from "./publicAuth/CreateAccount.tsx";
 import { SignIn } from "./publicAuth/SignIn.tsx";
 import { Account } from "./components/screens/Account.tsx";
-import { UserDashboard } from "./components/screens/UserDashboard.tsx";
+import { Dashboard } from "./components/screens/Dashboard.tsx";
+import { Books } from "./components/author/Books.tsx";
 
 const router = createBrowserRouter([
   {
@@ -29,7 +29,11 @@ const router = createBrowserRouter([
       },
       {
         path: "dashboard",
-        element: <UserDashboard />,
+        element: <Dashboard />,
+      },
+      {
+        path: "books",
+        element: <Books />,
       },
     ],
   },
