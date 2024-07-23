@@ -42,5 +42,3 @@ export const isAuthor = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
-
-// Don't forget to export and use this route in your Express app

@@ -6,7 +6,6 @@ export const Home = () => {
 
   const fetchUser = async () => {
     const response = await fetch(`http://localhost:3000/user/${uid}`, {
-      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },

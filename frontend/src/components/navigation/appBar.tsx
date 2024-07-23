@@ -23,7 +23,6 @@ export const AppBarTop = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [username, setUsername] = useState<string | null>(null);
-  const [isAuthor, setIsAuthor] = useState<boolean | null>(null);
 
   const uid = useUidStore((state) => state.uid);
   const navigate = useNavigate();
@@ -74,7 +73,6 @@ export const AppBarTop = () => {
     if (!uid) return;
     (async () => {
       const response = await fetch(`http://localhost:3000/user/${uid}`, {
-        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -82,11 +80,6 @@ export const AppBarTop = () => {
       const data = await response.json();
 
       setUsername(data.user.username);
-    })();
-    (async () => {
-      const response = await fetch(`http://localhost:3000/author/${uid}`);
-      const result = await response.json();
-      setIsAuthor(result.is_author);
     })();
   }, [uid]);
 
