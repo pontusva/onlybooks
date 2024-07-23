@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { useGlobalAudioPlayer } from "react-use-audio-player";
 
 export const UserDashboard = () => {
