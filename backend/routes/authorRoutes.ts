@@ -33,7 +33,9 @@ export const isAuthor = async (req: Request, res: Response) => {
     const result = await authorQueries.isAuthor.values(firebase_uid);
 
     if (result.length > 0) {
-      res.status(200).json({ is_author: result[0].is_author });
+      res
+        .status(200)
+        .json({ is_author: result[0].is_author, id: result[0].id });
     } else {
       res.status(200).json({ message: "User is not an author" });
     }
@@ -62,6 +64,27 @@ export const insertPurchaseCode = async (req: Request, res: Response) => {
       res.status(200).json({ code: result[0].code });
     } else {
       res.status(404).json({ message: "error creating code" });
+    }
+  } catch (error) {
+    console.error("Error fetching author status:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getAuthorsBooks = async (req: Request, res: Response) => {
+  const { author_id } = req.params;
+  console.log(req.params);
+  if (!author_id) {
+    return res.status(400).json({ error: "author_id is required" });
+  }
+
+  try {
+    const result = await authorQueries.getAuthorsBooks.values(author_id);
+
+    if (result.length > 0) {
+      res.status(200).json(result);
+    } else {
+      res.status(200).json({ message: "No books found" });
     }
   } catch (error) {
     console.error("Error fetching author status:", error);

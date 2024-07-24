@@ -1,7 +1,7 @@
 import express from "express";
 import { client } from "./dbinit";
 import { createUser, getUser } from "./routes/userRoutes";
-import { becomeAuthor, isAuthor } from "./routes/authorRoutes";
+import { becomeAuthor, isAuthor, getAuthorsBooks } from "./routes/authorRoutes";
 import { streamAudioBook } from "./routes/stream";
 import audioRouter from "./routes/uploadAuthorBooks";
 import cors from "cors";
@@ -18,6 +18,7 @@ app.get("/user/:firebase_uid", getUser);
 app.get("/author/:firebase_uid", isAuthor);
 app.use("/audio", audioRouter);
 app.get("/stream", streamAudioBook);
+app.get("/author/:author_id/books", getAuthorsBooks);
 
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
