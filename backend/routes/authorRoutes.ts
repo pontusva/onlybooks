@@ -42,3 +42,29 @@ export const isAuthor = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const insertPurchaseCode = async (req: Request, res: Response) => {
+  const { author_id, code, audio_file_id, expires_at, firebase_uid } = req.body;
+
+  if (!firebase_uid) {
+    return res.status(400).json({ error: "firebase_uid is required" });
+  }
+
+  try {
+    const result = await authorQueries.insertPurchaseCode.values(
+      author_id,
+      code,
+      audio_file_id,
+      expires_at
+    );
+
+    if (result.length > 0) {
+      res.status(200).json({ code: result[0].code });
+    } else {
+      res.status(404).json({ message: "error creating code" });
+    }
+  } catch (error) {
+    console.error("Error fetching author status:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};

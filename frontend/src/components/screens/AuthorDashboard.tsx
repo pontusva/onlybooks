@@ -7,6 +7,7 @@ import ImageIcon from "@mui/icons-material/Image";
 import WorkIcon from "@mui/icons-material/Work";
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import { useNavigate } from "react-router-dom";
+import { GenerateUUid } from "../dialogs/GenerateUUid";
 
 export const AuthorDashboard = () => {
   const navigate = useNavigate();
@@ -38,7 +39,14 @@ export const AuthorDashboard = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <ListItemText primary="Generate" secondary="Unique code for a book" />
+        <GenerateUUid
+          children={
+            <ListItemText
+              primary="Generate"
+              secondary="Unique code for a book"
+            />
+          }
+        />
       </ListItem>
     </List>
   );
