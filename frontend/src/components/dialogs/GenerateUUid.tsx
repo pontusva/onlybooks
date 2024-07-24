@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { SimpleDialog } from "../reuseable/Dialog";
 import { v4 as uuidv4 } from "uuid";
-import { Button, Typography } from "@mui/material";
+import { Button } from "@mui/material";
 import { useAuthorIdStore } from "../../zustand/authorIdStore";
 import { useUidStore } from "../../zustand/userStore";
-import firebase from "firebase/compat/app";
 
 interface Books {
   author_id: string;
