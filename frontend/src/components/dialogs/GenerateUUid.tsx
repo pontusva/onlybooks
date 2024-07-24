@@ -106,16 +106,18 @@ export const GenerateUuid = ({ children }: { children: React.ReactNode }) => {
         open={open}
         onClose={handleClose}
       >
-        {books?.map((book) => (
-          <div className="" key={book.id}>
-            <Button
-              className="flex justify-start text-left w-full truncate"
-              onClick={() => handleGenerateUuid(book.id)}
-            >
-              {book.title}
-            </Button>
-          </div>
-        ))}
+        {books && books.length
+          ? books?.map((book) => (
+              <div className="" key={book.id}>
+                <Button
+                  className="flex justify-start text-left w-full truncate"
+                  onClick={() => handleGenerateUuid(book.id)}
+                >
+                  {book.title}
+                </Button>
+              </div>
+            ))
+          : null}
       </SimpleDialog>
     </div>
   );
