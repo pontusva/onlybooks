@@ -7,7 +7,7 @@ import ImageIcon from "@mui/icons-material/Image";
 import WorkIcon from "@mui/icons-material/Work";
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import { useNavigate } from "react-router-dom";
-import { GenerateUUid } from "../dialogs/GenerateUUid";
+import { GenerateUuid } from "../dialogs/GenerateUUid";
 
 export const AuthorDashboard = () => {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ export const AuthorDashboard = () => {
             <BeachAccessIcon />
           </Avatar>
         </ListItemAvatar>
-        <GenerateUUid
+        <GenerateUuid
           children={
             <ListItemText
               primary="Generate"

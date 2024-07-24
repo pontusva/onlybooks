@@ -20,8 +20,8 @@ export const SimpleDialog = ({
   };
 
   return (
-    <Dialog onClose={handleClose} open={open}>
-      <DialogTitle>{title}</DialogTitle>
+    <Dialog fullWidth onClose={handleClose} open={open}>
+      <DialogTitle align="center">{title}</DialogTitle>
       {children}
     </Dialog>
   );
