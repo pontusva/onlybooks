@@ -1,6 +1,11 @@
 import express from "express";
 import { client } from "./dbinit";
-import { createUser, getUser, redeemCode } from "./routes/userRoutes";
+import {
+  createUser,
+  getUser,
+  redeemCode,
+  getPurchasedAudioFiles,
+} from "./routes/userRoutes";
 import {
   becomeAuthor,
   isAuthor,
@@ -23,6 +28,7 @@ app.get("/author/:firebase_uid", isAuthor);
 app.get("/stream", streamAudioBook);
 app.get("/author/:author_id/codes", getAuthorGeneratedCodes);
 app.get("/author/:author_id/books", getAuthorsBooks);
+app.get("/user/:user_id/purchased", getPurchasedAudioFiles);
 app.post("/register", createUser);
 app.post("/purchase", insertPurchaseCode);
 app.post("/user/:user_id/redeem", redeemCode);

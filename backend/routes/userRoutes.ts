@@ -37,3 +37,16 @@ export const redeemCode = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const getPurchasedAudioFiles = async (req: Request, res: Response) => {
+  const { user_id } = req.params;
+  try {
+    const redeemedBooks = await userQueries.getPurchasedAudioFiles.values(
+      user_id
+    );
+    res.status(200).json({ redeemedBooks });
+  } catch (error) {
+    console.error("Error fetching redeemed books:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

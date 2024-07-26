@@ -14,6 +14,7 @@ interface Code {
   id: string;
   title: string;
   code: string;
+  is_redeemed: boolean;
 }
 
 interface GroupedCodes {
@@ -22,17 +23,21 @@ interface GroupedCodes {
 
 export const GeneratedCodes = () => {
   const [codes, setCodes] = useState<Code[]>([]);
+  const [loading, setLoading] = useState(true);
   const authorId = useAuthorIdStore((state) => state.authorId);
-  const groupedCodes: GroupedCodes = codes.reduce(
-    (acc: GroupedCodes, code: Code) => {
-      if (!acc[code.title]) {
-        acc[code.title] = [];
-      }
-      acc[code.title].push(code);
-      return acc;
-    },
-    {} as GroupedCodes
-  );
+
+  const groupedCodes: GroupedCodes | null =
+    codes.length > 0
+      ? codes.reduce((acc: GroupedCodes, code: Code) => {
+          if (!code.is_redeemed) {
+            if (!acc[code.title]) {
+              acc[code.title] = [];
+            }
+            acc[code.title].push(code);
+          }
+          return acc;
+        }, {} as GroupedCodes)
+      : null;
 
   useEffect(() => {
     if (!authorId) return;
@@ -50,6 +55,7 @@ export const GeneratedCodes = () => {
         console.error("Fetch error:", error);
       }
     })();
+    setLoading(false);
   }, [authorId]);
 
   const handleCopy = (code: string) => {
@@ -57,31 +63,34 @@ export const GeneratedCodes = () => {
   };
 
   return (
-    <List style={{ padding: "10px" }}>
-      {Object.keys(groupedCodes).map((title) => (
-        <Fragment key={title}>
-          <Typography variant="h6" align="center" gutterBottom>
-            {title}
-          </Typography>
-          {groupedCodes[title].map((code) => (
-            <Fragment key={code.id}>
-              <ListItem>
-                <ListItemText secondary={code.code} />
-                <Button
-                  variant="contained"
-                  size="small"
-                  color="primary"
-                  onClick={() => handleCopy(code.code)}
-                  startIcon={<ContentCopyIcon />}
-                >
-                  Copy
-                </Button>
-              </ListItem>
-            </Fragment>
-          ))}
-          <Divider />
-        </Fragment>
-      ))}
-    </List>
+    !loading &&
+    groupedCodes && (
+      <List style={{ padding: "10px" }}>
+        {Object.keys(groupedCodes).map((title) => (
+          <Fragment key={title}>
+            <Typography variant="h6" align="center" gutterBottom>
+              {title}
+            </Typography>
+            {groupedCodes[title].map((code) => (
+              <Fragment key={code.id}>
+                <ListItem>
+                  <ListItemText secondary={code.code} />
+                  <Button
+                    variant="contained"
+                    size="small"
+                    color="primary"
+                    onClick={() => handleCopy(code.code)}
+                    startIcon={<ContentCopyIcon />}
+                  >
+                    Copy
+                  </Button>
+                </ListItem>
+              </Fragment>
+            ))}
+            <Divider />
+          </Fragment>
+        ))}
+      </List>
+    )
   );
 };
