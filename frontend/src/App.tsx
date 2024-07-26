@@ -1,18 +1,30 @@
 import { useEffect } from "react";
 import { AppBarTop } from "./components/navigation/appBar.tsx";
 import { Outlet } from "react-router-dom";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useUidStore } from "./zustand/userStore.ts";
 import { useAuthorIdStore } from "./zustand/authorIdStore.ts";
+import { useUserIdStore } from "./zustand/userIdStore.ts";
 import { auth } from "./auth/initAuth.ts";
 
 function App() {
   const navigate = useNavigate();
   const setUid = useUidStore((state) => state.setUid);
   const setAuthorId = useAuthorIdStore((state) => state.setAuthorId);
+  const setUserId = useUserIdStore((state) => state.setUserId);
 
   useEffect(() => {
+    const fetchUser = async (uid: string) => {
+      const response = await fetch(`http://localhost:3000/user/${uid}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      setUserId(data.user.id);
+    };
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUid(user.uid);
@@ -24,8 +36,11 @@ function App() {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           const result = await response.json();
-          setAuthorId(result.id);
-          console.log(result.id);
+          if (result.id) {
+            setAuthorId(result.id);
+          } else {
+            await fetchUser(user.uid);
+          }
         } catch (error) {
           console.error("Fetch error:", error);
         }

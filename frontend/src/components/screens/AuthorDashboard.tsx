@@ -48,6 +48,18 @@ export const AuthorDashboard = () => {
           }
         />
       </ListItem>
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <WorkIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          onClick={() => navigate("/generated")}
+          primary="Generated codes"
+          secondary="5"
+        />
+      </ListItem>
     </List>
   );
 };

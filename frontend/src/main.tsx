@@ -13,6 +13,7 @@ import { SignIn } from "./publicAuth/SignIn.tsx";
 import { Account } from "./components/screens/Account.tsx";
 import { Dashboard } from "./components/screens/Dashboard.tsx";
 import { Books } from "./components/author/Books.tsx";
+import { GeneratedCodes } from "./components/author/GeneratedCodes.tsx";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: "books",
         element: <Books />,
+      },
+      {
+        path: "generated",
+        element: <GeneratedCodes />,
       },
     ],
   },

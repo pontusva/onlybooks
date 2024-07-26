@@ -22,3 +22,18 @@ export const getUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const redeemCode = async (req: Request, res: Response) => {
+  const { code } = req.body;
+  const { user_id } = req.params;
+  try {
+    const redeemedCode = await userQueries.redeemCode.values(code, user_id);
+    if (redeemedCode.length === 0) {
+      res.status(200).json({ invalid: "Invalid or already redeemed code" });
+    }
+    return res.status(200).json({ message: redeemedCode[0] });
+  } catch (error) {
+    console.error("Error redeeming code:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};

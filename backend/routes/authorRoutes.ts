@@ -91,3 +91,26 @@ export const getAuthorsBooks = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const getAuthorGeneratedCodes = async (req: Request, res: Response) => {
+  const { author_id } = req.params;
+
+  if (!author_id) {
+    return res.status(400).json({ error: "author_id is required" });
+  }
+
+  try {
+    const result = await authorQueries.getAuthorGeneratedCodes.values(
+      author_id
+    );
+
+    if (result.length > 0) {
+      res.status(200).json(result);
+    } else {
+      res.status(200).json({ message: "No generated codes found" });
+    }
+  } catch (error) {
+    console.error("Error fetching author status:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
