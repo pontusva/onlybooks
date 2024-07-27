@@ -25,7 +25,7 @@ app.use(express.json());
 
 app.get("/user/:firebase_uid", getUser);
 app.get("/author/:firebase_uid", isAuthor);
-app.get("/stream", streamAudioBook);
+app.get("/stream/:audio_file", streamAudioBook);
 app.get("/author/:author_id/codes", getAuthorGeneratedCodes);
 app.get("/author/:author_id/books", getAuthorsBooks);
 app.get("/user/:user_id/purchased", getPurchasedAudioFiles);
