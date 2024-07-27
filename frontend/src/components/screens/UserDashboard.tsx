@@ -8,11 +8,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const schema = z.object({
   code: z.string().uuid(),
@@ -35,6 +34,7 @@ export const UserDashboard = () => {
   const [redeemedBooks, setRedeemedBooks] = useState<RedeemedBooks | null>(
     null
   );
+  const [audioFile, setAudioFile] = useState<string>("");
   const userId = useUserIdStore((state) => state.userId);
   const { load } = useGlobalAudioPlayer();
   const {
@@ -42,6 +42,8 @@ export const UserDashboard = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<Schema>({ resolver: zodResolver(schema) });
+
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (!userId) return;
@@ -56,7 +58,6 @@ export const UserDashboard = () => {
           }
         );
         const data = await response.json();
-
         setRedeemedBooks(data);
       } catch (error) {
         console.error("Fetch error:", error);
@@ -64,45 +65,42 @@ export const UserDashboard = () => {
     })();
   }, [userId]);
 
-  const onSubmit = (data: Schema) => {
-    (async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/user/${userId}/redeem`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              code: data.code,
-            }),
-          }
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+  const onSubmit = async (data: Schema) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/user/${userId}/redeem`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            code: data.code,
+          }),
         }
-        const result = await response.json();
-        console.log(result);
-      } catch (error) {
-        console.error("Fetch error:", error);
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    })();
+      const result = await response.json();
+      console.log(result);
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  };
+
+  const handleBookClick = (fileUrl: string) => {
+    setAudioFile(fileUrl);
+    if (audioRef.current) {
+      audioRef.current.src = `http://localhost:3000/stream/${fileUrl}`;
+      audioRef.current.play().catch((error) => {
+        console.error("Playback error:", error);
+      });
+    }
   };
 
   return (
     <div>
-      <button
-        onClick={() => {
-          load("http://localhost:3000/stream", {
-            autoplay: true,
-            html5: true,
-            format: "mp3",
-          });
-        }}
-      >
-        Start Streaming
-      </button>
       <form className="flex flex-col p-10" onSubmit={handleSubmit(onSubmit)}>
         <TextField
           {...register("code")}
@@ -122,14 +120,30 @@ export const UserDashboard = () => {
         </Typography>
         <List>
           {redeemedBooks &&
-            redeemedBooks.redeemedBooks.map((book, i) => {
-              return (
-                <ListItem key={i}>
-                  <ListItemText primary={book.title} />
-                </ListItem>
-              );
-            })}
+            redeemedBooks.redeemedBooks.map((book) => (
+              <ListItem key={book.id}>
+                <ListItemText primary={book.title} />
+                <Button onClick={() => handleBookClick(book.file_url)}>
+                  Play
+                </Button>
+              </ListItem>
+            ))}
         </List>
+      </div>
+      <div className="flex justify-center">
+        <audio
+          id="audio-player"
+          ref={audioRef}
+          controls
+          onPlay={() => console.log("Audio playing")}
+          onPause={() => console.log("Audio paused")}
+        >
+          <source
+            src={audioFile ? `http://localhost:3000/stream/${audioFile}` : ""}
+            type="audio/mp3"
+          />
+          Your browser does not support the audio element.
+        </audio>
       </div>
     </div>
   );

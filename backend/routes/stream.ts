@@ -3,10 +3,14 @@ import fs from "fs";
 import path from "path";
 
 export const streamAudioBook = async (req: Request, res: Response) => {
-  const filePath = path.resolve(
-    __dirname,
-    "../audioBooks/audio-15a12e4f-9420-436d-82ff-534fb2b27d44.mp3"
-  );
+  const { audio_file } = req.params;
+  const filePath = path.resolve(__dirname, `../audioBooks/${audio_file}`);
+
+  // Check if file exists
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).send("Audio file not found");
+  }
+
   const stat = fs.statSync(filePath);
   const fileSize = stat.size;
   const range = req.headers.range;
@@ -38,6 +42,7 @@ export const streamAudioBook = async (req: Request, res: Response) => {
     const head = {
       "Content-Length": fileSize,
       "Content-Type": "audio/mpeg",
+      "Accept-Ranges": "bytes",
     };
     res.writeHead(200, head);
     fs.createReadStream(filePath).pipe(res);
