@@ -14,7 +14,7 @@ import {
   getAuthorGeneratedCodes,
 } from "./routes/authorRoutes";
 import { streamAudioBook } from "./routes/stream";
-import audioRouter from "./routes/uploadAuthorBooks";
+import { uploadBook } from "./routes/uploadAuthorBooks";
 import cors from "cors";
 const app = express();
 const port = 3000;
@@ -33,7 +33,7 @@ app.post("/register", createUser);
 app.post("/purchase", insertPurchaseCode);
 app.post("/user/:user_id/redeem", redeemCode);
 app.put("/author", becomeAuthor);
-app.use("/audio", audioRouter);
+app.use("/audio/upload", uploadBook);
 
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);

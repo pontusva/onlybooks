@@ -3,6 +3,8 @@ import { useUidStore } from "../../zustand/userStore";
 import { useEffect, useState } from "react";
 import { AuthorDashboard } from "./AuthorDashboard";
 import { Loader } from "../reuseable/Loader";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../auth/initAuth";
 
 export const Dashboard = () => {
   const uid = useUidStore((state) => state.uid);
@@ -12,9 +14,18 @@ export const Dashboard = () => {
   useEffect(() => {
     (async () => {
       if (!uid) return;
-      const response = await fetch(`http://localhost:3000/author/${uid}`);
-      const result = await response.json();
-      setIsAuthor(result.is_author);
+
+      const q = query(
+        collection(db, "users"),
+        where("firebase_uid", "==", uid)
+      );
+
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach(async (document) => {
+        const userData = document.data().is_author;
+
+        setIsAuthor(userData);
+      });
       setLoading(false);
     })();
   }, [uid]);

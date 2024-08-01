@@ -25,7 +25,7 @@ export const GenerateUuid = ({ children }: { children: React.ReactNode }) => {
   const handleClickOpen = () => {
     setOpen(true);
   };
-
+  console.log(authorId);
   const handleClose = () => {
     setOpen(false);
   };

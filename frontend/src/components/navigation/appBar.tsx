@@ -16,6 +16,9 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../auth/initAuth";
 import { useNavigate } from "react-router-dom";
 import { useUidStore } from "../../zustand/userStore";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../../auth/initAuth";
+
 const pages = ["Products", "Pricing", "Blog"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
@@ -72,14 +75,12 @@ export const AppBarTop = () => {
   useEffect(() => {
     if (!uid) return;
     (async () => {
-      const response = await fetch(`http://localhost:3000/user/${uid}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-
-      setUsername(data.user.username);
+      const q = query(
+        collection(db, "users"),
+        where("firebase_uid", "==", uid)
+      );
+      const querySnapshot = await getDocs(q);
+      setUsername(querySnapshot.docs[0].data().username);
     })();
   }, [uid]);
 

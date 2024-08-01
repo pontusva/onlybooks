@@ -4,6 +4,8 @@ import { TextField, Button } from "@mui/material";
 import z from "zod";
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { db, uploadFile } from "../../auth/initAuth";
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 
 const schema = z.object({
   title: z.string().min(3),
@@ -12,14 +14,13 @@ const schema = z.object({
 });
 
 type Schema = z.infer<typeof schema>;
+
 interface User {
-  user: {
-    createdAt: string;
-    firebase_uid: string;
-    is_author: boolean;
-    id: number;
-    username: string;
-  };
+  createdAt: string;
+  firebase_uid: string;
+  is_author: boolean;
+  id: string;
+  username: string;
 }
 export const AuthorAccount = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -33,22 +34,35 @@ export const AuthorAccount = () => {
   useEffect(() => {
     if (!uid) return;
     (async () => {
-      const response = await fetch(`http://localhost:3000/user/${uid}`);
-      const result = await response.json();
-      setUser(result);
+      const q = query(
+        collection(db, "users"),
+        where("firebase_uid", "==", uid)
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach(async (document) => {
+        const userData = document.data() as User;
+        const userWithId = { ...userData, id: document.id };
+        setUser(userWithId);
+      });
     })();
   }, []);
 
   const onSubmit = (data: Schema) => {
     if (!user) return;
-    const formData = new FormData();
-    formData.append("author_id", String(user?.user.id));
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    formData.append("audio", data.file[0]);
-    fetch(`http://localhost:3000/audio/upload`, {
-      method: "POST",
-      body: formData,
+
+    uploadFile(data.file[0], async (audio: string) => {
+      (async () => {
+        try {
+          await addDoc(collection(db, "audio"), {
+            author_id: user.id,
+            title: data.title,
+            description: data.description,
+            audio,
+          });
+        } catch (e) {
+          console.error("Error adding document: ", e);
+        }
+      })();
     });
   };
   return (

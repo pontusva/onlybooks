@@ -1,12 +1,15 @@
 import { useEffect } from "react";
 import { AppBarTop } from "./components/navigation/appBar.tsx";
 import { Outlet } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useUidStore } from "./zustand/userStore.ts";
 import { useAuthorIdStore } from "./zustand/authorIdStore.ts";
 import { useUserIdStore } from "./zustand/userIdStore.ts";
-import { auth } from "./auth/initAuth.ts";
+import { collection, query, where, getDocs } from "firebase/firestore";
+
+import { firebaseApp, auth, db } from "./auth/initAuth.ts";
+firebaseApp;
 
 function App() {
   const navigate = useNavigate();
@@ -16,30 +19,29 @@ function App() {
 
   useEffect(() => {
     const fetchUser = async (uid: string) => {
-      const response = await fetch(`http://localhost:3000/user/${uid}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      setUserId(data.user.id);
+      const q = query(
+        collection(db, "users"),
+        where("firebase_uid", "==", uid)
+      );
+      const querySnapshot = await getDocs(q);
+
+      setUserId(querySnapshot.docs[0].id);
     };
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUid(user.uid);
         try {
-          const response = await fetch(
-            `http://localhost:3000/author/${user.uid}`
+          const q = query(
+            collection(db, "users"),
+            where("firebase_uid", "==", user.uid)
           );
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const result = await response.json();
-          if (result.id) {
-            setAuthorId(result.id);
+          const querySnapshot = await getDocs(q);
+
+          if (querySnapshot) {
+            setAuthorId(querySnapshot.docs[0].id);
           } else {
-            await fetchUser(user.uid);
+            await fetchUser(querySnapshot.docs[0].data().firebase_uid);
           }
         } catch (error) {
           console.error("Fetch error:", error);
