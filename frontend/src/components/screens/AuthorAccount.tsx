@@ -40,6 +40,7 @@ export const AuthorAccount = () => {
       );
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach(async (document) => {
+        console.log(document);
         const userData = document.data() as User;
         const userWithId = { ...userData, id: document.id };
         setUser(userWithId);

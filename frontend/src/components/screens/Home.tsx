@@ -15,6 +15,14 @@ export const Home = () => {
   };
   return (
     <div className="absolute h-screen flex items-center justify-center w-screen">
+      <div>
+        <iframe
+          src="https://iframe.mediadelivery.net/embed/280288/185f6d67-9913-49cb-ba6f-bba64ea38616?autoplay=true&loop=false&muted=false&preload=true&responsive=true"
+          loading="lazy"
+          allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;"
+          allowfullscreen="true"
+        ></iframe>
+      </div>
       <Button onClick={fetchUser}>Fetch User</Button>
     </div>
   );
