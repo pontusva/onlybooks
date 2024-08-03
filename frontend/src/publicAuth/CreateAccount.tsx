@@ -1,4 +1,5 @@
 import { auth } from "../auth/initAuth";
+
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
