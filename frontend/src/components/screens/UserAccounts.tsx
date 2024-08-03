@@ -8,6 +8,16 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
 import { useAuthorStore } from "../../zustand/authorStore";
 import { useUidStore } from "../../zustand/userStore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
+
+import { db } from "../../auth/initAuth";
 export const UserAccount = () => {
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
@@ -80,20 +90,19 @@ function SimpleDialog(props: SimpleDialogProps) {
   };
 
   const becomeAuthor = async () => {
-    const response = await fetch("http://localhost:3000/author", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ firebase_uid: uid }),
-    });
-    const result = await response.json();
+    if (!uid) return;
+    const q = query(collection(db, "users"), where("firebase_uid", "==", uid));
 
-    if (response.ok) {
-      setIsAuthor(result.is_author);
-    } else {
-      console.error(result);
-    }
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach(async (document) => {
+      const authorRef = doc(db, "users", document.id);
+
+      await setDoc(authorRef, { is_author: true }, { merge: true });
+    });
+    if (!querySnapshot.docs[0].data().is_author) return;
+
+    setIsAuthor(querySnapshot.docs[0].data().is_author);
   };
 
   return (

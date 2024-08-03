@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { UserAccount } from "./UserAccounts";
 import { AuthorAccount } from "./AuthorAccount";
 import { Loader } from "../reuseable/Loader";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../auth/initAuth";
 
 export const Account = () => {
   const [isAuthor, setIsAuthor] = useState<boolean | undefined>(undefined);
@@ -15,10 +17,13 @@ export const Account = () => {
     (async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3000/author/${uid}`);
 
-        const result = await response.json();
-        setIsAuthor(result.is_author);
+        const q = query(
+          collection(db, "users"),
+          where("firebase_uid", "==", uid)
+        );
+        const querySnapshot = await getDocs(q);
+        setIsAuthor(querySnapshot.docs[0].data().is_author);
         setLoading(false);
       } catch (error) {
         console.error("There was a problem with the fetch operation:", error);

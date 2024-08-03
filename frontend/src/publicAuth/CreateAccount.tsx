@@ -1,4 +1,4 @@
-import { auth } from "../auth/initAuth";
+import { auth, db } from "../auth/initAuth";
 
 import {
   createUserWithEmailAndPassword,
@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { TextField, Button } from "@mui/material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
+import { addDoc, collection } from "firebase/firestore";
 import z from "zod";
 
 const schema = z.object({
@@ -36,16 +37,16 @@ function CreateAccount() {
 
         if (user) {
           (async () => {
-            await fetch("http://localhost:3000/register", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
+            try {
+              const docRef = await addDoc(collection(db, "users"), {
                 ...dataWithoutPassword,
                 firebase_uid: user.uid,
-              }),
-            });
+              });
+
+              console.log("Document written with ID: ", docRef.id);
+            } catch (e) {
+              console.error("Error adding document: ", e);
+            }
           })();
         }
       })
