@@ -10,6 +10,7 @@ import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 const schema = z.object({
   title: z.string().min(3),
   description: z.string().min(3),
+  author: z.string().min(3),
   file: z.instanceof(FileList),
 });
 
@@ -40,7 +41,6 @@ export const AuthorAccount = () => {
       );
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach(async (document) => {
-        console.log(document);
         const userData = document.data() as User;
         const userWithId = { ...userData, id: document.id };
         setUser(userWithId);
@@ -56,6 +56,7 @@ export const AuthorAccount = () => {
         try {
           await addDoc(collection(db, "audio"), {
             author_id: user.id,
+            author: data.author,
             title: data.title,
             description: data.description,
             audio,
@@ -80,6 +81,15 @@ export const AuthorAccount = () => {
         />
         {errors.title && (
           <span className="text-red-500">{errors.title.message}</span>
+        )}
+        <TextField
+          {...register("author")}
+          id="standard-basic"
+          label="Author"
+          variant="outlined"
+        />
+        {errors.author && (
+          <span className="text-red-500">{errors.author.message}</span>
         )}
         <TextField
           {...register("description")}

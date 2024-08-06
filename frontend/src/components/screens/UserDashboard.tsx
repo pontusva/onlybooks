@@ -12,6 +12,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useEffect, useRef, useState } from "react";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  runTransaction,
+  where,
+} from "firebase/firestore";
+import { db } from "../../auth/initAuth";
 
 const schema = z.object({
   code: z.string().uuid(),
@@ -20,23 +30,20 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>;
 
 interface RedeemedBooks {
-  redeemedBooks: {
-    id: string;
-    title: string;
-    created_at: string;
-    file_url: string;
-    description: string;
-    purchased_at: string;
-  }[];
+  id: string;
+  title: string;
+  created_at: string;
+  audio: string;
+  description: string;
+  purchased_at: string;
 }
 
 export const UserDashboard = () => {
-  const [redeemedBooks, setRedeemedBooks] = useState<RedeemedBooks | null>(
+  const [redeemedBooks, setRedeemedBooks] = useState<RedeemedBooks[] | null>(
     null
   );
   const [audioFile, setAudioFile] = useState<string>("");
   const userId = useUserIdStore((state) => state.userId);
-  const { load } = useGlobalAudioPlayer();
   const {
     register,
     handleSubmit,
@@ -49,50 +56,93 @@ export const UserDashboard = () => {
     if (!userId) return;
     (async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/user/${userId}/purchased`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+        const userDoc = query(
+          collection(db, "Purchases"),
+          where("user_id", "==", userId)
         );
-        const data = await response.json();
-        setRedeemedBooks(data);
+        const userSnapshot = await getDocs(userDoc);
+
+        if (!userSnapshot.empty) {
+          const redeemedBooksArray = [];
+
+          for (const docs of userSnapshot.docs) {
+            const purchaseCodeId = docs.data().purchase_code_id;
+            const getRedeemedBooks = doc(db, "PurchaseCodes", purchaseCodeId);
+            const redeemedBooksSnapshot = await getDoc(getRedeemedBooks);
+
+            if (redeemedBooksSnapshot.exists()) {
+              const redeemedBooksData = redeemedBooksSnapshot.data();
+              const getAudioFile = doc(
+                db,
+                "audio",
+                redeemedBooksData.audio_file_id
+              );
+              const audioFileSnapshot = await getDoc(getAudioFile);
+
+              if (audioFileSnapshot.exists()) {
+                redeemedBooksArray.push(
+                  audioFileSnapshot.data() as RedeemedBooks
+                );
+              } else {
+                console.log("No such audio file document!");
+              }
+            } else {
+              console.log("No matching redeemed books document found.");
+            }
+          }
+          console.log(redeemedBooksArray);
+          setRedeemedBooks(redeemedBooksArray);
+        } else {
+          console.log("No matching purchases found.");
+        }
       } catch (error) {
-        console.error("Fetch error:", error);
+        console.error("Error fetching user data: ", error);
       }
     })();
   }, [userId]);
 
   const onSubmit = async (data: Schema) => {
     try {
-      const response = await fetch(
-        `http://localhost:3000/user/${userId}/redeem`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            code: data.code,
-          }),
-        }
+      const purchaseCodeQuery = query(
+        collection(db, "PurchaseCodes"),
+        where("code", "==", data.code)
       );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const querySnapshot = await getDocs(purchaseCodeQuery);
+
+      if (querySnapshot.empty) {
+        throw new Error("Code is invalid or already redeemed");
       }
-      const result = await response.json();
-      console.log(result);
+
+      const purchaseCodeDoc = querySnapshot.docs[0];
+      await runTransaction(db, async (transaction) => {
+        const purchaseCodeRef = purchaseCodeDoc.ref;
+
+        if (purchaseCodeDoc.data().is_redeemed) {
+          throw new Error("Code is invalid or already redeemed");
+        }
+
+        transaction.update(purchaseCodeRef, { is_redeemed: true });
+
+        const newPurchaseRef = doc(collection(db, "Purchases"));
+        transaction.set(newPurchaseRef, {
+          user_id: userId,
+          purchase_code_id: purchaseCodeDoc.id,
+          audio_file_id: purchaseCodeDoc.data().audio_file_id,
+        });
+
+        return newPurchaseRef;
+      });
+
+      console.log("Transaction successfully committed!");
     } catch (error) {
-      console.error("Fetch error:", error);
+      console.error("Transaction failed: ", error);
     }
   };
 
   const handleBookClick = (fileUrl: string) => {
     setAudioFile(fileUrl);
     if (audioRef.current) {
-      audioRef.current.src = `http://localhost:3000/stream/${fileUrl}`;
+      audioRef.current.src = fileUrl;
       audioRef.current.play().catch((error) => {
         console.error("Playback error:", error);
       });
@@ -120,10 +170,11 @@ export const UserDashboard = () => {
         </Typography>
         <List>
           {redeemedBooks &&
-            redeemedBooks.redeemedBooks.map((book) => (
+            redeemedBooks.length &&
+            redeemedBooks.map((book) => (
               <ListItem key={book.id}>
                 <ListItemText primary={book.title} />
-                <Button onClick={() => handleBookClick(book.file_url)}>
+                <Button onClick={() => handleBookClick(book.audio)}>
                   Play
                 </Button>
               </ListItem>
@@ -138,10 +189,7 @@ export const UserDashboard = () => {
           onPlay={() => console.log("Audio playing")}
           onPause={() => console.log("Audio paused")}
         >
-          <source
-            src={audioFile ? `http://localhost:3000/stream/${audioFile}` : ""}
-            type="audio/mp3"
-          />
+          <source src={audioFile ? audioFile : ""} type="audio/mp3" />
           Your browser does not support the audio element.
         </audio>
       </div>

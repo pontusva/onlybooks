@@ -4,6 +4,15 @@ import { v4 as uuidv4 } from "uuid";
 import { Button } from "@mui/material";
 import { useAuthorIdStore } from "../../zustand/authorIdStore";
 import { useUidStore } from "../../zustand/userStore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  DocumentData,
+  addDoc,
+} from "firebase/firestore";
+import { db } from "../../auth/initAuth";
 
 interface Books {
   author_id: string;
@@ -18,14 +27,14 @@ interface Books {
 export const GenerateUuid = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = useState(false);
   const authorId = useAuthorIdStore((state) => state.authorId);
-  const [books, setBooks] = useState<Books[] | null>(null);
+  const [books, setBooks] = useState<DocumentData | null>(null);
   const [selectedBookId, setSelectedBookId] = useState<number | null>(null);
   const uid = useUidStore((state) => state.uid);
 
   const handleClickOpen = () => {
     setOpen(true);
   };
-  console.log(authorId);
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -33,53 +42,61 @@ export const GenerateUuid = ({ children }: { children: React.ReactNode }) => {
   const generateUuid = (bookId: number) => {
     setBooks(
       (currentBooks) =>
-        currentBooks?.map((book) =>
+        currentBooks?.map((book: Books) =>
           book.id === bookId ? { ...book, uuid: uuidv4() } : book
         ) || []
     );
   };
 
   const insertCode = async (book: Books) => {
-    const response = await fetch(`http://localhost:3000/purchase`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    try {
+      const docRef = await addDoc(collection(db, "PurchaseCodes"), {
         author_id: authorId,
         code: book.uuid,
+        title: book.title,
         audio_file_id: book.id,
         expires_at: new Date(),
         firebase_uid: uid,
-      }),
-    });
+        is_redeemed: false,
+      });
 
-    const result = await response.json();
-    console.log(result);
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
   };
 
   useEffect(() => {
     (async () => {
       if (!authorId) return;
 
-      const response = await fetch(
-        `http://localhost:3000/author/${authorId}/books`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+      const q = query(
+        collection(db, "audio"),
+        where("author_id", "==", authorId)
       );
+      const querySnapshot = await getDocs(q);
 
-      const result = await response.json();
-      setBooks(result);
+      if (!querySnapshot.empty) {
+        querySnapshot.forEach(async (document) => {
+          console.log(document.data());
+          const booksArray = querySnapshot.docs.map((document) => ({
+            ...document.data(),
+            id: document.id,
+          }));
+          setBooks(booksArray);
+        });
+      } else {
+        // Handle the case where no documents are found
+        setBooks([]);
+      }
     })();
   }, [authorId]);
 
   useEffect(() => {
     if (selectedBookId !== null) {
-      const updatedBook = books?.find((book) => book.id === selectedBookId);
+      const updatedBook = books?.find(
+        (book: Books) => book.id === selectedBookId
+      );
       if (updatedBook) {
         insertCode(updatedBook);
       }
@@ -91,7 +108,7 @@ export const GenerateUuid = ({ children }: { children: React.ReactNode }) => {
     setSelectedBookId(bookId);
     generateUuid(bookId);
   };
-
+  console.log(books);
   return (
     <div>
       <span
@@ -106,16 +123,18 @@ export const GenerateUuid = ({ children }: { children: React.ReactNode }) => {
         onClose={handleClose}
       >
         {books && books.length
-          ? books?.map((book) => (
-              <div className="" key={book.id}>
-                <Button
-                  className="flex justify-start text-left w-full truncate"
-                  onClick={() => handleGenerateUuid(book.id)}
-                >
-                  {book.title}
-                </Button>
-              </div>
-            ))
+          ? books?.map((book: Books) => {
+              return (
+                <div className="" key={book.id}>
+                  <Button
+                    className="flex justify-start text-left w-full truncate"
+                    onClick={() => handleGenerateUuid(book.id)}
+                  >
+                    {book.title}
+                  </Button>
+                </div>
+              );
+            })
           : null}
       </SimpleDialog>
     </div>

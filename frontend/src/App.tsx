@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { AppBarTop } from "./components/navigation/appBar.tsx";
 import { Outlet } from "react-router-dom";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useUidStore } from "./zustand/userStore.ts";
 import { useAuthorIdStore } from "./zustand/authorIdStore.ts";
@@ -34,14 +34,23 @@ function App() {
         try {
           const q = query(
             collection(db, "users"),
+            where("is_author", "==", true),
             where("firebase_uid", "==", user.uid)
           );
           const querySnapshot = await getDocs(q);
 
-          if (querySnapshot) {
+          const qUser = query(
+            collection(db, "users"),
+            where("firebase_uid", "==", user.uid)
+          );
+          const querySnapshotUser = await getDocs(qUser);
+
+          if (!querySnapshot.empty) {
             setAuthorId(querySnapshot.docs[0].id);
+          } else if (!querySnapshotUser.empty) {
+            await fetchUser(querySnapshotUser.docs[0].data().firebase_uid);
           } else {
-            await fetchUser(querySnapshot.docs[0].data().firebase_uid);
+            console.error("No matching documents found.");
           }
         } catch (error) {
           console.error("Fetch error:", error);
