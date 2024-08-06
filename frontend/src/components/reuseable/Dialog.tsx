@@ -10,7 +10,6 @@ export interface SimpleDialogProps {
 
 export const SimpleDialog = ({
   onClose,
-
   open,
   children,
   title,

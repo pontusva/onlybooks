@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { db, uploadFile } from "../../auth/initAuth";
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
-
+import { CreateNewLibrary } from "../dialogs/CreateNewLibrary";
 const schema = z.object({
   title: z.string().min(3),
   description: z.string().min(3),
@@ -69,6 +69,7 @@ export const AuthorAccount = () => {
   };
   return (
     <>
+      <CreateNewLibrary children={<Button>Create new library?</Button>} />
       <form
         className="flex flex-col  h-screen space-y-10 pt-24 p-5"
         onSubmit={handleSubmit(onSubmit)}
