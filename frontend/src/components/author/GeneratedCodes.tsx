@@ -73,7 +73,7 @@ export const GeneratedCodes = () => {
     !loading &&
     groupedCodes && (
       <List style={{ padding: "10px" }}>
-        {Object.keys(groupedCodes).map((title, i) => (
+        {Object.keys(groupedCodes).map((title) => (
           <Fragment key={title}>
             <Typography variant="h6" align="center" gutterBottom>
               {title}
