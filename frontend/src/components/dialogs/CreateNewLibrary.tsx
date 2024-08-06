@@ -77,7 +77,8 @@ export const CreateNewLibrary = ({ children }: { children: ReactNode }) => {
       const authorData = authorDoc.data();
       const newLibrary = {
         name: data.name,
-        libraryId: result.folders[0].id,
+        libraryId: result.folders[0].libraryId,
+        folderId: result.folders[0].id,
       };
 
       const updatedLibraries = Array.isArray(authorData.libraries)
