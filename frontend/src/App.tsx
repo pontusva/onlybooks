@@ -63,9 +63,11 @@ function App() {
 
     return () => unsubscribe();
   }, [navigate, setUid, setAuthorId]);
+
   return (
     <>
       <AppBarTop />
+
       <Outlet />
     </>
   );

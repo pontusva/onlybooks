@@ -153,7 +153,8 @@ export const AuthorAccount = () => {
               <em>Select a library</em>
             </MenuItem>
             {user &&
-              user.libraries.map((book) => {
+              user.libraries?.map((book) => {
+                console.log(book);
                 return (
                   <MenuItem
                     key={book.libraryId}

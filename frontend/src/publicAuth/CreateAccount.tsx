@@ -1,5 +1,4 @@
 import { auth, db } from "../auth/initAuth";
-
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -30,6 +29,19 @@ function CreateAccount() {
 
   const onSubmit = async (data: Schema) => {
     const { password, ...dataWithoutPassword } = data;
+    const response = await fetch("http://localhost:3000/api/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: data.username,
+        password,
+      }),
+    });
+    const result = await response.json();
+    console.log(result);
+    if (!result) return;
     createUserWithEmailAndPassword(auth, data.email, data.password)
       .then((userCredential) => {
         // Signed up
@@ -41,6 +53,8 @@ function CreateAccount() {
               await addDoc(collection(db, "users"), {
                 ...dataWithoutPassword,
                 firebase_uid: user.uid,
+                audibookshelfId: result.user.id,
+                token: result.user.token,
               });
             } catch (e) {
               console.error("Error adding document: ", e);
@@ -54,19 +68,6 @@ function CreateAccount() {
         // ..
         console.log({ errorCode, errorMessage });
       });
-
-    const response = await fetch("http://localhost:3000/api/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: data.username,
-        password,
-      }),
-    });
-    const result = await response.json();
-    console.log(result);
   };
 
   onAuthStateChanged(auth, (user) => {

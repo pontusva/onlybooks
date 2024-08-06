@@ -21,6 +21,8 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../auth/initAuth";
+import { useGlobalAudioPlayer, useAudioPlayer } from "react-use-audio-player";
+import ReactPlayer from "react-player";
 
 const schema = z.object({
   code: z.string().uuid(),
@@ -29,6 +31,7 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>;
 
 interface RedeemedBooks {
+  author_id: string;
   id: string;
   title: string;
   created_at: string;
@@ -41,14 +44,18 @@ export const UserDashboard = () => {
   const [redeemedBooks, setRedeemedBooks] = useState<RedeemedBooks[] | null>(
     null
   );
+  const [audioFileId, setAudioFileId] = useState<string>("");
   const [audioFile, setAudioFile] = useState<string>("");
+  const [itemId, setItemId] = useState<string>("");
+  const [contentUrl, setContentUrl] = useState<string>("");
   const userId = useUserIdStore((state) => state.userId);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<Schema>({ resolver: zodResolver(schema) });
-
+  const { play } = useGlobalAudioPlayer();
+  const { load } = useAudioPlayer();
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -89,7 +96,7 @@ export const UserDashboard = () => {
               console.log("No matching redeemed books document found.");
             }
           }
-          console.log(redeemedBooksArray);
+
           setRedeemedBooks(redeemedBooksArray);
         } else {
           console.log("No matching purchases found.");
@@ -128,7 +135,7 @@ export const UserDashboard = () => {
           purchase_code_id: purchaseCodeDoc.id,
           audio_file_id: purchaseCodeDoc.data().audio_file_id,
         });
-
+        setAudioFileId(purchaseCodeDoc.data().audio_file_id);
         return newPurchaseRef;
       });
 
@@ -148,6 +155,69 @@ export const UserDashboard = () => {
     }
   };
 
+  useEffect(() => {
+    (async () => {
+      if (!userId) return;
+      try {
+        const q = query(
+          collection(db, "Purchases"),
+          where("user_id", "==", userId)
+        );
+        const querySnapshot = await getDocs(q);
+
+        const audioBookRef = doc(
+          db,
+          "audio",
+          querySnapshot.docs[0].data().audio_file_id
+        ); // Replace 'yourDocumentId' with the actual document ID
+        const audioBookSnapshot = await getDoc(audioBookRef);
+
+        if (audioBookSnapshot.exists()) {
+          const audioBookData = audioBookSnapshot.data();
+
+          const response = await fetch(
+            `http://localhost:3000/api/libraries/${audioBookData.libraryId}/${audioBookData.title}`
+          );
+          const result = await response.json();
+
+          setItemId(result.book[0].libraryItem.id);
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching document:", error);
+      }
+    })();
+  }, [redeemedBooks, audioFileId, userId]);
+
+  useEffect(() => {
+    (async () => {
+      if (!itemId) return;
+
+      const response = await fetch(
+        `http://localhost:3000/api/items/${itemId}/play`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const result = await response.json();
+      setContentUrl(result.audioTracks[0].contentUrl);
+    })();
+  }, [itemId, redeemedBooks, audioFileId, userId]);
+
+  useEffect(() => {
+    if (!contentUrl) return;
+    load(`http://localhost:13378/${contentUrl}`, {
+      loop: true,
+      format: "mp3",
+      html5: true,
+    });
+  }, [load]);
+  console.log(contentUrl);
   return (
     <div>
       <form className="flex flex-col p-10" onSubmit={handleSubmit(onSubmit)}>
@@ -167,30 +237,23 @@ export const UserDashboard = () => {
         <Typography variant="h4" align="center" gutterBottom>
           Redeemed Books
         </Typography>
-        <List>
+        <div className="flex justify-center items-center">
           {redeemedBooks &&
             redeemedBooks.length &&
             redeemedBooks.map((book) => (
-              <ListItem key={book.id}>
-                <ListItemText primary={book.title} />
-                <Button onClick={() => handleBookClick(book.audio)}>
-                  Play
-                </Button>
-              </ListItem>
+              <div key={book.id}>
+                <Typography variant="h5" component="h3" gutterBottom>
+                  {book.title}
+                </Typography>
+                <ReactPlayer
+                  height={36}
+                  width={350}
+                  url={`http://localhost:13378/${contentUrl}`}
+                  controls
+                />
+              </div>
             ))}
-        </List>
-      </div>
-      <div className="flex justify-center">
-        <audio
-          id="audio-player"
-          ref={audioRef}
-          controls
-          onPlay={() => console.log("Audio playing")}
-          onPause={() => console.log("Audio paused")}
-        >
-          <source src={audioFile ? audioFile : ""} type="audio/mp3" />
-          Your browser does not support the audio element.
-        </audio>
+        </div>
       </div>
     </div>
   );
