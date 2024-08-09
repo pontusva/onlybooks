@@ -10,7 +10,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../auth/initAuth";
@@ -18,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { useUidStore } from "../../zustand/userStore";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../auth/initAuth";
+import { Fade, Skeleton } from "@mui/material";
 
 const pages = ["Products", "Pricing", "Blog"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
@@ -26,7 +26,7 @@ export const AppBarTop = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [username, setUsername] = useState<string | null>(null);
-
+  const [skeletonLoading, setSkeletonLoading] = useState<boolean>(true);
   const uid = useUidStore((state) => state.uid);
   const navigate = useNavigate();
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -82,6 +82,7 @@ export const AppBarTop = () => {
       const querySnapshot = await getDocs(q);
       setUsername(querySnapshot.docs[0].data().username);
     })();
+    setSkeletonLoading(false);
   }, [uid]);
 
   return (
@@ -124,25 +125,37 @@ export const AppBarTop = () => {
               ))}
             </Menu>
           </Box>
-          <MenuBookIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            onClick={() => navigate("/")}
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            OnlyBooks
-          </Typography>
+
+          <div className="flex w-screen justify-center items-center">
+            {skeletonLoading || !username ? (
+              <Skeleton variant="rectangular" width={300} height={40} />
+            ) : (
+              <Fade in={!skeletonLoading}>
+                <Typography
+                  variant="h5"
+                  noWrap
+                  component="a"
+                  onClick={() => navigate("/")}
+                  sx={{
+                    display: {
+                      xs: "flex",
+                      md: "none",
+                      flexDirection: "row",
+                      justifyContent: "center",
+                    },
+                    flexGrow: 1,
+                    fontFamily: "monospace",
+                    fontWeight: 700,
+                    letterSpacing: ".3rem",
+                    color: "inherit",
+                    textDecoration: "none",
+                  }}
+                >
+                  OnlyBooks
+                </Typography>
+              </Fade>
+            )}
+          </div>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
@@ -158,9 +171,18 @@ export const AppBarTop = () => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp">
-                  {username && username[0].toUpperCase()}
-                </Avatar>
+                {skeletonLoading || !username ? (
+                  <Skeleton
+                    className="z-10 relative"
+                    variant="circular"
+                    width={50}
+                    height={50}
+                  />
+                ) : (
+                  <Fade in={!skeletonLoading}>
+                    <Avatar>{username && username[0].toUpperCase()}</Avatar>
+                  </Fade>
+                )}
               </IconButton>
             </Tooltip>
             <Menu
