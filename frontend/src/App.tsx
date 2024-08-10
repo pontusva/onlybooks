@@ -7,15 +7,21 @@ import { useUidStore } from "./zustand/userStore.ts";
 import { useAuthorIdStore } from "./zustand/authorIdStore.ts";
 import { useUserIdStore } from "./zustand/userIdStore.ts";
 import { collection, query, where, getDocs } from "firebase/firestore";
-
+import { getUserById } from "./data/users/useGetUserById.ts";
 import { firebaseApp, auth, db } from "./auth/initAuth.ts";
 firebaseApp;
 
 function App() {
   const navigate = useNavigate();
   const setUid = useUidStore((state) => state.setUid);
+  const firebase_uid = useUidStore((state) => state.uid);
   const setAuthorId = useAuthorIdStore((state) => state.setAuthorId);
   const setUserId = useUserIdStore((state) => state.setUserId);
+
+  const { user } = getUserById({
+    firebase_uid: firebase_uid ? firebase_uid : "",
+  });
+  console.log(user);
 
   useEffect(() => {
     const fetchUser = async (uid: string) => {
@@ -31,6 +37,7 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUid(user.uid);
+
         try {
           const q = query(
             collection(db, "users"),

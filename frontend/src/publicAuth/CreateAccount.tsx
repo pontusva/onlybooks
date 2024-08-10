@@ -1,13 +1,13 @@
-import { auth, db } from "../auth/initAuth";
+import { auth } from "../auth/initAuth";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
 } from "firebase/auth";
+import { useUserCreate } from "../data/users/createUser";
 import { useForm } from "react-hook-form";
 import { TextField, Button } from "@mui/material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import { addDoc, collection } from "firebase/firestore";
 import z from "zod";
 
 const schema = z.object({
@@ -20,46 +20,30 @@ type Schema = z.infer<typeof schema>;
 
 function CreateAccount() {
   const navigate = useNavigate();
+  const { createUser } = useUserCreate();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<Schema>({ resolver: zodResolver(schema) });
-  console.log("test");
+
   const onSubmit = async (data: Schema) => {
     const { password, ...dataWithoutPassword } = data;
-    const response = await fetch("http://localhost:3000/api/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: data.username,
-        password,
-      }),
-    });
-    const result = await response.json();
-    console.log(result);
-    if (!result) return;
+
     createUserWithEmailAndPassword(auth, data.email, data.password)
       .then((userCredential) => {
         // Signed up
         const user = userCredential.user;
 
         if (user) {
-          (async () => {
-            try {
-              await addDoc(collection(db, "users"), {
-                ...dataWithoutPassword,
-                firebase_uid: user.uid,
-                audibookshelfId: result.user.id,
-                token: result.user.token,
-              });
-            } catch (e) {
-              console.error("Error adding document: ", e);
-            }
-          })();
+          createUser({
+            variables: {
+              firebaseUid: user.uid,
+              ...dataWithoutPassword,
+              isAuthor: false,
+            },
+          });
         }
       })
       .catch((error) => {
