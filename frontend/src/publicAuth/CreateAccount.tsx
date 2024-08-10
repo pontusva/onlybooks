@@ -26,7 +26,7 @@ function CreateAccount() {
     handleSubmit,
     formState: { errors },
   } = useForm<Schema>({ resolver: zodResolver(schema) });
-
+  console.log("test");
   const onSubmit = async (data: Schema) => {
     const { password, ...dataWithoutPassword } = data;
     const response = await fetch("http://localhost:3000/api/users", {
