@@ -10,11 +10,13 @@ gql`
     userById(id: $userByIdId) {
       firebase_uid
       is_author
+      username
+      id
     }
   }
 `;
 
-export const getUserById = ({ firebase_uid }: Props) => {
+export const useGetUserById = ({ firebase_uid }: Props) => {
   const { data, loading, refetch } = useGetUserByIdQuery({
     variables: {
       userByIdId: firebase_uid,

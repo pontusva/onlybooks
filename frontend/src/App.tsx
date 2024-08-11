@@ -6,9 +6,9 @@ import { useNavigate } from "react-router-dom";
 import { useUidStore } from "./zustand/userStore.ts";
 import { useAuthorIdStore } from "./zustand/authorIdStore.ts";
 import { useUserIdStore } from "./zustand/userIdStore.ts";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { getUserById } from "./data/users/useGetUserById.ts";
-import { firebaseApp, auth, db } from "./auth/initAuth.ts";
+import { useGetUserById } from "./data/users/useGetUserById.ts";
+import { useIsAuthor } from "./data/authors/useIsAuthor.ts";
+import { firebaseApp, auth } from "./auth/initAuth.ts";
 firebaseApp;
 
 function App() {
@@ -18,46 +18,22 @@ function App() {
   const setAuthorId = useAuthorIdStore((state) => state.setAuthorId);
   const setUserId = useUserIdStore((state) => state.setUserId);
 
-  const { user } = getUserById({
-    firebase_uid: firebase_uid ? firebase_uid : "",
+  const { user: graphUser } = useGetUserById({
+    firebase_uid: firebase_uid || "",
   });
-  console.log(user);
+  const { isAuthor } = useIsAuthor({
+    firebase_uid: firebase_uid || "",
+  });
 
   useEffect(() => {
-    const fetchUser = async (uid: string) => {
-      const q = query(
-        collection(db, "users"),
-        where("firebase_uid", "==", uid)
-      );
-      const querySnapshot = await getDocs(q);
-
-      setUserId(querySnapshot.docs[0].id);
-    };
-
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUid(user.uid);
-
         try {
-          const q = query(
-            collection(db, "users"),
-            where("is_author", "==", true),
-            where("firebase_uid", "==", user.uid)
-          );
-          const querySnapshot = await getDocs(q);
-
-          const qUser = query(
-            collection(db, "users"),
-            where("firebase_uid", "==", user.uid)
-          );
-          const querySnapshotUser = await getDocs(qUser);
-
-          if (!querySnapshot.empty) {
-            setAuthorId(querySnapshot.docs[0].id);
-          } else if (!querySnapshotUser.empty) {
-            await fetchUser(querySnapshotUser.docs[0].data().firebase_uid);
+          if (isAuthor?.is_author) {
+            setAuthorId(isAuthor.id);
           } else {
-            console.error("No matching documents found.");
+            setUserId(graphUser?.id);
           }
         } catch (error) {
           console.error("Fetch error:", error);
@@ -69,12 +45,11 @@ function App() {
     });
 
     return () => unsubscribe();
-  }, [navigate, setUid, setAuthorId]);
+  }, [navigate, setUid, setAuthorId, isAuthor, graphUser]);
 
   return (
     <>
       <AppBarTop />
-
       <Outlet />
     </>
   );

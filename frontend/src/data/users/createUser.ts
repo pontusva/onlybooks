@@ -14,17 +14,7 @@ gql`
       email: $email
       is_author: $isAuthor
     ) {
-      code
-      message
       success
-      user {
-        created_at
-        email
-        firebase_uid
-        id
-        is_author
-        username
-      }
     }
   }
 `;

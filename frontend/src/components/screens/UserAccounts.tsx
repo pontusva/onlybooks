@@ -6,20 +6,12 @@ import { Typography, Button } from "@mui/material";
 import { useState } from "react";
 import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
-import { useAuthorStore } from "../../zustand/authorStore";
 import { useUidStore } from "../../zustand/userStore";
-import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  setDoc,
-  where,
-} from "firebase/firestore";
+import { useBecomeAuthor } from "../../data/authors/useBecomeAuthor";
 
-import { db } from "../../auth/initAuth";
 export const UserAccount = () => {
   const [open, setOpen] = useState(false);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -84,31 +76,23 @@ export const UserAccount = () => {
 function SimpleDialog(props: SimpleDialogProps) {
   const uid = useUidStore((state) => state.uid);
   const { onClose, selectedValue, open } = props;
-  const setIsAuthor = useAuthorStore((state) => state.setIsAuthor);
+  const { becomeAuthor } = useBecomeAuthor();
   const handleClose = () => {
     onClose(selectedValue);
   };
 
-  const becomeAuthor = async () => {
-    if (!uid) return;
-    const q = query(collection(db, "users"), where("firebase_uid", "==", uid));
-
-    const querySnapshot = await getDocs(q);
-
-    querySnapshot.forEach(async (document) => {
-      const authorRef = doc(db, "users", document.id);
-
-      await setDoc(authorRef, { is_author: true }, { merge: true });
+  const becomeAuthorFunc = async () => {
+    becomeAuthor({
+      variables: {
+        firebaseUid: uid || "",
+      },
     });
-    if (!querySnapshot.docs[0].data().is_author) return;
-
-    setIsAuthor(querySnapshot.docs[0].data().is_author);
   };
 
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle>Become an Author</DialogTitle>
-      <Button onClick={becomeAuthor}>Become Author</Button>
+      <Button onClick={becomeAuthorFunc}>Become Author</Button>
     </Dialog>
   );
 }

@@ -15,9 +15,8 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../auth/initAuth";
 import { useNavigate } from "react-router-dom";
 import { useUidStore } from "../../zustand/userStore";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../../auth/initAuth";
 import { Fade, Skeleton } from "@mui/material";
+import { useGetUserById } from "../../data/users/useGetUserById";
 
 const pages = ["Products", "Pricing", "Blog"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
@@ -28,6 +27,9 @@ export const AppBarTop = () => {
   const [username, setUsername] = useState<string | null>(null);
   const [skeletonLoading, setSkeletonLoading] = useState<boolean>(true);
   const uid = useUidStore((state) => state.uid);
+
+  const { user } = useGetUserById({ firebase_uid: uid || "" });
+
   const navigate = useNavigate();
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -51,19 +53,14 @@ export const AppBarTop = () => {
   const handleSettingClick = (setting: string | null) => {
     switch (setting) {
       case "Profile":
-        // Navigate to profile page or perform action
-
         break;
       case "Account":
-        // Navigate to account settings or perform action
         navigate("/account");
         break;
       case "Dashboard":
-        // Navigate to dashboard or perform action
         navigate("/dashboard");
         break;
       case "Logout":
-        // Perform logout action
         signOut(auth);
         console.log("Logging out");
         break;
@@ -73,17 +70,10 @@ export const AppBarTop = () => {
   };
 
   useEffect(() => {
-    if (!uid) return;
-    (async () => {
-      const q = query(
-        collection(db, "users"),
-        where("firebase_uid", "==", uid)
-      );
-      const querySnapshot = await getDocs(q);
-      setUsername(querySnapshot.docs[0].data().username);
-    })();
+    if (!uid || !user?.username) return;
+    setUsername(user?.username);
     setSkeletonLoading(false);
-  }, [uid]);
+  }, [uid, user?.username]);
 
   return (
     <AppBar position="static">
