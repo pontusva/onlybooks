@@ -17,6 +17,7 @@ import {
   DocumentData,
 } from "firebase/firestore";
 import { db } from "../../auth/initAuth";
+import { useGetPurchaseCodes } from "../../data/authors/useGetPurchaseCodes";
 
 interface Code {
   id: string;
@@ -31,8 +32,11 @@ interface GroupedCodes {
 
 export const GeneratedCodes = () => {
   const [codes, setCodes] = useState<DocumentData>([]);
-  const [loading, setLoading] = useState(true);
   const authorId = useAuthorIdStore((state) => state.authorId);
+
+  const { purchaseCodes, loading } = useGetPurchaseCodes({
+    authorId: authorId || "",
+  });
 
   const groupedCodes: GroupedCodes | null =
     codes.length > 0
@@ -48,23 +52,10 @@ export const GeneratedCodes = () => {
       : null;
 
   useEffect(() => {
-    if (!authorId) return;
-    (async () => {
-      const q = query(
-        collection(db, "PurchaseCodes"),
-        where("author_id", "==", authorId)
-      );
-      const codesArray: DocumentData[] = [];
-
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach(async (document) => {
-        codesArray.push(document.data());
-      });
-      setCodes(codesArray);
-    })();
-    setLoading(false);
-  }, [authorId]);
-
+    if (!authorId || !purchaseCodes) return;
+    setCodes(purchaseCodes);
+  }, [purchaseCodes]);
+  console.log(codes, purchaseCodes);
   const handleCopy = (code: string) => {
     navigator.clipboard.writeText(code);
   };

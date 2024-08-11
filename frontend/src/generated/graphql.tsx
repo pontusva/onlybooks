@@ -23,6 +23,7 @@ export type Mutation = {
   createUser?: Maybe<Response>;
   insertBook?: Maybe<Response>;
   insertPurchaseCodes?: Maybe<Response>;
+  redeemCode?: Maybe<Response>;
 };
 
 
@@ -56,9 +57,27 @@ export type MutationInsertPurchaseCodesArgs = {
   is_redeemed: Scalars['Boolean']['input'];
 };
 
+
+export type MutationRedeemCodeArgs = {
+  code: Scalars['String']['input'];
+  user_id: Scalars['String']['input'];
+};
+
+export type PurchaseCodes = {
+  __typename?: 'PurchaseCodes';
+  audio_file_id: Scalars['String']['output'];
+  author_id: Scalars['String']['output'];
+  code: Scalars['String']['output'];
+  expires_at: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  is_redeemed: Scalars['Boolean']['output'];
+  title: Scalars['String']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   getAuthorBooks?: Maybe<Array<Maybe<UploadBook>>>;
+  getPurchaseCodes?: Maybe<Array<Maybe<PurchaseCodes>>>;
   isAuthor?: Maybe<User>;
   userById?: Maybe<User>;
   users?: Maybe<Array<Maybe<User>>>;
@@ -67,6 +86,11 @@ export type Query = {
 
 export type QueryGetAuthorBooksArgs = {
   author_id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetPurchaseCodesArgs = {
+  author_id: Scalars['String']['input'];
 };
 
 
@@ -119,6 +143,13 @@ export type GetAuthorBooksQueryVariables = Exact<{
 
 export type GetAuthorBooksQuery = { __typename?: 'Query', getAuthorBooks?: Array<{ __typename?: 'UploadBook', title: string, file_name: string, id: string, author_id: string, created_at: string, description?: string, file_url: string }> };
 
+export type GetPurchaseCodesQueryVariables = Exact<{
+  authorId: Scalars['String']['input'];
+}>;
+
+
+export type GetPurchaseCodesQuery = { __typename?: 'Query', getPurchaseCodes?: Array<{ __typename?: 'PurchaseCodes', is_redeemed: boolean, code: string, author_id: string, expires_at: string, audio_file_id: string, title: string }> };
+
 export type InsertPurchaseCodesMutationVariables = Exact<{
   authorId: Scalars['String']['input'];
   code: Scalars['String']['input'];
@@ -169,6 +200,14 @@ export type GetUserByIdQueryVariables = Exact<{
 
 
 export type GetUserByIdQuery = { __typename?: 'Query', userById?: { __typename?: 'User', firebase_uid: string, is_author: boolean, username: string, id: string } };
+
+export type RedeemCodeMutationVariables = Exact<{
+  code: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type RedeemCodeMutation = { __typename?: 'Mutation', redeemCode?: { __typename?: 'Response', success: boolean } };
 
 
 export const BecomeAuthorDocument = gql`
@@ -250,6 +289,51 @@ export type GetAuthorBooksQueryHookResult = ReturnType<typeof useGetAuthorBooksQ
 export type GetAuthorBooksLazyQueryHookResult = ReturnType<typeof useGetAuthorBooksLazyQuery>;
 export type GetAuthorBooksSuspenseQueryHookResult = ReturnType<typeof useGetAuthorBooksSuspenseQuery>;
 export type GetAuthorBooksQueryResult = Apollo.QueryResult<GetAuthorBooksQuery, GetAuthorBooksQueryVariables>;
+export const GetPurchaseCodesDocument = gql`
+    query GetPurchaseCodes($authorId: String!) {
+  getPurchaseCodes(author_id: $authorId) {
+    is_redeemed
+    code
+    author_id
+    expires_at
+    audio_file_id
+    title
+  }
+}
+    `;
+
+/**
+ * __useGetPurchaseCodesQuery__
+ *
+ * To run a query within a React component, call `useGetPurchaseCodesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPurchaseCodesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPurchaseCodesQuery({
+ *   variables: {
+ *      authorId: // value for 'authorId'
+ *   },
+ * });
+ */
+export function useGetPurchaseCodesQuery(baseOptions: Apollo.QueryHookOptions<GetPurchaseCodesQuery, GetPurchaseCodesQueryVariables> & ({ variables: GetPurchaseCodesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPurchaseCodesQuery, GetPurchaseCodesQueryVariables>(GetPurchaseCodesDocument, options);
+      }
+export function useGetPurchaseCodesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPurchaseCodesQuery, GetPurchaseCodesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPurchaseCodesQuery, GetPurchaseCodesQueryVariables>(GetPurchaseCodesDocument, options);
+        }
+export function useGetPurchaseCodesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetPurchaseCodesQuery, GetPurchaseCodesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPurchaseCodesQuery, GetPurchaseCodesQueryVariables>(GetPurchaseCodesDocument, options);
+        }
+export type GetPurchaseCodesQueryHookResult = ReturnType<typeof useGetPurchaseCodesQuery>;
+export type GetPurchaseCodesLazyQueryHookResult = ReturnType<typeof useGetPurchaseCodesLazyQuery>;
+export type GetPurchaseCodesSuspenseQueryHookResult = ReturnType<typeof useGetPurchaseCodesSuspenseQuery>;
+export type GetPurchaseCodesQueryResult = Apollo.QueryResult<GetPurchaseCodesQuery, GetPurchaseCodesQueryVariables>;
 export const InsertPurchaseCodesDocument = gql`
     mutation InsertPurchaseCodes($authorId: String!, $code: String!, $audioFileId: String!, $expiresAt: String!, $isRedeemed: Boolean!) {
   insertPurchaseCodes(
@@ -501,3 +585,37 @@ export type GetUserByIdQueryHookResult = ReturnType<typeof useGetUserByIdQuery>;
 export type GetUserByIdLazyQueryHookResult = ReturnType<typeof useGetUserByIdLazyQuery>;
 export type GetUserByIdSuspenseQueryHookResult = ReturnType<typeof useGetUserByIdSuspenseQuery>;
 export type GetUserByIdQueryResult = Apollo.QueryResult<GetUserByIdQuery, GetUserByIdQueryVariables>;
+export const RedeemCodeDocument = gql`
+    mutation RedeemCode($code: String!, $userId: String!) {
+  redeemCode(code: $code, user_id: $userId) {
+    success
+  }
+}
+    `;
+export type RedeemCodeMutationFn = Apollo.MutationFunction<RedeemCodeMutation, RedeemCodeMutationVariables>;
+
+/**
+ * __useRedeemCodeMutation__
+ *
+ * To run a mutation, you first call `useRedeemCodeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRedeemCodeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [redeemCodeMutation, { data, loading, error }] = useRedeemCodeMutation({
+ *   variables: {
+ *      code: // value for 'code'
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useRedeemCodeMutation(baseOptions?: Apollo.MutationHookOptions<RedeemCodeMutation, RedeemCodeMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RedeemCodeMutation, RedeemCodeMutationVariables>(RedeemCodeDocument, options);
+      }
+export type RedeemCodeMutationHookResult = ReturnType<typeof useRedeemCodeMutation>;
+export type RedeemCodeMutationResult = Apollo.MutationResult<RedeemCodeMutation>;
+export type RedeemCodeMutationOptions = Apollo.BaseMutationOptions<RedeemCodeMutation, RedeemCodeMutationVariables>;

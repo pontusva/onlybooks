@@ -21,11 +21,12 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../auth/initAuth";
+import { useRedeemCode } from "../../data/users/useRedeemCode";
 import { useGlobalAudioPlayer, useAudioPlayer } from "react-use-audio-player";
 import ReactPlayer from "react-player";
 
 const schema = z.object({
-  // code: z.string().uuid(),
+  code: z.string().uuid(),
 });
 
 type Schema = z.infer<typeof schema>;
@@ -44,6 +45,7 @@ export const UserDashboard = () => {
   const [redeemedBooks, setRedeemedBooks] = useState<RedeemedBooks[] | null>(
     null
   );
+  const { redeemCode } = useRedeemCode();
   const [playing, setPlaying] = useState(false);
   const [abortController, setAbortController] = useState(null);
   const [audioFileId, setAudioFileId] = useState<string>("");
@@ -111,59 +113,35 @@ export const UserDashboard = () => {
   // }, [userId]);
 
   const onSubmit = async (data: Schema) => {
-    // try {
-    //   const purchaseCodeQuery = query(
-    //     collection(db, "PurchaseCodes"),
-    //     where("code", "==", data.code)
-    //   );
-    //   const querySnapshot = await getDocs(purchaseCodeQuery);
-    //   if (querySnapshot.empty) {
-    //     throw new Error("Code is invalid or already redeemed");
+    if (!data.code || !userId) return;
+    redeemCode({
+      variables: {
+        code: data.code,
+        userId,
+      },
+    });
+
+    // (async () => {
+    //   // File name to be sent to the backend
+    //   const fileName = "Free_Test_Data_5MB_MP3.mp3"; // Replace with actual file name logic
+    //   try {
+    //     // First, make a POST request to get the streaming token
+    //     const response = await fetch(
+    //       `http://localhost:3000/api/request-audio`,
+    //       {
+    //         method: "POST",
+    //         headers: {
+    //           "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify({ fileName }),
+    //       }
+    //     );
+    //     const result = await response.json();
+    //     setAudioToken(result.hlsUrl);
+    //   } catch (error) {
+    //     console.error("Error requesting audio:", error);
     //   }
-    //   const purchaseCodeDoc = querySnapshot.docs[0];
-    //   await runTransaction(db, async (transaction) => {
-    //     const purchaseCodeRef = purchaseCodeDoc.ref;
-    //     if (purchaseCodeDoc.data().is_redeemed) {
-    //       throw new Error("Code is invalid or already redeemed");
-    //     }
-    //     transaction.update(purchaseCodeRef, { is_redeemed: true });
-    //     const newPurchaseRef = doc(collection(db, "Purchases"));
-    //     transaction.set(newPurchaseRef, {
-    //       user_id: userId,
-    //       purchase_code_id: purchaseCodeDoc.id,
-    //       audio_file_id: purchaseCodeDoc.data().audio_file_id,
-    //     });
-    //     setAudioFileId(purchaseCodeDoc.data().audio_file_id);
-    //     return newPurchaseRef;
-    //   });
-    //   console.log("Transaction successfully committed!");
-    // } catch (error) {
-    //   console.error("Transaction failed: ", error);
-    // }
-    (async () => {
-      // File name to be sent to the backend
-      const fileName = "Free_Test_Data_5MB_MP3.mp3"; // Replace with actual file name logic
-
-      try {
-        // First, make a POST request to get the streaming token
-        const response = await fetch(
-          `http://localhost:3000/api/request-audio`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ fileName }),
-          }
-        );
-
-        const result = await response.json();
-
-        setAudioToken(result.hlsUrl);
-      } catch (error) {
-        console.error("Error requesting audio:", error);
-      }
-    })();
+    // })();
   };
 
   const handleBookClick = (fileUrl: string) => {
