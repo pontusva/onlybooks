@@ -6,6 +6,7 @@ import { uploadFile } from "../../auth/initAuth";
 import { useAuthorIdStore } from "../../zustand/authorIdStore";
 import { CreateNewLibrary } from "../dialogs/CreateNewLibrary";
 import { useUploadBook } from "../../data/authors/useUploadBook";
+import { useGetAuthorBooks } from "../../data/authors/useGetAuthorBooks";
 const schema = z.object({
   title: z.string().min(3),
   description: z.string().min(3),
@@ -16,6 +17,8 @@ type Schema = z.infer<typeof schema>;
 
 export const AuthorAccount = () => {
   const authorId = useAuthorIdStore((state) => state.authorId);
+  const { books } = useGetAuthorBooks({ authorId: authorId || "" });
+  console.log(books);
   const { insertBook } = useUploadBook();
   const {
     register,
@@ -23,7 +26,6 @@ export const AuthorAccount = () => {
     formState: { errors },
   } = useForm<Schema>({ resolver: zodResolver(schema) });
   const onSubmit = async (data: Schema) => {
-    console.log(data);
     uploadFile(data.file[0], async (audio: string) => {
       (async () => {
         try {

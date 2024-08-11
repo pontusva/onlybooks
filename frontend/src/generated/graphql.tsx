@@ -17,21 +17,12 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
-export type AudioFile = {
-  __typename?: 'AudioFile';
-  author_id: Scalars['ID']['output'];
-  created_at: Scalars['String']['output'];
-  description?: Maybe<Scalars['String']['output']>;
-  file_url: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  title: Scalars['String']['output'];
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
   becomeAuthor?: Maybe<Response>;
   createUser?: Maybe<Response>;
   insertBook?: Maybe<Response>;
+  insertPurchaseCodes?: Maybe<Response>;
 };
 
 
@@ -56,11 +47,26 @@ export type MutationInsertBookArgs = {
   title: Scalars['String']['input'];
 };
 
+
+export type MutationInsertPurchaseCodesArgs = {
+  audio_file_id: Scalars['String']['input'];
+  author_id: Scalars['String']['input'];
+  code: Scalars['String']['input'];
+  expires_at: Scalars['String']['input'];
+  is_redeemed: Scalars['Boolean']['input'];
+};
+
 export type Query = {
   __typename?: 'Query';
+  getAuthorBooks?: Maybe<Array<Maybe<UploadBook>>>;
   isAuthor?: Maybe<User>;
   userById?: Maybe<User>;
   users?: Maybe<Array<Maybe<User>>>;
+};
+
+
+export type QueryGetAuthorBooksArgs = {
+  author_id: Scalars['ID']['input'];
 };
 
 
@@ -105,6 +111,24 @@ export type BecomeAuthorMutationVariables = Exact<{
 
 
 export type BecomeAuthorMutation = { __typename?: 'Mutation', becomeAuthor?: { __typename?: 'Response', success: boolean } };
+
+export type GetAuthorBooksQueryVariables = Exact<{
+  authorId: Scalars['ID']['input'];
+}>;
+
+
+export type GetAuthorBooksQuery = { __typename?: 'Query', getAuthorBooks?: Array<{ __typename?: 'UploadBook', title: string, file_name: string, id: string, author_id: string, created_at: string, description?: string, file_url: string }> };
+
+export type InsertPurchaseCodesMutationVariables = Exact<{
+  authorId: Scalars['String']['input'];
+  code: Scalars['String']['input'];
+  audioFileId: Scalars['String']['input'];
+  expiresAt: Scalars['String']['input'];
+  isRedeemed: Scalars['Boolean']['input'];
+}>;
+
+
+export type InsertPurchaseCodesMutation = { __typename?: 'Mutation', insertPurchaseCodes?: { __typename?: 'Response', success: boolean } };
 
 export type IsAuthorQueryVariables = Exact<{
   firebaseUid: Scalars['String']['input'];
@@ -180,6 +204,95 @@ export function useBecomeAuthorMutation(baseOptions?: Apollo.MutationHookOptions
 export type BecomeAuthorMutationHookResult = ReturnType<typeof useBecomeAuthorMutation>;
 export type BecomeAuthorMutationResult = Apollo.MutationResult<BecomeAuthorMutation>;
 export type BecomeAuthorMutationOptions = Apollo.BaseMutationOptions<BecomeAuthorMutation, BecomeAuthorMutationVariables>;
+export const GetAuthorBooksDocument = gql`
+    query GetAuthorBooks($authorId: ID!) {
+  getAuthorBooks(author_id: $authorId) {
+    title
+    file_name
+    id
+    author_id
+    created_at
+    description
+    file_url
+  }
+}
+    `;
+
+/**
+ * __useGetAuthorBooksQuery__
+ *
+ * To run a query within a React component, call `useGetAuthorBooksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAuthorBooksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAuthorBooksQuery({
+ *   variables: {
+ *      authorId: // value for 'authorId'
+ *   },
+ * });
+ */
+export function useGetAuthorBooksQuery(baseOptions: Apollo.QueryHookOptions<GetAuthorBooksQuery, GetAuthorBooksQueryVariables> & ({ variables: GetAuthorBooksQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAuthorBooksQuery, GetAuthorBooksQueryVariables>(GetAuthorBooksDocument, options);
+      }
+export function useGetAuthorBooksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAuthorBooksQuery, GetAuthorBooksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAuthorBooksQuery, GetAuthorBooksQueryVariables>(GetAuthorBooksDocument, options);
+        }
+export function useGetAuthorBooksSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetAuthorBooksQuery, GetAuthorBooksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAuthorBooksQuery, GetAuthorBooksQueryVariables>(GetAuthorBooksDocument, options);
+        }
+export type GetAuthorBooksQueryHookResult = ReturnType<typeof useGetAuthorBooksQuery>;
+export type GetAuthorBooksLazyQueryHookResult = ReturnType<typeof useGetAuthorBooksLazyQuery>;
+export type GetAuthorBooksSuspenseQueryHookResult = ReturnType<typeof useGetAuthorBooksSuspenseQuery>;
+export type GetAuthorBooksQueryResult = Apollo.QueryResult<GetAuthorBooksQuery, GetAuthorBooksQueryVariables>;
+export const InsertPurchaseCodesDocument = gql`
+    mutation InsertPurchaseCodes($authorId: String!, $code: String!, $audioFileId: String!, $expiresAt: String!, $isRedeemed: Boolean!) {
+  insertPurchaseCodes(
+    author_id: $authorId
+    code: $code
+    audio_file_id: $audioFileId
+    expires_at: $expiresAt
+    is_redeemed: $isRedeemed
+  ) {
+    success
+  }
+}
+    `;
+export type InsertPurchaseCodesMutationFn = Apollo.MutationFunction<InsertPurchaseCodesMutation, InsertPurchaseCodesMutationVariables>;
+
+/**
+ * __useInsertPurchaseCodesMutation__
+ *
+ * To run a mutation, you first call `useInsertPurchaseCodesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useInsertPurchaseCodesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [insertPurchaseCodesMutation, { data, loading, error }] = useInsertPurchaseCodesMutation({
+ *   variables: {
+ *      authorId: // value for 'authorId'
+ *      code: // value for 'code'
+ *      audioFileId: // value for 'audioFileId'
+ *      expiresAt: // value for 'expiresAt'
+ *      isRedeemed: // value for 'isRedeemed'
+ *   },
+ * });
+ */
+export function useInsertPurchaseCodesMutation(baseOptions?: Apollo.MutationHookOptions<InsertPurchaseCodesMutation, InsertPurchaseCodesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<InsertPurchaseCodesMutation, InsertPurchaseCodesMutationVariables>(InsertPurchaseCodesDocument, options);
+      }
+export type InsertPurchaseCodesMutationHookResult = ReturnType<typeof useInsertPurchaseCodesMutation>;
+export type InsertPurchaseCodesMutationResult = Apollo.MutationResult<InsertPurchaseCodesMutation>;
+export type InsertPurchaseCodesMutationOptions = Apollo.BaseMutationOptions<InsertPurchaseCodesMutation, InsertPurchaseCodesMutationVariables>;
 export const IsAuthorDocument = gql`
     query IsAuthor($firebaseUid: String!) {
   isAuthor(firebase_uid: $firebaseUid) {

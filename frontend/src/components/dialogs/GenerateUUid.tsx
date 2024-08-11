@@ -3,34 +3,30 @@ import { SimpleDialog } from "../reuseable/Dialog";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "@mui/material";
 import { useAuthorIdStore } from "../../zustand/authorIdStore";
-import { useUidStore } from "../../zustand/userStore";
+import { useInsertPurchaseCodes } from "../../data/authors/useInsertPurchaseCodes";
 import {
-  collection,
-  getDocs,
-  query,
-  where,
-  DocumentData,
-  addDoc,
-} from "firebase/firestore";
-import { db } from "../../auth/initAuth";
+  useGetAuthorBooks,
+  AuthorBooks,
+} from "../../data/authors/useGetAuthorBooks";
 
 interface Books {
   author_id: string;
   created_at: string;
-  description: string;
+  description?: string;
   file_url: string;
   id: number;
   title: string;
-  uuid: string;
+  uuid?: string;
 }
+type CombinedBooks = Books & AuthorBooks;
 
 export const GenerateUuid = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = useState(false);
   const authorId = useAuthorIdStore((state) => state.authorId);
-  const [books, setBooks] = useState<DocumentData | null>(null);
+  const { insertPurchaseCodes } = useInsertPurchaseCodes();
+  const { books: booksData } = useGetAuthorBooks({ authorId: authorId || "" });
+  const [books, setBooks] = useState<CombinedBooks[] | null>(null);
   const [selectedBookId, setSelectedBookId] = useState<number | null>(null);
-  const uid = useUidStore((state) => state.uid);
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -42,7 +38,7 @@ export const GenerateUuid = ({ children }: { children: React.ReactNode }) => {
   const generateUuid = (bookId: number) => {
     setBooks(
       (currentBooks) =>
-        currentBooks?.map((book: Books) =>
+        currentBooks?.map((book: CombinedBooks) =>
           book.id === bookId ? { ...book, uuid: uuidv4() } : book
         ) || []
     );
@@ -50,17 +46,16 @@ export const GenerateUuid = ({ children }: { children: React.ReactNode }) => {
 
   const insertCode = async (book: Books) => {
     try {
-      const docRef = await addDoc(collection(db, "PurchaseCodes"), {
-        author_id: authorId,
-        code: book.uuid,
-        title: book.title,
-        audio_file_id: book.id,
-        expires_at: new Date(),
-        firebase_uid: uid,
-        is_redeemed: false,
+      if (!authorId || !book.uuid) return;
+      insertPurchaseCodes({
+        variables: {
+          audioFileId: String(book?.id),
+          authorId,
+          code: book?.uuid,
+          expiresAt: new Date().toISOString(),
+          isRedeemed: false,
+        },
       });
-
-      console.log("Document written with ID: ", docRef.id);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -68,29 +63,15 @@ export const GenerateUuid = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     (async () => {
-      if (!authorId) return;
-
-      const q = query(
-        collection(db, "audio"),
-        where("author_id", "==", authorId)
+      if (!authorId || !booksData) return;
+      setBooks(
+        booksData.map((book) => ({
+          ...book,
+          id: Number(book.id),
+        })) as unknown as CombinedBooks[]
       );
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        querySnapshot.forEach(async (document) => {
-          console.log(document.data());
-          const booksArray = querySnapshot.docs.map((document) => ({
-            ...document.data(),
-            id: document.id,
-          }));
-          setBooks(booksArray);
-        });
-      } else {
-        // Handle the case where no documents are found
-        setBooks([]);
-      }
     })();
-  }, [authorId]);
+  }, [booksData]);
 
   useEffect(() => {
     if (selectedBookId !== null) {
