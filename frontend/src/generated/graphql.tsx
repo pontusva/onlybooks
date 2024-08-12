@@ -22,6 +22,7 @@ export type Mutation = {
   becomeAuthor?: Maybe<Response>;
   createUser?: Maybe<Response>;
   insertBook?: Maybe<Response>;
+  insertHlsName?: Maybe<Response>;
   insertPurchaseCodes?: Maybe<Response>;
   redeemCode?: Maybe<Response>;
 };
@@ -46,6 +47,12 @@ export type MutationInsertBookArgs = {
   file_name: Scalars['String']['input'];
   file_url: Scalars['String']['input'];
   title: Scalars['String']['input'];
+};
+
+
+export type MutationInsertHlsNameArgs = {
+  audio_file_id: Scalars['String']['input'];
+  hls_path: Scalars['String']['input'];
 };
 
 
@@ -78,6 +85,7 @@ export type Query = {
   __typename?: 'Query';
   getAuthorBooks?: Maybe<Array<Maybe<UploadBook>>>;
   getPurchaseCodes?: Maybe<Array<Maybe<PurchaseCodes>>>;
+  getRedeemedBooks?: Maybe<Array<Maybe<RedemeedBooks>>>;
   isAuthor?: Maybe<User>;
   userById?: Maybe<User>;
   users?: Maybe<Array<Maybe<User>>>;
@@ -94,6 +102,11 @@ export type QueryGetPurchaseCodesArgs = {
 };
 
 
+export type QueryGetRedeemedBooksArgs = {
+  user_id: Scalars['String']['input'];
+};
+
+
 export type QueryIsAuthorArgs = {
   firebase_uid: Scalars['String']['input'];
 };
@@ -101,6 +114,17 @@ export type QueryIsAuthorArgs = {
 
 export type QueryUserByIdArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type RedemeedBooks = {
+  __typename?: 'RedemeedBooks';
+  created_at: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  file_name: Scalars['String']['output'];
+  file_url: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  purchased_at: Scalars['String']['output'];
+  title: Scalars['String']['output'];
 };
 
 export type Response = {
@@ -194,6 +218,13 @@ export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetUsersQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'User', firebase_uid: string }> };
 
+export type GetRedeemedBooksQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type GetRedeemedBooksQuery = { __typename?: 'Query', getRedeemedBooks?: Array<{ __typename?: 'RedemeedBooks', created_at: string, description: string, file_name: string, file_url: string, id: string, purchased_at: string, title: string }> };
+
 export type GetUserByIdQueryVariables = Exact<{
   userByIdId: Scalars['ID']['input'];
 }>;
@@ -208,6 +239,14 @@ export type RedeemCodeMutationVariables = Exact<{
 
 
 export type RedeemCodeMutation = { __typename?: 'Mutation', redeemCode?: { __typename?: 'Response', success: boolean } };
+
+export type InsertHlsNameMutationVariables = Exact<{
+  hlsPath: Scalars['String']['input'];
+  audioFileId: Scalars['String']['input'];
+}>;
+
+
+export type InsertHlsNameMutation = { __typename?: 'Mutation', insertHlsName?: { __typename?: 'Response', success: boolean } };
 
 
 export const BecomeAuthorDocument = gql`
@@ -542,6 +581,52 @@ export type GetUsersQueryHookResult = ReturnType<typeof useGetUsersQuery>;
 export type GetUsersLazyQueryHookResult = ReturnType<typeof useGetUsersLazyQuery>;
 export type GetUsersSuspenseQueryHookResult = ReturnType<typeof useGetUsersSuspenseQuery>;
 export type GetUsersQueryResult = Apollo.QueryResult<GetUsersQuery, GetUsersQueryVariables>;
+export const GetRedeemedBooksDocument = gql`
+    query GetRedeemedBooks($userId: String!) {
+  getRedeemedBooks(user_id: $userId) {
+    created_at
+    description
+    file_name
+    file_url
+    id
+    purchased_at
+    title
+  }
+}
+    `;
+
+/**
+ * __useGetRedeemedBooksQuery__
+ *
+ * To run a query within a React component, call `useGetRedeemedBooksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRedeemedBooksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRedeemedBooksQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetRedeemedBooksQuery(baseOptions: Apollo.QueryHookOptions<GetRedeemedBooksQuery, GetRedeemedBooksQueryVariables> & ({ variables: GetRedeemedBooksQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRedeemedBooksQuery, GetRedeemedBooksQueryVariables>(GetRedeemedBooksDocument, options);
+      }
+export function useGetRedeemedBooksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRedeemedBooksQuery, GetRedeemedBooksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRedeemedBooksQuery, GetRedeemedBooksQueryVariables>(GetRedeemedBooksDocument, options);
+        }
+export function useGetRedeemedBooksSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetRedeemedBooksQuery, GetRedeemedBooksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetRedeemedBooksQuery, GetRedeemedBooksQueryVariables>(GetRedeemedBooksDocument, options);
+        }
+export type GetRedeemedBooksQueryHookResult = ReturnType<typeof useGetRedeemedBooksQuery>;
+export type GetRedeemedBooksLazyQueryHookResult = ReturnType<typeof useGetRedeemedBooksLazyQuery>;
+export type GetRedeemedBooksSuspenseQueryHookResult = ReturnType<typeof useGetRedeemedBooksSuspenseQuery>;
+export type GetRedeemedBooksQueryResult = Apollo.QueryResult<GetRedeemedBooksQuery, GetRedeemedBooksQueryVariables>;
 export const GetUserByIdDocument = gql`
     query GetUserById($userByIdId: ID!) {
   userById(id: $userByIdId) {
@@ -619,3 +704,37 @@ export function useRedeemCodeMutation(baseOptions?: Apollo.MutationHookOptions<R
 export type RedeemCodeMutationHookResult = ReturnType<typeof useRedeemCodeMutation>;
 export type RedeemCodeMutationResult = Apollo.MutationResult<RedeemCodeMutation>;
 export type RedeemCodeMutationOptions = Apollo.BaseMutationOptions<RedeemCodeMutation, RedeemCodeMutationVariables>;
+export const InsertHlsNameDocument = gql`
+    mutation InsertHlsName($hlsPath: String!, $audioFileId: String!) {
+  insertHlsName(hls_path: $hlsPath, audio_file_id: $audioFileId) {
+    success
+  }
+}
+    `;
+export type InsertHlsNameMutationFn = Apollo.MutationFunction<InsertHlsNameMutation, InsertHlsNameMutationVariables>;
+
+/**
+ * __useInsertHlsNameMutation__
+ *
+ * To run a mutation, you first call `useInsertHlsNameMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useInsertHlsNameMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [insertHlsNameMutation, { data, loading, error }] = useInsertHlsNameMutation({
+ *   variables: {
+ *      hlsPath: // value for 'hlsPath'
+ *      audioFileId: // value for 'audioFileId'
+ *   },
+ * });
+ */
+export function useInsertHlsNameMutation(baseOptions?: Apollo.MutationHookOptions<InsertHlsNameMutation, InsertHlsNameMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<InsertHlsNameMutation, InsertHlsNameMutationVariables>(InsertHlsNameDocument, options);
+      }
+export type InsertHlsNameMutationHookResult = ReturnType<typeof useInsertHlsNameMutation>;
+export type InsertHlsNameMutationResult = Apollo.MutationResult<InsertHlsNameMutation>;
+export type InsertHlsNameMutationOptions = Apollo.BaseMutationOptions<InsertHlsNameMutation, InsertHlsNameMutationVariables>;

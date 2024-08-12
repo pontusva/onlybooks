@@ -1,28 +1,12 @@
 import { useUserIdStore } from "../../zustand/userIdStore";
-import {
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useEffect, useRef, useState } from "react";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  runTransaction,
-  where,
-} from "firebase/firestore";
-import { db } from "../../auth/initAuth";
 import { useRedeemCode } from "../../data/users/useRedeemCode";
-import { useGlobalAudioPlayer, useAudioPlayer } from "react-use-audio-player";
+import { useGetRedeemedBooks } from "../../data/users/useGetRedeemedBooks";
+import { useUpdateHlsName } from "../../data/users/useUpdateHlsName";
 import ReactPlayer from "react-player";
 
 const schema = z.object({
@@ -42,10 +26,10 @@ interface RedeemedBooks {
 }
 
 export const UserDashboard = () => {
-  const [redeemedBooks, setRedeemedBooks] = useState<RedeemedBooks[] | null>(
-    null
-  );
+  const userId = useUserIdStore((state) => state.userId);
+  const { redeemedBooks } = useGetRedeemedBooks({ userId: userId || "" });
   const { redeemCode } = useRedeemCode();
+  const { insertHlsName } = useUpdateHlsName();
   const [playing, setPlaying] = useState(false);
   const [abortController, setAbortController] = useState(null);
   const [audioFileId, setAudioFileId] = useState<string>("");
@@ -53,65 +37,15 @@ export const UserDashboard = () => {
   const [itemId, setItemId] = useState<string>("");
   const [contentUrl, setContentUrl] = useState<string>("");
   const [audioToken, setAudioToken] = useState<string>("");
-  const userId = useUserIdStore((state) => state.userId);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<Schema>({ resolver: zodResolver(schema) });
-  const { play } = useGlobalAudioPlayer();
-  const { load } = useAudioPlayer();
+
   const audioRef = useRef<HTMLAudioElement>(null);
-
-  // useEffect(() => {
-  //   if (!userId) return;
-  //   (async () => {
-  //     try {
-  //       const userDoc = query(
-  //         collection(db, "Purchases"),
-  //         where("user_id", "==", userId)
-  //       );
-  //       const userSnapshot = await getDocs(userDoc);
-
-  //       if (!userSnapshot.empty) {
-  //         const redeemedBooksArray = [];
-
-  //         for (const docs of userSnapshot.docs) {
-  //           const purchaseCodeId = docs.data().purchase_code_id;
-  //           const getRedeemedBooks = doc(db, "PurchaseCodes", purchaseCodeId);
-  //           const redeemedBooksSnapshot = await getDoc(getRedeemedBooks);
-
-  //           if (redeemedBooksSnapshot.exists()) {
-  //             const redeemedBooksData = redeemedBooksSnapshot.data();
-  //             const getAudioFile = doc(
-  //               db,
-  //               "audio",
-  //               redeemedBooksData.audio_file_id
-  //             );
-  //             const audioFileSnapshot = await getDoc(getAudioFile);
-
-  //             if (audioFileSnapshot.exists()) {
-  //               redeemedBooksArray.push(
-  //                 audioFileSnapshot.data() as RedeemedBooks
-  //               );
-  //             } else {
-  //               console.log("No such audio file document!");
-  //             }
-  //           } else {
-  //             console.log("No matching redeemed books document found.");
-  //           }
-  //         }
-
-  //         setRedeemedBooks(redeemedBooksArray);
-  //       } else {
-  //         console.log("No matching purchases found.");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching user data: ", error);
-  //     }
-  //   })();
-  // }, [userId]);
-
+  console.log(redeemedBooks);
   const onSubmit = async (data: Schema) => {
     if (!data.code || !userId) return;
     redeemCode({
@@ -120,29 +54,40 @@ export const UserDashboard = () => {
         userId,
       },
     });
-
-    // (async () => {
-    //   // File name to be sent to the backend
-    //   const fileName = "Free_Test_Data_5MB_MP3.mp3"; // Replace with actual file name logic
-    //   try {
-    //     // First, make a POST request to get the streaming token
-    //     const response = await fetch(
-    //       `http://localhost:3000/api/request-audio`,
-    //       {
-    //         method: "POST",
-    //         headers: {
-    //           "Content-Type": "application/json",
-    //         },
-    //         body: JSON.stringify({ fileName }),
-    //       }
-    //     );
-    //     const result = await response.json();
-    //     setAudioToken(result.hlsUrl);
-    //   } catch (error) {
-    //     console.error("Error requesting audio:", error);
-    //   }
-    // })();
   };
+
+  const fetchAudio = async (fileName?: string, id?: string) => {
+    // File name to be sent to the backend
+    // Replace with actual file name logic
+    try {
+      // First, make a POST request to get the streaming token
+      const response = await fetch(`http://localhost:3000/api/request-audio`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ fileName }),
+      });
+      const result = await response.json();
+
+      setItemId(id);
+      setAudioToken(result.hlsUrl);
+    } catch (error) {
+      console.error("Error requesting audio:", error);
+    }
+  };
+  console.log(audioToken, itemId);
+  useEffect(() => {
+    console.log(audioToken, itemId);
+
+    console.log(audioToken, itemId, "executed");
+    insertHlsName({
+      variables: {
+        hlsPath: audioToken,
+        audioFileId: itemId,
+      },
+    });
+  }, [audioToken, itemId]);
 
   const handleBookClick = (fileUrl: string) => {
     setAudioFile(fileUrl);
@@ -180,69 +125,6 @@ export const UserDashboard = () => {
   //   })();
   // }, [audioToken]);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     if (!userId) return;
-  //     try {
-  //       const q = query(
-  //         collection(db, "Purchases"),
-  //         where("user_id", "==", userId)
-  //       );
-  //       const querySnapshot = await getDocs(q);
-
-  //       const audioBookRef = doc(
-  //         db,
-  //         "audio",
-  //         querySnapshot.docs[0].data().audio_file_id
-  //       ); // Replace 'yourDocumentId' with the actual document ID
-  //       const audioBookSnapshot = await getDoc(audioBookRef);
-
-  //       if (audioBookSnapshot.exists()) {
-  //         const audioBookData = audioBookSnapshot.data();
-
-  //         const response = await fetch(
-  //           `http://localhost:3000/api/libraries/${audioBookData.libraryId}/${audioBookData.title}`
-  //         );
-  //         const result = await response.json();
-
-  //         setItemId(result.book[0].libraryItem.id);
-  //       } else {
-  //         console.log("No such document!");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching document:", error);
-  //     }
-  //   })();
-  // }, [redeemedBooks, audioFileId, userId]);
-
-  // useEffect(() => {
-  //   (async () => {
-  //     if (!itemId) return;
-
-  //     const response = await fetch(
-  //       `http://localhost:3000/api/items/${itemId}/play`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     const result = await response.json();
-  //     setContentUrl(result.audioTracks[0].contentUrl);
-  //   })();
-  // }, [itemId, redeemedBooks, audioFileId, userId]);
-
-  // useEffect(() => {
-  //   if (!contentUrl) return;
-  //   load(`http://localhost:13378/${contentUrl}`, {
-  //     loop: true,
-  //     format: "mp3",
-  //     html5: true,
-  //   });
-  // }, [load]);
-
   return (
     <div>
       <form className="flex flex-col p-10" onSubmit={handleSubmit(onSubmit)}>
@@ -270,21 +152,24 @@ export const UserDashboard = () => {
                 <Typography variant="h5" component="h3" gutterBottom>
                   {book.title}
                 </Typography>
+                <Button onClick={() => fetchAudio(book.file_name, book.id)}>
+                  Download
+                </Button>
+                <ReactPlayer
+                  config={{
+                    file: {
+                      attributes: {
+                        onContextMenu: (e) => e.preventDefault(),
+                      },
+                    },
+                  }}
+                  url={contentUrl}
+                  height={36}
+                  width={350}
+                  controls
+                />
               </div>
             ))}
-          <ReactPlayer
-            config={{
-              file: {
-                attributes: {
-                  onContextMenu: (e) => e.preventDefault(),
-                },
-              },
-            }}
-            url={contentUrl}
-            height={36}
-            width={350}
-            controls
-          />
         </div>
       </div>
     </div>
