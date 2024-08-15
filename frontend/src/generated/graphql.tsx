@@ -17,6 +17,20 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type AudioFile = {
+  __typename?: 'AudioFile';
+  audio_created_at: Scalars['String']['output'];
+  audio_description?: Maybe<Scalars['String']['output']>;
+  audio_file_id: Scalars['String']['output'];
+  audio_file_url: Scalars['String']['output'];
+  audio_hls_path?: Maybe<Scalars['String']['output']>;
+  audio_title: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  purchase_code_id: Scalars['String']['output'];
+  purchased_at: Scalars['String']['output'];
+  user_id: Scalars['String']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   becomeAuthor?: Maybe<Response>;
@@ -67,7 +81,7 @@ export type MutationInsertPurchaseCodesArgs = {
 
 export type MutationRedeemCodeArgs = {
   code: Scalars['String']['input'];
-  user_id: Scalars['String']['input'];
+  firebase_uid: Scalars['String']['input'];
 };
 
 export type PurchaseCodes = {
@@ -86,6 +100,7 @@ export type Query = {
   getAuthorBooks?: Maybe<Array<Maybe<UploadBook>>>;
   getPurchaseCodes?: Maybe<Array<Maybe<PurchaseCodes>>>;
   getRedeemedBooks?: Maybe<Array<Maybe<RedemeedBooks>>>;
+  getUserAudioFiles?: Maybe<Array<Maybe<AudioFile>>>;
   isAuthor?: Maybe<User>;
   userById?: Maybe<User>;
   users?: Maybe<Array<Maybe<User>>>;
@@ -103,7 +118,12 @@ export type QueryGetPurchaseCodesArgs = {
 
 
 export type QueryGetRedeemedBooksArgs = {
-  user_id: Scalars['String']['input'];
+  firebase_uid: Scalars['String']['input'];
+};
+
+
+export type QueryGetUserAudioFilesArgs = {
+  firebase_uid: Scalars['String']['input'];
 };
 
 
@@ -122,6 +142,7 @@ export type RedemeedBooks = {
   description: Scalars['String']['output'];
   file_name: Scalars['String']['output'];
   file_url: Scalars['String']['output'];
+  hls_path: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   purchased_at: Scalars['String']['output'];
   title: Scalars['String']['output'];
@@ -219,11 +240,18 @@ export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetUsersQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'User', firebase_uid: string }> };
 
 export type GetRedeemedBooksQueryVariables = Exact<{
-  userId: Scalars['String']['input'];
+  firebaseUid: Scalars['String']['input'];
 }>;
 
 
-export type GetRedeemedBooksQuery = { __typename?: 'Query', getRedeemedBooks?: Array<{ __typename?: 'RedemeedBooks', created_at: string, description: string, file_name: string, file_url: string, id: string, purchased_at: string, title: string }> };
+export type GetRedeemedBooksQuery = { __typename?: 'Query', getRedeemedBooks?: Array<{ __typename?: 'RedemeedBooks', id: string, title: string, description: string, file_name: string, file_url: string, hls_path: string, created_at: string, purchased_at: string }> };
+
+export type GetUserAudioFilesQueryVariables = Exact<{
+  firebaseUid: Scalars['String']['input'];
+}>;
+
+
+export type GetUserAudioFilesQuery = { __typename?: 'Query', getUserAudioFiles?: Array<{ __typename?: 'AudioFile', id: string, user_id: string, purchase_code_id: string, audio_file_id: string, purchased_at: string, audio_title: string, audio_description?: string, audio_file_url: string, audio_hls_path?: string, audio_created_at: string }> };
 
 export type GetUserByIdQueryVariables = Exact<{
   userByIdId: Scalars['ID']['input'];
@@ -234,7 +262,7 @@ export type GetUserByIdQuery = { __typename?: 'Query', userById?: { __typename?:
 
 export type RedeemCodeMutationVariables = Exact<{
   code: Scalars['String']['input'];
-  userId: Scalars['String']['input'];
+  firebaseUid: Scalars['String']['input'];
 }>;
 
 
@@ -582,15 +610,16 @@ export type GetUsersLazyQueryHookResult = ReturnType<typeof useGetUsersLazyQuery
 export type GetUsersSuspenseQueryHookResult = ReturnType<typeof useGetUsersSuspenseQuery>;
 export type GetUsersQueryResult = Apollo.QueryResult<GetUsersQuery, GetUsersQueryVariables>;
 export const GetRedeemedBooksDocument = gql`
-    query GetRedeemedBooks($userId: String!) {
-  getRedeemedBooks(user_id: $userId) {
-    created_at
+    query GetRedeemedBooks($firebaseUid: String!) {
+  getRedeemedBooks(firebase_uid: $firebaseUid) {
+    id
+    title
     description
     file_name
     file_url
-    id
+    hls_path
+    created_at
     purchased_at
-    title
   }
 }
     `;
@@ -607,7 +636,7 @@ export const GetRedeemedBooksDocument = gql`
  * @example
  * const { data, loading, error } = useGetRedeemedBooksQuery({
  *   variables: {
- *      userId: // value for 'userId'
+ *      firebaseUid: // value for 'firebaseUid'
  *   },
  * });
  */
@@ -627,6 +656,55 @@ export type GetRedeemedBooksQueryHookResult = ReturnType<typeof useGetRedeemedBo
 export type GetRedeemedBooksLazyQueryHookResult = ReturnType<typeof useGetRedeemedBooksLazyQuery>;
 export type GetRedeemedBooksSuspenseQueryHookResult = ReturnType<typeof useGetRedeemedBooksSuspenseQuery>;
 export type GetRedeemedBooksQueryResult = Apollo.QueryResult<GetRedeemedBooksQuery, GetRedeemedBooksQueryVariables>;
+export const GetUserAudioFilesDocument = gql`
+    query GetUserAudioFiles($firebaseUid: String!) {
+  getUserAudioFiles(firebase_uid: $firebaseUid) {
+    id
+    user_id
+    purchase_code_id
+    audio_file_id
+    purchased_at
+    audio_title
+    audio_description
+    audio_file_url
+    audio_hls_path
+    audio_created_at
+  }
+}
+    `;
+
+/**
+ * __useGetUserAudioFilesQuery__
+ *
+ * To run a query within a React component, call `useGetUserAudioFilesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserAudioFilesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserAudioFilesQuery({
+ *   variables: {
+ *      firebaseUid: // value for 'firebaseUid'
+ *   },
+ * });
+ */
+export function useGetUserAudioFilesQuery(baseOptions: Apollo.QueryHookOptions<GetUserAudioFilesQuery, GetUserAudioFilesQueryVariables> & ({ variables: GetUserAudioFilesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserAudioFilesQuery, GetUserAudioFilesQueryVariables>(GetUserAudioFilesDocument, options);
+      }
+export function useGetUserAudioFilesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserAudioFilesQuery, GetUserAudioFilesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserAudioFilesQuery, GetUserAudioFilesQueryVariables>(GetUserAudioFilesDocument, options);
+        }
+export function useGetUserAudioFilesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetUserAudioFilesQuery, GetUserAudioFilesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUserAudioFilesQuery, GetUserAudioFilesQueryVariables>(GetUserAudioFilesDocument, options);
+        }
+export type GetUserAudioFilesQueryHookResult = ReturnType<typeof useGetUserAudioFilesQuery>;
+export type GetUserAudioFilesLazyQueryHookResult = ReturnType<typeof useGetUserAudioFilesLazyQuery>;
+export type GetUserAudioFilesSuspenseQueryHookResult = ReturnType<typeof useGetUserAudioFilesSuspenseQuery>;
+export type GetUserAudioFilesQueryResult = Apollo.QueryResult<GetUserAudioFilesQuery, GetUserAudioFilesQueryVariables>;
 export const GetUserByIdDocument = gql`
     query GetUserById($userByIdId: ID!) {
   userById(id: $userByIdId) {
@@ -671,8 +749,8 @@ export type GetUserByIdLazyQueryHookResult = ReturnType<typeof useGetUserByIdLaz
 export type GetUserByIdSuspenseQueryHookResult = ReturnType<typeof useGetUserByIdSuspenseQuery>;
 export type GetUserByIdQueryResult = Apollo.QueryResult<GetUserByIdQuery, GetUserByIdQueryVariables>;
 export const RedeemCodeDocument = gql`
-    mutation RedeemCode($code: String!, $userId: String!) {
-  redeemCode(code: $code, user_id: $userId) {
+    mutation RedeemCode($code: String!, $firebaseUid: String!) {
+  redeemCode(code: $code, firebase_uid: $firebaseUid) {
     success
   }
 }
@@ -693,7 +771,7 @@ export type RedeemCodeMutationFn = Apollo.MutationFunction<RedeemCodeMutation, R
  * const [redeemCodeMutation, { data, loading, error }] = useRedeemCodeMutation({
  *   variables: {
  *      code: // value for 'code'
- *      userId: // value for 'userId'
+ *      firebaseUid: // value for 'firebaseUid'
  *   },
  * });
  */

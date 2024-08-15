@@ -2,8 +2,8 @@ import { gql } from "@apollo/client";
 import { useRedeemCodeMutation } from "../../generated/graphql";
 
 gql`
-  mutation RedeemCode($code: String!, $userId: String!) {
-    redeemCode(code: $code, user_id: $userId) {
+  mutation RedeemCode($code: String!, $firebaseUid: String!) {
+    redeemCode(code: $code, firebase_uid: $firebaseUid) {
       success
     }
   }

@@ -2,28 +2,29 @@ import { gql } from "@apollo/client";
 import { useGetRedeemedBooksQuery } from "../../generated/graphql";
 
 interface Props {
-  userId: string;
+  firebaseUid: string;
 }
 
 gql`
-  query GetRedeemedBooks($userId: String!) {
-    getRedeemedBooks(user_id: $userId) {
-      created_at
+  query GetRedeemedBooks($firebaseUid: String!) {
+    getRedeemedBooks(firebase_uid: $firebaseUid) {
+      id
+      title
       description
       file_name
       file_url
-      id
+      hls_path
+      created_at
       purchased_at
-      title
     }
   }
 `;
 
-export const useGetRedeemedBooks = ({ userId }: Props) => {
+export const useGetRedeemedBooks = ({ firebaseUid }: Props) => {
   const { data, loading, refetch } = useGetRedeemedBooksQuery({
-    variables: { userId },
+    variables: { firebaseUid },
   });
-
+  console.log(data);
   return {
     redeemedBooks: data?.getRedeemedBooks,
     loading,

@@ -15,11 +15,14 @@ import { Dashboard } from "./components/screens/Dashboard.tsx";
 import { Books } from "./components/author/Books.tsx";
 import { GeneratedCodes } from "./components/author/GeneratedCodes.tsx";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 
 const client = new ApolloClient({
   uri: "http://localhost:4000/",
   cache: new InMemoryCache(),
 });
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -61,7 +64,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <RouterProvider router={router} />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
     </ApolloProvider>
   </React.StrictMode>
 );

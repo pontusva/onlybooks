@@ -4,17 +4,15 @@ import { UserAccount } from "./UserAccounts";
 import { AuthorAccount } from "./AuthorAccount";
 import { Loader } from "../reuseable/Loader";
 import { useIsAuthor } from "../../data/authors/useIsAuthor";
-import { useAuthorIdStore } from "../../zustand/authorIdStore";
 
 export const Account = () => {
   const uid = useUidStore((state) => state.uid);
-  const authorId = useAuthorIdStore((state) => state.authorId);
-  console.log(authorId);
+
   const { isAuthor, loading } = useIsAuthor({
     firebase_uid: uid || "",
   });
 
-  return loading || !isAuthor ? (
+  return loading ? (
     <div className="w-screen h-screen flex justify-center items-center">
       <Loader />
     </div>
