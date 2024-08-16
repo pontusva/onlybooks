@@ -31,11 +31,16 @@ export type AudioFile = {
   user_id: Scalars['String']['output'];
 };
 
+export type InsertBookResponse = {
+  __typename?: 'InsertBookResponse';
+  id: Scalars['ID']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   becomeAuthor?: Maybe<Response>;
   createUser?: Maybe<Response>;
-  insertBook?: Maybe<Response>;
+  insertBook?: Maybe<InsertBookResponse>;
   insertHlsName?: Maybe<Response>;
   insertPurchaseCodes?: Maybe<Response>;
   redeemCode?: Maybe<Response>;
@@ -142,7 +147,7 @@ export type RedemeedBooks = {
   description: Scalars['String']['output'];
   file_name: Scalars['String']['output'];
   file_url: Scalars['String']['output'];
-  hls_path: Scalars['String']['output'];
+  hls_path?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   purchased_at: Scalars['String']['output'];
   title: Scalars['String']['output'];
@@ -222,7 +227,7 @@ export type InsertBookMutationVariables = Exact<{
 }>;
 
 
-export type InsertBookMutation = { __typename?: 'Mutation', insertBook?: { __typename?: 'Response', success: boolean } };
+export type InsertBookMutation = { __typename?: 'Mutation', insertBook?: { __typename?: 'InsertBookResponse', id: string } };
 
 export type CreateUserMutationVariables = Exact<{
   firebaseUid: Scalars['String']['input'];
@@ -244,7 +249,7 @@ export type GetRedeemedBooksQueryVariables = Exact<{
 }>;
 
 
-export type GetRedeemedBooksQuery = { __typename?: 'Query', getRedeemedBooks?: Array<{ __typename?: 'RedemeedBooks', id: string, title: string, description: string, file_name: string, file_url: string, hls_path: string, created_at: string, purchased_at: string }> };
+export type GetRedeemedBooksQuery = { __typename?: 'Query', getRedeemedBooks?: Array<{ __typename?: 'RedemeedBooks', id: string, title: string, description: string, file_name: string, file_url: string, hls_path?: string, created_at: string, purchased_at: string }> };
 
 export type GetUserAudioFilesQueryVariables = Exact<{
   firebaseUid: Scalars['String']['input'];
@@ -495,7 +500,7 @@ export const InsertBookDocument = gql`
     file_name: $fileName
     description: $description
   ) {
-    success
+    id
   }
 }
     `;

@@ -16,7 +16,7 @@ gql`
       file_name: $fileName
       description: $description
     ) {
-      success
+      id
     }
   }
 `;

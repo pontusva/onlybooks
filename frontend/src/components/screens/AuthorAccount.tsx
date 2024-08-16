@@ -7,6 +7,8 @@ import { useAuthorIdStore } from "../../zustand/authorIdStore";
 import { CreateNewLibrary } from "../dialogs/CreateNewLibrary";
 import { useUploadBook } from "../../data/authors/useUploadBook";
 import { useGetAuthorBooks } from "../../data/authors/useGetAuthorBooks";
+import { useUpdateHlsName } from "../../data/users/useUpdateHlsName";
+import { useState } from "react";
 const schema = z.object({
   title: z.string().min(3),
   description: z.string().min(3),
@@ -17,6 +19,9 @@ type Schema = z.infer<typeof schema>;
 
 export const AuthorAccount = () => {
   const authorId = useAuthorIdStore((state) => state.authorId);
+  const { insertHlsName } = useUpdateHlsName();
+  const [itemId, setItemId] = useState<string>("");
+  const [audioToken, setAudioToken] = useState<string>("");
   const { books } = useGetAuthorBooks({ authorId: authorId || "" });
   console.log(books);
   const { insertBook } = useUploadBook();
@@ -27,22 +32,52 @@ export const AuthorAccount = () => {
   } = useForm<Schema>({ resolver: zodResolver(schema) });
   const onSubmit = async (data: Schema) => {
     uploadFile(data.file[0], async (audio: string) => {
-      (async () => {
+      try {
+        if (!authorId) return;
+
+        const insertBookResponse = await insertBook({
+          variables: {
+            authorId,
+            title: data.title,
+            fileUrl: audio,
+            fileName: data.file[0].name,
+            description: data.description,
+          },
+        });
+
+        const newBookId = insertBookResponse?.data?.insertBook?.id;
+        console.log(insertBookResponse);
+        if (!newBookId) {
+          throw new Error("Failed to retrieve new book ID");
+        }
+
         try {
-          if (!authorId) return;
-          insertBook({
+          const response = await fetch(
+            `http://localhost:3001/api/request-audio`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ fileName: data.file[0].name }),
+            }
+          );
+
+          const result = await response.json();
+          console.log(result);
+
+          await insertHlsName({
             variables: {
-              authorId,
-              title: data.title,
-              fileUrl: audio,
-              fileName: data.file[0].name,
-              description: data.description,
+              hlsPath: result.hlsUrl,
+              audioFileId: newBookId,
             },
           });
-        } catch (e) {
-          console.error("Error adding document: ", e);
+        } catch (error) {
+          console.error("Error requesting audio:", error);
         }
-      })();
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
     });
   };
 
