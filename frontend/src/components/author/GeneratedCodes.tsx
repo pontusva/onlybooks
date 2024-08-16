@@ -47,7 +47,7 @@ export const GeneratedCodes = () => {
     if (!authorId || !purchaseCodes) return;
     setCodes(purchaseCodes);
   }, [purchaseCodes]);
-  console.log(codes, purchaseCodes);
+
   const handleCopy = (code: string) => {
     navigator.clipboard.writeText(code);
   };

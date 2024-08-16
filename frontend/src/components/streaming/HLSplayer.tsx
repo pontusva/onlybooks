@@ -57,7 +57,6 @@ const HLSPlayer: React.FC<HLSPlayerProps> = ({ folder, filename }) => {
       }
     }
   };
-
   useEffect(() => {
     const audio = audioRef.current;
 
@@ -65,13 +64,20 @@ const HLSPlayer: React.FC<HLSPlayerProps> = ({ folder, filename }) => {
       const updateTime = () => setCurrentTime(audio.currentTime);
       const setAudioDuration = () => setDuration(audio.duration);
 
-      audio.addEventListener("timeupdate", updateTime);
+      // Handler for when the audio ends
+      const handleAudioEnd = () => {
+        isStreaming(false);
+        setIsPlaying(false);
+      };
 
+      audio.addEventListener("timeupdate", updateTime);
       audio.addEventListener("loadedmetadata", setAudioDuration);
+      audio.addEventListener("ended", handleAudioEnd); // Listen for audio end
 
       return () => {
         audio.removeEventListener("timeupdate", updateTime);
         audio.removeEventListener("loadedmetadata", setAudioDuration);
+        audio.removeEventListener("ended", handleAudioEnd); // Clean up the listener
       };
     }
   }, []);
