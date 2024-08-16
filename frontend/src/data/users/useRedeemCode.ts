@@ -11,6 +11,7 @@ gql`
 
 export const useRedeemCode = () => {
   const [redeemCode, { loading }] = useRedeemCodeMutation({
+    refetchQueries: ["GetRedeemedBooks"],
     onCompleted: (data) => {
       console.log(data);
     },

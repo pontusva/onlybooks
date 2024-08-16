@@ -8,7 +8,7 @@ import { CreateNewLibrary } from "../dialogs/CreateNewLibrary";
 import { useUploadBook } from "../../data/authors/useUploadBook";
 import { useGetAuthorBooks } from "../../data/authors/useGetAuthorBooks";
 import { useUpdateHlsName } from "../../data/users/useUpdateHlsName";
-import { useState } from "react";
+
 const schema = z.object({
   title: z.string().min(3),
   description: z.string().min(3),
@@ -20,11 +20,9 @@ type Schema = z.infer<typeof schema>;
 export const AuthorAccount = () => {
   const authorId = useAuthorIdStore((state) => state.authorId);
   const { insertHlsName } = useUpdateHlsName();
-  const [itemId, setItemId] = useState<string>("");
-  const [audioToken, setAudioToken] = useState<string>("");
   const { books } = useGetAuthorBooks({ authorId: authorId || "" });
-  console.log(books);
   const { insertBook } = useUploadBook();
+  console.log(books);
   const {
     register,
     handleSubmit,
@@ -46,7 +44,7 @@ export const AuthorAccount = () => {
         });
 
         const newBookId = insertBookResponse?.data?.insertBook?.id;
-        console.log(insertBookResponse);
+
         if (!newBookId) {
           throw new Error("Failed to retrieve new book ID");
         }
@@ -64,7 +62,6 @@ export const AuthorAccount = () => {
           );
 
           const result = await response.json();
-          console.log(result);
 
           await insertHlsName({
             variables: {

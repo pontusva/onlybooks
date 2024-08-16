@@ -1,5 +1,0 @@
-.env
-sql
-backend/node_modules
-backend/queries.ts
-backend/audioBooks

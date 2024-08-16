@@ -38,12 +38,16 @@ export const UserDashboard = () => {
 
   return (
     <div>
-      <form className="flex flex-col p-10" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="flex items-center justify-center flex-col p-10"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <TextField
           {...register("code")}
           id="standard-basic"
           label="code"
           variant="outlined"
+          style={{ width: "20rem" }}
         />
         {errors.code && (
           <span className="text-red-500">{errors.code.message}</span>
