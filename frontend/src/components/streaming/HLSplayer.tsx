@@ -3,6 +3,7 @@ import { Box, Slider, Button, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import StopIcon from "@mui/icons-material/Stop";
+import { useIsStreamingStore } from "../../zustand/useIsStreamingStore";
 import { formatTime } from "../../utils";
 import Hls from "hls.js";
 
@@ -14,6 +15,7 @@ interface HLSPlayerProps {
 const HLSPlayer: React.FC<HLSPlayerProps> = ({ folder, filename }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const isStreaming = useIsStreamingStore((state) => state.setIsStreaming);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
@@ -22,7 +24,9 @@ const HLSPlayer: React.FC<HLSPlayerProps> = ({ folder, filename }) => {
     if (audio) {
       if (Hls.isSupported() && folder && filename) {
         const hls = new Hls();
-        hls.loadSource(`http://localhost:8888/playlist/${folder}/${filename}`);
+        hls.loadSource(
+          `https://existent-beings.com/playlist/${folder}/${filename}`
+        );
         hls.attachMedia(audio);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {});
 
@@ -30,7 +34,7 @@ const HLSPlayer: React.FC<HLSPlayerProps> = ({ folder, filename }) => {
           hls.destroy();
         };
       } else if (audio.canPlayType("application/vnd.apple.mpegurl")) {
-        audio.src = `http://localhost:8888/playlist/${folder}/${filename}.m3u8`;
+        audio.src = `https://existent-beings.com/playlist/${folder}/${filename}.m3u8`;
         audio.addEventListener("loadedmetadata", () => {});
         return () => {
           audio.removeEventListener("loadedmetadata", () => {});
@@ -44,9 +48,11 @@ const HLSPlayer: React.FC<HLSPlayerProps> = ({ folder, filename }) => {
     if (audio) {
       if (audio.paused) {
         audio.play();
+        isStreaming(true);
         setIsPlaying(true);
       } else {
         audio.pause();
+        isStreaming(false);
         setIsPlaying(false);
       }
     }

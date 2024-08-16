@@ -12,8 +12,6 @@ import {
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { doc, runTransaction } from "firebase/firestore";
-import { db } from "../../auth/initAuth";
 
 const schema = z.object({
   name: z.string().min(3),
@@ -53,44 +51,6 @@ export const CreateNewLibrary = ({ children }: { children: ReactNode }) => {
   };
   const onSubmit = async (data: Schema) => {
     if (!authorId) return;
-    const response = await fetch("http://localhost:3000/api/libraries", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: data.name,
-        mediaType: data.mediaType,
-        provider: data.provider,
-      }),
-    });
-    const result = await response.json();
-
-    const authorRef = doc(db, "users", authorId);
-
-    await runTransaction(db, async (transaction) => {
-      const authorDoc = await transaction.get(authorRef);
-      if (!authorDoc.exists()) {
-        throw "Document does not exist!";
-      }
-
-      const authorData = authorDoc.data();
-      const newLibrary = {
-        name: data.name,
-        libraryId: result.folders[0].libraryId,
-        folderId: result.folders[0].id,
-      };
-
-      const updatedLibraries = Array.isArray(authorData.libraries)
-        ? [...authorData.libraries, newLibrary]
-        : [newLibrary];
-
-      transaction.update(authorRef, {
-        libraries: updatedLibraries,
-      });
-    });
-
-    console.log(result);
   };
   return (
     <>

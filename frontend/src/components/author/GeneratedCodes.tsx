@@ -9,18 +9,10 @@ import {
 } from "@mui/material";
 import { useAuthorIdStore } from "../../zustand/authorIdStore";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import {
-  query,
-  collection,
-  where,
-  getDocs,
-  DocumentData,
-} from "firebase/firestore";
-import { db } from "../../auth/initAuth";
 import { useGetPurchaseCodes } from "../../data/authors/useGetPurchaseCodes";
 
 interface Code {
-  id: string;
+  id?: string;
   title: string;
   code: string;
   is_redeemed: boolean;
@@ -31,7 +23,7 @@ interface GroupedCodes {
 }
 
 export const GeneratedCodes = () => {
-  const [codes, setCodes] = useState<DocumentData>([]);
+  const [codes, setCodes] = useState<Code[]>([]);
   const authorId = useAuthorIdStore((state) => state.authorId);
 
   const { purchaseCodes, loading } = useGetPurchaseCodes({
