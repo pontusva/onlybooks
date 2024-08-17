@@ -24,7 +24,7 @@ export const useAudioStore = create<AudioState>((set) => ({
   setIsPlaying: (by: boolean) => set({ isPlaying: by }),
   setFolderAndFilename: (folder, filename, bookId) =>
     set({ folder, filename, isPlaying: true, currentBookId: bookId }),
-  play: () => set((state) => ({ isPlaying: true })),
+  play: () => set(() => ({ isPlaying: true })),
   stop: () => set(() => ({ isPlaying: false, currentBookId: null })),
   togglePlayPause: () =>
     set((state) => ({

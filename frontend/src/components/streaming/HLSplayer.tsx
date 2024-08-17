@@ -90,7 +90,7 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
       <Box sx={{ width: 300 }}>
         <audio ref={audioRef} style={{ display: "none" }} />
         <Box sx={{ width: "100%", display: "flex", alignItems: "center" }}>
-          <Button onClick={togglePlayPause}>
+          <Button disabled={!folder || !filename} onClick={togglePlayPause}>
             {!isPlaying ? <PlayCircleIcon /> : <StopIcon />}
           </Button>
           <Slider
