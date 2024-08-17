@@ -6,7 +6,6 @@ import Divider from "@mui/material/Divider";
 import { useDrawerStore } from "../../zustand/useDrawerStore";
 import { PlayList } from "../drawers/PlayList";
 import { RedeemCodeDialog } from "../dialogs/RedeemCode";
-import HLSPlayer from "../streaming/HLSplayer";
 
 export const LibraryDrawer = () => {
   const { openDrawer, closeDrawer, drawers } = useDrawerStore();
@@ -22,9 +21,6 @@ export const LibraryDrawer = () => {
 
   const DrawerList = (
     <Box sx={{ width: 250 }} role="presentation">
-      <RedeemCodeDialog>
-        <Button>Redeem Code</Button>
-      </RedeemCodeDialog>
       <PlayList />
       <Divider />
     </Box>

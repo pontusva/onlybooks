@@ -1,11 +1,14 @@
-import { Button, TextField, Typography } from "@mui/material";
+import { Button, Typography, Box } from "@mui/material";
 import { useForm } from "react-hook-form";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import StopIcon from "@mui/icons-material/Stop";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRedeemCode } from "../../data/users/useRedeemCode";
 import { useGetRedeemedBooks } from "../../data/users/useGetRedeemedBooks";
 import { useUidStore } from "../../zustand/userStore";
 import { useAudioStore } from "../../zustand/useAudioStore";
+import { RedeemCodeDialog } from "../dialogs/RedeemCode";
 
 const schema = z.object({
   code: z.string().uuid(),
@@ -74,9 +77,17 @@ export const PlayList = () => {
       </form> */}
 
       <div>
-        <Typography variant="h4" align="center" gutterBottom>
-          Redeemed Books
+        <Typography
+          sx={{ marginTop: 4 }}
+          variant="h5"
+          align="center"
+          gutterBottom
+        >
+          Library
         </Typography>
+        <RedeemCodeDialog>
+          <Button>Redeem Code</Button>
+        </RedeemCodeDialog>
 
         <div className="flex flex-col p-1 justify-center">
           {redeemedBooks &&
@@ -85,7 +96,13 @@ export const PlayList = () => {
               const folder = book.hls_path ? book.hls_path.split("/")[0] : "";
               const filename = book.hls_path ? book.hls_path.split("/")[1] : "";
               return (
-                <div key={book.id} className="flex">
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: 1,
+                  }}
+                >
                   <Typography
                     className="text-left w-full"
                     variant="body1"
@@ -94,14 +111,20 @@ export const PlayList = () => {
                   >
                     {book.title}
                   </Typography>
+
                   <Button
+                    sx={{ padding: 0, margin: 0 }}
                     onClick={() => {
                       handlePlayClick(folder, filename, book.id);
                     }}
                   >
-                    {currentBookId === book.id && isPlaying ? "Pause" : "Play"}
+                    {currentBookId === book.id && isPlaying ? (
+                      <StopIcon />
+                    ) : (
+                      <PlayCircleIcon />
+                    )}
                   </Button>
-                </div>
+                </Box>
               );
             })}
         </div>

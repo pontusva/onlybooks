@@ -7,13 +7,18 @@ import { Button, TextField } from "@mui/material";
 import { SimpleDialog } from "../reuseable/Dialog";
 import { ReactNode, useState } from "react";
 
+interface paddingTop {
+  children: ReactNode;
+  paddingTop?: number;
+}
+
 const schema = z.object({
   code: z.string().uuid(),
 });
 
 type Schema = z.infer<typeof schema>;
 
-export const RedeemCodeDialog = ({ children }: { children: ReactNode }) => {
+export const RedeemCodeDialog = ({ children, paddingTop }: paddingTop) => {
   const [open, setOpen] = useState(false);
   const { redeemCode } = useRedeemCode();
   const firebase_uid = useUidStore((state) => state.uid);
@@ -46,7 +51,7 @@ export const RedeemCodeDialog = ({ children }: { children: ReactNode }) => {
       <span
         style={{
           margin: "0 auto",
-          paddingTop: "4em",
+          paddingTop,
           display: "flex",
           justifyContent: "center",
           flexDirection: "row",

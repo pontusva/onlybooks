@@ -59,9 +59,6 @@ export const UserAccount = () => {
           </Card>
         </Box>
       </div>
-      <div className="flex flex-col items-center justify-center w-screen h-[20rem] pt-3">
-        <Card variant="outlined">{StayUserCard}</Card>
-      </div>
       <SimpleDialog
         selectedValue={"selectedValue"}
         open={open}
@@ -94,32 +91,6 @@ function SimpleDialog(props: SimpleDialogProps) {
     </Dialog>
   );
 }
-
-const StayUserCard = (
-  <>
-    <Box sx={{ maxWidth: 610 }}>
-      <CardContent>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          Enjoy Our Features as a Regular User!
-        </Typography>
-        <Typography variant="h5" component="div">
-          Stay Connected, Stay Informed
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          Benefits of Being a Valued User
-        </Typography>
-        <Typography className="text-wrap" variant="body2">
-          As a regular user, you have access to a range of features:
-          <br />
-          Browse and read a wide variety of content Follow your favorite authors
-          and get updates Participate in discussions and community events Save
-          and organize your favorite articles
-          {'"Enjoy a seamless and enriching reading experience with us"'}
-        </Typography>
-      </CardContent>
-    </Box>
-  </>
-);
 
 export interface SimpleDialogProps {
   open: boolean;
