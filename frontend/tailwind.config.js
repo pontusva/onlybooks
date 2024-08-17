@@ -5,7 +5,11 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'background-default': '#121212 ', // Tailwind color for background
+      },
+    },
   },
   plugins: [],
 }

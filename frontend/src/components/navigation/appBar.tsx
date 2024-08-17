@@ -17,23 +17,27 @@ import { useNavigate } from "react-router-dom";
 import { useUidStore } from "../../zustand/userStore";
 import { Fade, Skeleton } from "@mui/material";
 import { useGetUserById } from "../../data/users/useGetUserById";
+import { useDrawerStore } from "../../zustand/useDrawerStore";
 
-const pages = ["Products", "Pricing", "Blog"];
-const settings = ["Profile", "Account", "Library", "Dashboard", "Logout"];
+const pages = ["Library", "Pricing", "Blog"];
+const settings = ["Profile", "Account", "Redeem", "Dashboard", "Logout"];
 
 export const AppBarTop = () => {
+  const { openDrawer } = useDrawerStore();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [skeletonLoading, setSkeletonLoading] = useState<boolean>(true);
-  const uid = useUidStore((state) => state.uid);
 
+  const uid = useUidStore((state) => state.uid);
   const { user } = useGetUserById({ firebase_uid: uid || "" });
 
   const navigate = useNavigate();
+
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -46,37 +50,44 @@ export const AppBarTop = () => {
     setAnchorElUser(null);
   };
 
-  onAuthStateChanged(auth, (user) => {
-    return !user && navigate("/login");
-  });
-
   const handleSettingClick = (setting: string | null) => {
     switch (setting) {
       case "Profile":
+        // Handle profile click
         break;
       case "Account":
         navigate("/account");
         break;
-      case "Library":
+      case "Redeem":
         navigate("/Library");
         break;
       case "Logout":
-        signOut(auth);
-        console.log("Logging out");
+        signOut(auth).then(() => console.log("Logged out"));
         break;
       default:
         console.log("No action defined for this setting");
     }
+    handleCloseUserMenu(); // Close the user menu after selection
   };
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        navigate("/login");
+      }
+    });
+
+    return () => unsubscribe(); // Clean up the listener on component unmount
+  }, [navigate]);
+
+  useEffect(() => {
     if (!uid || !user?.username) return;
-    setUsername(user?.username);
+    setUsername(user.username);
     setSkeletonLoading(false);
   }, [uid, user?.username]);
 
   return (
-    <AppBar position="static">
+    <AppBar color="primary" position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -85,35 +96,11 @@ export const AppBarTop = () => {
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
-              onClick={handleOpenNavMenu}
+              onClick={() => openDrawer("libraryDrawer")}
               color="inherit"
             >
               <MenuIcon />
             </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: "block", md: "none" },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
           </Box>
 
           <div className="flex w-screen justify-center items-center">

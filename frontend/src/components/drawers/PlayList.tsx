@@ -13,7 +13,7 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
-export const UserLibrary = () => {
+export const PlayList = () => {
   const firebase_uid = useUidStore((state) => state.uid);
   const { setFolderAndFilename, play, stop, currentBookId, isPlaying } =
     useAudioStore();
@@ -78,15 +78,20 @@ export const UserLibrary = () => {
           Redeemed Books
         </Typography>
 
-        <div className="flex flex-col justify-center items-center">
-          {/* {redeemedBooks &&
+        <div className="flex flex-col p-1 justify-center">
+          {redeemedBooks &&
             redeemedBooks.length &&
             redeemedBooks.map((book) => {
               const folder = book.hls_path ? book.hls_path.split("/")[0] : "";
               const filename = book.hls_path ? book.hls_path.split("/")[1] : "";
               return (
                 <div key={book.id} className="flex">
-                  <Typography variant="body1" component="p" gutterBottom>
+                  <Typography
+                    className="text-left w-full"
+                    variant="body1"
+                    component="p"
+                    gutterBottom
+                  >
                     {book.title}
                   </Typography>
                   <Button
@@ -98,7 +103,7 @@ export const UserLibrary = () => {
                   </Button>
                 </div>
               );
-            })} */}
+            })}
         </div>
       </div>
     </div>
