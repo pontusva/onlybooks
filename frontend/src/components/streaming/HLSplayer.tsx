@@ -3,24 +3,25 @@ import { Box, Slider, Button, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import StopIcon from "@mui/icons-material/Stop";
-import { useIsStreamingStore } from "../../zustand/useIsStreamingStore";
 import { formatTime } from "../../utils";
 import Hls from "hls.js";
+import { useAudioStore } from "../../zustand/useAudioStore";
 
 interface HLSPlayerProps {
   folder?: string;
   filename?: string;
 }
 
-const HLSPlayer: React.FC<HLSPlayerProps> = ({ folder, filename }) => {
+const HLSPlayer: React.FC<HLSPlayerProps> = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const isStreaming = useIsStreamingStore((state) => state.setIsStreaming);
+  const { folder, filename, isPlaying, togglePlayPause, setIsPlaying } =
+    useAudioStore();
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
   useEffect(() => {
     const audio = audioRef.current;
+
     if (audio) {
       if (Hls.isSupported() && folder && filename) {
         const hls = new Hls();
@@ -34,29 +35,23 @@ const HLSPlayer: React.FC<HLSPlayerProps> = ({ folder, filename }) => {
           hls.destroy();
         };
       } else if (audio.canPlayType("application/vnd.apple.mpegurl")) {
-        audio.src = `https://existent-beings.com/playlist/${folder}/${filename}.m3u8`;
-        audio.addEventListener("loadedmetadata", () => {});
-        return () => {
-          audio.removeEventListener("loadedmetadata", () => {});
-        };
+        audio.src = `https://existent-beings.com/playlist/${folder}/${filename}`;
       }
     }
   }, [folder, filename]);
 
-  const handlePlayPause = () => {
+  useEffect(() => {
     const audio = audioRef.current;
+
     if (audio) {
-      if (audio.paused) {
-        audio.play();
-        isStreaming(true);
-        setIsPlaying(true);
+      if (isPlaying) {
+        audio.play().catch((error) => console.error("Playback error:", error));
       } else {
         audio.pause();
-        isStreaming(false);
-        setIsPlaying(false);
       }
     }
-  };
+  }, [isPlaying, folder, filename]);
+
   useEffect(() => {
     const audio = audioRef.current;
 
@@ -64,9 +59,7 @@ const HLSPlayer: React.FC<HLSPlayerProps> = ({ folder, filename }) => {
       const updateTime = () => setCurrentTime(audio.currentTime);
       const setAudioDuration = () => setDuration(audio.duration);
 
-      // Handler for when the audio ends
       const handleAudioEnd = () => {
-        isStreaming(false);
         setIsPlaying(false);
       };
 
@@ -97,7 +90,7 @@ const HLSPlayer: React.FC<HLSPlayerProps> = ({ folder, filename }) => {
       <Box sx={{ width: 300 }}>
         <audio ref={audioRef} style={{ display: "none" }} />
         <Box sx={{ width: "100%", display: "flex", alignItems: "center" }}>
-          <Button onClick={handlePlayPause}>
+          <Button onClick={togglePlayPause}>
             {!isPlaying ? <PlayCircleIcon /> : <StopIcon />}
           </Button>
           <Slider

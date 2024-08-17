@@ -52,7 +52,7 @@ function App() {
     <>
       <AppBarTop />
       <Outlet />
-      <div />
+
       <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 mb-10">
         <HLSPlayer />
       </div>
