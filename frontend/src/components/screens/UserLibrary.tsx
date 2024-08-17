@@ -13,7 +13,7 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
-export const UserDashboard = () => {
+export const UserLibrary = () => {
   const firebase_uid = useUidStore((state) => state.uid);
   const { redeemedBooks } = useGetRedeemedBooks({
     firebaseUid: firebase_uid || "",

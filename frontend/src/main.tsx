@@ -11,11 +11,11 @@ import "@fontsource/roboto/700.css";
 import CreateAccount from "./publicAuth/CreateAccount.tsx";
 import { SignIn } from "./publicAuth/SignIn.tsx";
 import { Account } from "./components/screens/Account.tsx";
-import { Dashboard } from "./components/screens/Dashboard.tsx";
 import { Books } from "./components/author/Books.tsx";
 import { GeneratedCodes } from "./components/author/GeneratedCodes.tsx";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { Library } from "./components/screens/Library.tsx";
 
 const client = new ApolloClient({
   uri: "http://localhost:4000/",
@@ -38,8 +38,8 @@ const router = createBrowserRouter([
         element: <Account />,
       },
       {
-        path: "dashboard",
-        element: <Dashboard />,
+        path: "library",
+        element: <Library />,
       },
       {
         path: "books",

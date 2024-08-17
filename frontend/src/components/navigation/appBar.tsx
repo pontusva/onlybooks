@@ -19,7 +19,7 @@ import { Fade, Skeleton } from "@mui/material";
 import { useGetUserById } from "../../data/users/useGetUserById";
 
 const pages = ["Products", "Pricing", "Blog"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Profile", "Account", "Library", "Dashboard", "Logout"];
 
 export const AppBarTop = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
@@ -57,8 +57,8 @@ export const AppBarTop = () => {
       case "Account":
         navigate("/account");
         break;
-      case "Dashboard":
-        navigate("/dashboard");
+      case "Library":
+        navigate("/Library");
         break;
       case "Logout":
         signOut(auth);

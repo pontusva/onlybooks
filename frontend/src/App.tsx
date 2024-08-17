@@ -9,6 +9,7 @@ import { useUserIdStore } from "./zustand/userIdStore.ts";
 import { useGetUserById } from "./data/users/useGetUserById.ts";
 import { useIsAuthor } from "./data/authors/useIsAuthor.ts";
 import { firebaseApp, auth } from "./auth/initAuth.ts";
+import HLSPlayer from "./components/streaming/HLSplayer.tsx";
 firebaseApp;
 
 function App() {
@@ -51,6 +52,10 @@ function App() {
     <>
       <AppBarTop />
       <Outlet />
+      <div />
+      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 mb-10">
+        <HLSPlayer />
+      </div>
     </>
   );
 }

@@ -9,7 +9,7 @@ import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import { useNavigate } from "react-router-dom";
 import { GenerateUuid } from "../dialogs/GenerateUUid";
 
-export const AuthorDashboard = () => {
+export const AuthorLibrary = () => {
   const navigate = useNavigate();
   return (
     <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>

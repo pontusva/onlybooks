@@ -1,12 +1,12 @@
-import { UserDashboard } from "./UserDashboard";
+import { UserLibrary } from "./UserLibrary";
 import { useUidStore } from "../../zustand/userStore";
 import { useEffect } from "react";
-import { AuthorDashboard } from "./AuthorDashboard";
+import { AuthorLibrary } from "./AuthorLibrary";
 import { Loader } from "../reuseable/Loader";
 
 import { useIsAuthor } from "../../data/authors/useIsAuthor";
 
-export const Dashboard = () => {
+export const Library = () => {
   const uid = useUidStore((state) => state.uid);
 
   const { isAuthor, loading } = useIsAuthor({
@@ -20,8 +20,8 @@ export const Dashboard = () => {
       <Loader />
     </div>
   ) : isAuthor ? (
-    <AuthorDashboard />
+    <AuthorLibrary />
   ) : (
-    <UserDashboard />
+    <UserLibrary />
   );
 };
