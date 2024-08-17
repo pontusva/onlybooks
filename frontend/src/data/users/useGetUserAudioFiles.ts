@@ -24,6 +24,7 @@ gql`
 
 export const useGetuserAudioFiles = ({ firebase_uid }: Props) => {
   const { data, loading } = useGetUserAudioFilesQuery({
+    skip: !firebase_uid,
     variables: {
       firebaseUid: firebase_uid,
     },

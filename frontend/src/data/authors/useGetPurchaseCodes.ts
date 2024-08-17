@@ -16,6 +16,7 @@ gql`
 
 export const useGetPurchaseCodes = ({ authorId }: { authorId: string }) => {
   const { data, loading, refetch } = useGetPurchaseCodesQuery({
+    skip: !authorId,
     variables: { authorId },
   });
 

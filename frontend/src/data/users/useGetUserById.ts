@@ -18,6 +18,7 @@ gql`
 
 export const useGetUserById = ({ firebase_uid }: Props) => {
   const { data, loading, refetch } = useGetUserByIdQuery({
+    skip: !firebase_uid,
     variables: {
       userByIdId: firebase_uid,
     },

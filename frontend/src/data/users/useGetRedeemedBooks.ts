@@ -22,6 +22,7 @@ gql`
 
 export const useGetRedeemedBooks = ({ firebaseUid }: Props) => {
   const { data, loading, refetch } = useGetRedeemedBooksQuery({
+    skip: !firebaseUid,
     variables: { firebaseUid },
   });
   console.log(data);

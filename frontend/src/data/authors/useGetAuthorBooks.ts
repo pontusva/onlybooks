@@ -20,6 +20,7 @@ gql`
 
 export const useGetAuthorBooks = ({ authorId }: { authorId: string }) => {
   const { data, loading, refetch } = useGetAuthorBooksQuery({
+    skip: !authorId,
     variables: { authorId },
   });
 
