@@ -15,6 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  Upload: { input: any; output: any; }
 };
 
 export type AudioFile = {
@@ -29,6 +30,11 @@ export type AudioFile = {
   purchase_code_id: Scalars['String']['output'];
   purchased_at: Scalars['String']['output'];
   user_id: Scalars['String']['output'];
+};
+
+export type ImageUploadInput = {
+  docType: Scalars['String']['input'];
+  file: Scalars['Upload']['input'];
 };
 
 export type InsertBookResponse = {
@@ -46,6 +52,7 @@ export type Mutation = {
   processAudio?: Maybe<ProcessAudioResponse>;
   redeemCode?: Maybe<Response>;
   requestAudio?: Maybe<RequestAudioResponse>;
+  uploadImage?: Maybe<SuccessResult>;
 };
 
 
@@ -90,6 +97,7 @@ export type MutationInsertPurchaseCodesArgs = {
 export type MutationProcessAudioArgs = {
   authorId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
+  docs?: InputMaybe<Array<ImageUploadInput>>;
   fileName: Scalars['String']['input'];
   fileUrl: Scalars['String']['input'];
   title: Scalars['String']['input'];
@@ -104,6 +112,11 @@ export type MutationRedeemCodeArgs = {
 
 export type MutationRequestAudioArgs = {
   audioName: Scalars['String']['input'];
+};
+
+
+export type MutationUploadImageArgs = {
+  docs: Array<ImageUploadInput>;
 };
 
 export type ProcessAudioResponse = {
@@ -186,6 +199,12 @@ export type Response = {
   success: Scalars['Boolean']['output'];
 };
 
+export type SuccessResult = {
+  __typename?: 'SuccessResult';
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+};
+
 export type UploadBook = {
   __typename?: 'UploadBook';
   author_id: Scalars['ID']['output'];
@@ -251,6 +270,7 @@ export type ProcessAudioMutationVariables = Exact<{
   title: Scalars['String']['input'];
   fileUrl: Scalars['String']['input'];
   fileName: Scalars['String']['input'];
+  docs?: InputMaybe<Array<ImageUploadInput> | ImageUploadInput>;
   description?: InputMaybe<Scalars['String']['input']>;
 }>;
 
@@ -263,6 +283,13 @@ export type RequestAudioMutationVariables = Exact<{
 
 
 export type RequestAudioMutation = { __typename?: 'Mutation', requestAudio?: { __typename?: 'RequestAudioResponse', hlsUrl: string } };
+
+export type UploadImageMutationVariables = Exact<{
+  docs: Array<ImageUploadInput> | ImageUploadInput;
+}>;
+
+
+export type UploadImageMutation = { __typename?: 'Mutation', uploadImage?: { __typename?: 'SuccessResult', success: boolean } };
 
 export type CreateUserMutationVariables = Exact<{
   firebaseUid: Scalars['String']['input'];
@@ -527,12 +554,13 @@ export type IsAuthorLazyQueryHookResult = ReturnType<typeof useIsAuthorLazyQuery
 export type IsAuthorSuspenseQueryHookResult = ReturnType<typeof useIsAuthorSuspenseQuery>;
 export type IsAuthorQueryResult = Apollo.QueryResult<IsAuthorQuery, IsAuthorQueryVariables>;
 export const ProcessAudioDocument = gql`
-    mutation ProcessAudio($authorId: ID!, $title: String!, $fileUrl: String!, $fileName: String!, $description: String) {
+    mutation ProcessAudio($authorId: ID!, $title: String!, $fileUrl: String!, $fileName: String!, $docs: [ImageUploadInput!], $description: String) {
   processAudio(
     authorId: $authorId
     title: $title
     fileUrl: $fileUrl
     fileName: $fileName
+    docs: $docs
     description: $description
   ) {
     book {
@@ -561,6 +589,7 @@ export type ProcessAudioMutationFn = Apollo.MutationFunction<ProcessAudioMutatio
  *      title: // value for 'title'
  *      fileUrl: // value for 'fileUrl'
  *      fileName: // value for 'fileName'
+ *      docs: // value for 'docs'
  *      description: // value for 'description'
  *   },
  * });
@@ -605,6 +634,39 @@ export function useRequestAudioMutation(baseOptions?: Apollo.MutationHookOptions
 export type RequestAudioMutationHookResult = ReturnType<typeof useRequestAudioMutation>;
 export type RequestAudioMutationResult = Apollo.MutationResult<RequestAudioMutation>;
 export type RequestAudioMutationOptions = Apollo.BaseMutationOptions<RequestAudioMutation, RequestAudioMutationVariables>;
+export const UploadImageDocument = gql`
+    mutation UploadImage($docs: [ImageUploadInput!]!) {
+  uploadImage(docs: $docs) {
+    success
+  }
+}
+    `;
+export type UploadImageMutationFn = Apollo.MutationFunction<UploadImageMutation, UploadImageMutationVariables>;
+
+/**
+ * __useUploadImageMutation__
+ *
+ * To run a mutation, you first call `useUploadImageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadImageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uploadImageMutation, { data, loading, error }] = useUploadImageMutation({
+ *   variables: {
+ *      docs: // value for 'docs'
+ *   },
+ * });
+ */
+export function useUploadImageMutation(baseOptions?: Apollo.MutationHookOptions<UploadImageMutation, UploadImageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UploadImageMutation, UploadImageMutationVariables>(UploadImageDocument, options);
+      }
+export type UploadImageMutationHookResult = ReturnType<typeof useUploadImageMutation>;
+export type UploadImageMutationResult = Apollo.MutationResult<UploadImageMutation>;
+export type UploadImageMutationOptions = Apollo.BaseMutationOptions<UploadImageMutation, UploadImageMutationVariables>;
 export const CreateUserDocument = gql`
     mutation CreateUser($firebaseUid: String!, $username: String!, $email: String!, $isAuthor: Boolean!) {
   createUser(

@@ -7,6 +7,7 @@ gql`
     $title: String!
     $fileUrl: String!
     $fileName: String!
+    $docs: [ImageUploadInput!]
     $description: String
   ) {
     processAudio(
@@ -14,6 +15,7 @@ gql`
       title: $title
       fileUrl: $fileUrl
       fileName: $fileName
+      docs: $docs
       description: $description
     ) {
       book {
@@ -32,6 +34,11 @@ export const useProcessAudio = () => {
     },
     onError: (error) => {
       console.log(error);
+    },
+    context: {
+      headers: {
+        "x-apollo-operation-name": "uploadFiles",
+      },
     },
   });
 

@@ -7,7 +7,7 @@ import { useAuthorIdStore } from "../../zustand/authorIdStore";
 import { CreateNewLibrary } from "../dialogs/CreateNewLibrary";
 import { useGetAuthorBooks } from "../../data/authors/useGetAuthorBooks";
 import { useProcessAudio } from "../../data/authors/useProcessAudio";
-
+import { useUploadImage } from "../../data/authors/useUploadImage";
 const schema = z.object({
   title: z.string().min(3),
   description: z.string().min(3),
@@ -21,6 +21,7 @@ export const AuthorAccount = () => {
   const authorId = useAuthorIdStore((state) => state.authorId);
   const { books } = useGetAuthorBooks({ authorId: authorId || "" });
   const { processAudio } = useProcessAudio();
+  const { uploadImage } = useUploadImage();
 
   console.log(books);
 
@@ -38,7 +39,19 @@ export const AuthorAccount = () => {
     console.log(data);
     // Extract the first file
     const file = data.file[0];
-    const imageFile = data.imageFile[0];
+    // const imageFile = data.imageFile[0];
+    console.log(data.imageFile[0]);
+    const docs = Array.from(data.imageFile).map((file) => ({
+      file, // This is where the file object goes
+      docType: "profilePicture", // Or any docType relevant to your context
+    }));
+
+    // try {
+    //   const response = await uploadImage({ variables: { docs } });
+    //   console.log(response);
+    // } catch (error) {
+    //   console.error("File upload failed", error);
+    // }
 
     try {
       // Call uploadFile and handle the result
@@ -57,6 +70,7 @@ export const AuthorAccount = () => {
               description: data.description,
               fileUrl: audio,
               fileName: file.name,
+              docs,
             },
           });
 

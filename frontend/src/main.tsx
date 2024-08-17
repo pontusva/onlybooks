@@ -16,10 +16,12 @@ import { GeneratedCodes } from "./components/author/GeneratedCodes.tsx";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Library } from "./components/screens/Library.tsx";
+import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 
 const client = new ApolloClient({
   uri: "http://localhost:4000/",
   cache: new InMemoryCache(),
+  link: createUploadLink({ uri: "http://localhost:4000/" }),
 });
 
 const queryClient = new QueryClient();
