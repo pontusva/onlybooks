@@ -25,6 +25,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@mui/icons-material": "^5.16.4",
     "@mui/material": "^5.16.4",
+    "apollo-upload-client": "^18.0.1",
     "axios": "^1.7.4",
     "firebase": "^10.12.4",
     "graphql": "^16.9.0",

@@ -43,7 +43,9 @@ export type Mutation = {
   insertBook?: Maybe<InsertBookResponse>;
   insertHlsName?: Maybe<Response>;
   insertPurchaseCodes?: Maybe<Response>;
+  processAudio?: Maybe<ProcessAudioResponse>;
   redeemCode?: Maybe<Response>;
+  requestAudio?: Maybe<RequestAudioResponse>;
 };
 
 
@@ -62,6 +64,7 @@ export type MutationCreateUserArgs = {
 
 export type MutationInsertBookArgs = {
   author_id: Scalars['ID']['input'];
+  cover_image_url?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   file_name: Scalars['String']['input'];
   file_url: Scalars['String']['input'];
@@ -84,9 +87,29 @@ export type MutationInsertPurchaseCodesArgs = {
 };
 
 
+export type MutationProcessAudioArgs = {
+  authorId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  fileName: Scalars['String']['input'];
+  fileUrl: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+};
+
+
 export type MutationRedeemCodeArgs = {
   code: Scalars['String']['input'];
   firebase_uid: Scalars['String']['input'];
+};
+
+
+export type MutationRequestAudioArgs = {
+  audioName: Scalars['String']['input'];
+};
+
+export type ProcessAudioResponse = {
+  __typename?: 'ProcessAudioResponse';
+  book?: Maybe<InsertBookResponse>;
+  hlsUrl?: Maybe<Scalars['String']['output']>;
 };
 
 export type PurchaseCodes = {
@@ -151,6 +174,11 @@ export type RedemeedBooks = {
   id: Scalars['ID']['output'];
   purchased_at: Scalars['String']['output'];
   title: Scalars['String']['output'];
+};
+
+export type RequestAudioResponse = {
+  __typename?: 'RequestAudioResponse';
+  hlsUrl: Scalars['String']['output'];
 };
 
 export type Response = {
@@ -218,7 +246,7 @@ export type IsAuthorQueryVariables = Exact<{
 
 export type IsAuthorQuery = { __typename?: 'Query', isAuthor?: { __typename?: 'User', username: string, id: string, is_author: boolean } };
 
-export type InsertBookMutationVariables = Exact<{
+export type ProcessAudioMutationVariables = Exact<{
   authorId: Scalars['ID']['input'];
   title: Scalars['String']['input'];
   fileUrl: Scalars['String']['input'];
@@ -227,7 +255,14 @@ export type InsertBookMutationVariables = Exact<{
 }>;
 
 
-export type InsertBookMutation = { __typename?: 'Mutation', insertBook?: { __typename?: 'InsertBookResponse', id: string } };
+export type ProcessAudioMutation = { __typename?: 'Mutation', processAudio?: { __typename?: 'ProcessAudioResponse', hlsUrl?: string, book?: { __typename?: 'InsertBookResponse', id: string } } };
+
+export type RequestAudioMutationVariables = Exact<{
+  audioName: Scalars['String']['input'];
+}>;
+
+
+export type RequestAudioMutation = { __typename?: 'Mutation', requestAudio?: { __typename?: 'RequestAudioResponse', hlsUrl: string } };
 
 export type CreateUserMutationVariables = Exact<{
   firebaseUid: Scalars['String']['input'];
@@ -491,33 +526,36 @@ export type IsAuthorQueryHookResult = ReturnType<typeof useIsAuthorQuery>;
 export type IsAuthorLazyQueryHookResult = ReturnType<typeof useIsAuthorLazyQuery>;
 export type IsAuthorSuspenseQueryHookResult = ReturnType<typeof useIsAuthorSuspenseQuery>;
 export type IsAuthorQueryResult = Apollo.QueryResult<IsAuthorQuery, IsAuthorQueryVariables>;
-export const InsertBookDocument = gql`
-    mutation InsertBook($authorId: ID!, $title: String!, $fileUrl: String!, $fileName: String!, $description: String) {
-  insertBook(
-    author_id: $authorId
+export const ProcessAudioDocument = gql`
+    mutation ProcessAudio($authorId: ID!, $title: String!, $fileUrl: String!, $fileName: String!, $description: String) {
+  processAudio(
+    authorId: $authorId
     title: $title
-    file_url: $fileUrl
-    file_name: $fileName
+    fileUrl: $fileUrl
+    fileName: $fileName
     description: $description
   ) {
-    id
+    book {
+      id
+    }
+    hlsUrl
   }
 }
     `;
-export type InsertBookMutationFn = Apollo.MutationFunction<InsertBookMutation, InsertBookMutationVariables>;
+export type ProcessAudioMutationFn = Apollo.MutationFunction<ProcessAudioMutation, ProcessAudioMutationVariables>;
 
 /**
- * __useInsertBookMutation__
+ * __useProcessAudioMutation__
  *
- * To run a mutation, you first call `useInsertBookMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useInsertBookMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useProcessAudioMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useProcessAudioMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [insertBookMutation, { data, loading, error }] = useInsertBookMutation({
+ * const [processAudioMutation, { data, loading, error }] = useProcessAudioMutation({
  *   variables: {
  *      authorId: // value for 'authorId'
  *      title: // value for 'title'
@@ -527,13 +565,46 @@ export type InsertBookMutationFn = Apollo.MutationFunction<InsertBookMutation, I
  *   },
  * });
  */
-export function useInsertBookMutation(baseOptions?: Apollo.MutationHookOptions<InsertBookMutation, InsertBookMutationVariables>) {
+export function useProcessAudioMutation(baseOptions?: Apollo.MutationHookOptions<ProcessAudioMutation, ProcessAudioMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<InsertBookMutation, InsertBookMutationVariables>(InsertBookDocument, options);
+        return Apollo.useMutation<ProcessAudioMutation, ProcessAudioMutationVariables>(ProcessAudioDocument, options);
       }
-export type InsertBookMutationHookResult = ReturnType<typeof useInsertBookMutation>;
-export type InsertBookMutationResult = Apollo.MutationResult<InsertBookMutation>;
-export type InsertBookMutationOptions = Apollo.BaseMutationOptions<InsertBookMutation, InsertBookMutationVariables>;
+export type ProcessAudioMutationHookResult = ReturnType<typeof useProcessAudioMutation>;
+export type ProcessAudioMutationResult = Apollo.MutationResult<ProcessAudioMutation>;
+export type ProcessAudioMutationOptions = Apollo.BaseMutationOptions<ProcessAudioMutation, ProcessAudioMutationVariables>;
+export const RequestAudioDocument = gql`
+    mutation RequestAudio($audioName: String!) {
+  requestAudio(audioName: $audioName) {
+    hlsUrl
+  }
+}
+    `;
+export type RequestAudioMutationFn = Apollo.MutationFunction<RequestAudioMutation, RequestAudioMutationVariables>;
+
+/**
+ * __useRequestAudioMutation__
+ *
+ * To run a mutation, you first call `useRequestAudioMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRequestAudioMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [requestAudioMutation, { data, loading, error }] = useRequestAudioMutation({
+ *   variables: {
+ *      audioName: // value for 'audioName'
+ *   },
+ * });
+ */
+export function useRequestAudioMutation(baseOptions?: Apollo.MutationHookOptions<RequestAudioMutation, RequestAudioMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RequestAudioMutation, RequestAudioMutationVariables>(RequestAudioDocument, options);
+      }
+export type RequestAudioMutationHookResult = ReturnType<typeof useRequestAudioMutation>;
+export type RequestAudioMutationResult = Apollo.MutationResult<RequestAudioMutation>;
+export type RequestAudioMutationOptions = Apollo.BaseMutationOptions<RequestAudioMutation, RequestAudioMutationVariables>;
 export const CreateUserDocument = gql`
     mutation CreateUser($firebaseUid: String!, $username: String!, $email: String!, $isAuthor: Boolean!) {
   createUser(
