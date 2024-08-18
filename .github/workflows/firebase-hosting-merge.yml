@@ -20,4 +20,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ONLYBOOKS_7F5D5 }}
           channelId: live
           projectId: onlybooks-7f5d5
-          entrypoint: /frontend
+          entrypoint: ./frontend
