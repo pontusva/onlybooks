@@ -24,7 +24,6 @@ export const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const storage = getStorage(firebaseApp);
 const analytics = getAnalytics(firebaseApp);
-const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 
 const uploadFile = (file: File, callback: any) => {
