@@ -1,20 +1,20 @@
 import { Button, Typography, Box } from "@mui/material";
-import { useForm } from "react-hook-form";
+// import { useForm } from "react-hook-form";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import StopIcon from "@mui/icons-material/Stop";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { z } from "zod";
 // import { useRedeemCode } from "../../data/users/useRedeemCode";
 import { useGetRedeemedBooks } from "../../data/users/useGetRedeemedBooks";
 import { useUidStore } from "../../zustand/userStore";
 import { useAudioStore } from "../../zustand/useAudioStore";
 import { RedeemCodeDialog } from "../dialogs/RedeemCode";
 
-const schema = z.object({
-  code: z.string().uuid(),
-});
+// const schema = z.object({
+//   code: z.string().uuid(),
+// });
 
-type Schema = z.infer<typeof schema>;
+// type Schema = z.infer<typeof schema>;
 
 export const PlayList = () => {
   const firebase_uid = useUidStore((state) => state.uid);
