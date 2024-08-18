@@ -1,14 +1,23 @@
-import { Button } from "@mui/material";
-import { useUidStore } from "../../zustand/userStore";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { Typography } from "@mui/material";
 
 export const Home = () => {
-  const uid = useUidStore((state) => state.uid);
-
-  const fetchUser = async () => {};
   return (
     <div className="absolute h-screen flex items-center justify-center w-screen">
-      <Button onClick={fetchUser}>Fetch User</Button>
+      <div className="flex relative bottom-20 flex-col">
+        <img className="" src="/booktree.png" alt="booktree logo" />
+        <Typography
+          className="text-center"
+          variant="h2"
+          component="h1"
+          style={{
+            background: "linear-gradient(45deg, #f3ec78, #af4261)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          BookTree
+        </Typography>
+      </div>
     </div>
   );
 };

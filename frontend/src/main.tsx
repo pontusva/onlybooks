@@ -13,15 +13,55 @@ import { SignIn } from "./publicAuth/SignIn.tsx";
 import { Account } from "./components/screens/Account.tsx";
 import { Books } from "./components/author/Books.tsx";
 import { GeneratedCodes } from "./components/author/GeneratedCodes.tsx";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  HttpLink,
+  from,
+} from "@apollo/client";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Library } from "./components/screens/Library.tsx";
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
+import { setContext } from "@apollo/client/link/context";
+import { firebaseApp, auth } from "./auth/initAuth.ts";
+const httpLink = new HttpLink({
+  uri: "http://localhost:4000/graphql", // Replace with your GraphQL server URI
+});
 
+// Create a middleware link to set the Authorization header
+const authLink = setContext(async (_, { headers }) => {
+  const user = auth.currentUser;
+
+  if (!user) {
+    return {
+      headers,
+    };
+  }
+
+  try {
+    const token = await user.getIdToken();
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : "",
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching ID token:", error);
+    return {
+      headers,
+    };
+  }
+});
+const uploadLink = createUploadLink({
+  uri: "http://localhost:4000/", // Your GraphQL server URI
+});
+const combinedLink = from([authLink, uploadLink]);
 const client = new ApolloClient({
   uri: "http://localhost:4000/",
   cache: new InMemoryCache(),
-  link: createUploadLink({ uri: "http://localhost:4000/" }),
+  link: combinedLink,
 });
 
 const queryClient = new QueryClient();
