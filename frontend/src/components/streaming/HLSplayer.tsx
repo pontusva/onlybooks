@@ -102,7 +102,7 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
     }
   }, [volume]);
 
-  const handleSliderChange = (event: Event, newValue: number | number[]) => {
+  const handleSliderChange = (_: Event, newValue: number | number[]) => {
     const audio = audioRef.current;
     const newTime = ((newValue as number) / 100) * duration;
     if (audio) {

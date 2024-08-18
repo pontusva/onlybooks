@@ -51,6 +51,7 @@ export const CreateNewLibrary = ({ children }: { children: ReactNode }) => {
   };
   const onSubmit = async (data: Schema) => {
     if (!authorId) return;
+    console.log(data);
   };
   return (
     <>

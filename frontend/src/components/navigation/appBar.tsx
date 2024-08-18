@@ -24,7 +24,7 @@ const settings = ["Profile", "Account", "Redeem", "Dashboard", "Logout"];
 
 export const AppBarTop = () => {
   const { openDrawer } = useDrawerStore();
-  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const [_, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [skeletonLoading, setSkeletonLoading] = useState<boolean>(true);
@@ -33,10 +33,6 @@ export const AppBarTop = () => {
   const { user } = useGetUserById({ firebase_uid: uid || "" });
 
   const navigate = useNavigate();
-
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);

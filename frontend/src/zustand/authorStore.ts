@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist, PersistStorage } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 
 interface AuthorState {
   isAuthor: boolean | undefined;

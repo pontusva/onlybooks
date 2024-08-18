@@ -1,11 +1,11 @@
-import { Button, TextField, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRedeemCode } from "../../data/users/useRedeemCode";
-import { useGetRedeemedBooks } from "../../data/users/useGetRedeemedBooks";
-import { useUidStore } from "../../zustand/userStore";
-import { useAudioStore } from "../../zustand/useAudioStore";
+// import { useRedeemCode } from "../../data/users/useRedeemCode";
+// import { useGetRedeemedBooks } from "../../data/users/useGetRedeemedBooks";
+// import { useUidStore } from "../../zustand/userStore";
+// import { useAudioStore } from "../../zustand/useAudioStore";
 
 const schema = z.object({
   code: z.string().uuid(),
@@ -14,45 +14,45 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>;
 
 export const UserLibrary = () => {
-  const firebase_uid = useUidStore((state) => state.uid);
-  const { setFolderAndFilename, play, stop, currentBookId, isPlaying } =
-    useAudioStore();
+  // const firebase_uid = useUidStore((state) => state.uid);
+  // const { setFolderAndFilename, play, stop, currentBookId, isPlaying } =
+  //   useAudioStore();
 
-  const handlePlayClick = (
-    folder: string,
-    filename: string,
-    bookId: string
-  ) => {
-    if (currentBookId === bookId) {
-      // If the clicked book is already playing, toggle play/pause
-      isPlaying ? stop() : play();
-    } else {
-      // If the clicked book is not currently playing, stop the current one and start the new one
-      stop();
-      setFolderAndFilename(folder, filename, bookId);
-      play();
-    }
-  };
-  const { redeemedBooks } = useGetRedeemedBooks({
-    firebaseUid: firebase_uid || "",
-  });
-  const { redeemCode } = useRedeemCode();
+  // const handlePlayClick = (
+  //   folder: string,
+  //   filename: string,
+  //   bookId: string
+  // ) => {
+  //   if (currentBookId === bookId) {
+  //     // If the clicked book is already playing, toggle play/pause
+  //     isPlaying ? stop() : play();
+  //   } else {
+  //     // If the clicked book is not currently playing, stop the current one and start the new one
+  //     stop();
+  //     setFolderAndFilename(folder, filename, bookId);
+  //     play();
+  //   }
+  // };
+  // const { redeemedBooks } = useGetRedeemedBooks({
+  //   firebaseUid: firebase_uid || "",
+  // });
+  // const { redeemCode } = useRedeemCode();
 
   const {
-    register,
-    handleSubmit,
+    // register,
+    // handleSubmit,
     formState: { errors },
   } = useForm<Schema>({ resolver: zodResolver(schema) });
 
-  const onSubmit = async (data: Schema) => {
-    if (!data.code || !firebase_uid) return;
-    redeemCode({
-      variables: {
-        code: data.code,
-        firebaseUid: firebase_uid || "",
-      },
-    });
-  };
+  // const onSubmit = async (data: Schema) => {
+  //   if (!data.code || !firebase_uid) return;
+  //   redeemCode({
+  //     variables: {
+  //       code: data.code,
+  //       firebaseUid: firebase_uid || "",
+  //     },
+  //   });
+  // };
 
   return (
     <div>

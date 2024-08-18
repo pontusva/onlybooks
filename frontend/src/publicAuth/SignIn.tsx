@@ -33,6 +33,9 @@ export const SignIn = () => {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
+        if (errorCode || errorMessage) {
+          throw new Error(errorCode || errorMessage);
+        }
         // ..
       });
   };

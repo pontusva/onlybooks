@@ -4,7 +4,7 @@ import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import StopIcon from "@mui/icons-material/Stop";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRedeemCode } from "../../data/users/useRedeemCode";
+// import { useRedeemCode } from "../../data/users/useRedeemCode";
 import { useGetRedeemedBooks } from "../../data/users/useGetRedeemedBooks";
 import { useUidStore } from "../../zustand/userStore";
 import { useAudioStore } from "../../zustand/useAudioStore";
@@ -39,23 +39,23 @@ export const PlayList = () => {
   const { redeemedBooks } = useGetRedeemedBooks({
     firebaseUid: firebase_uid || "",
   });
-  const { redeemCode } = useRedeemCode();
+  // const { redeemCode } = useRedeemCode();
 
   const {
-    register,
-    handleSubmit,
+    // register,
+    // handleSubmit,
     formState: { errors },
   } = useForm<Schema>({ resolver: zodResolver(schema) });
 
-  const onSubmit = async (data: Schema) => {
-    if (!data.code || !firebase_uid) return;
-    redeemCode({
-      variables: {
-        code: data.code,
-        firebaseUid: firebase_uid || "",
-      },
-    });
-  };
+  // const onSubmit = async (data: Schema) => {
+  //   if (!data.code || !firebase_uid) return;
+  //   redeemCode({
+  //     variables: {
+  //       code: data.code,
+  //       firebaseUid: firebase_uid || "",
+  //     },
+  //   });
+  // };
 
   return (
     <div>

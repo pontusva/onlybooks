@@ -1,11 +1,9 @@
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 
 import { useDrawerStore } from "../../zustand/useDrawerStore";
 import { PlayList } from "../drawers/PlayList";
-import { RedeemCodeDialog } from "../dialogs/RedeemCode";
 
 export const LibraryDrawer = () => {
   const { openDrawer, closeDrawer, drawers } = useDrawerStore();
