@@ -38,11 +38,11 @@ export const UserLibrary = () => {
   // });
   // const { redeemCode } = useRedeemCode();
 
-  const {
-    // register,
-    // handleSubmit,
-    formState: { errors },
-  } = useForm<Schema>({ resolver: zodResolver(schema) });
+  // const {
+  //   // register,
+  //   // handleSubmit,
+  //   formState: { errors },
+  // } = useForm<Schema>({ resolver: zodResolver(schema) });
 
   // const onSubmit = async (data: Schema) => {
   //   if (!data.code || !firebase_uid) return;

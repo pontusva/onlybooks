@@ -112,7 +112,7 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
     }
   };
 
-  const handleVolumeChange = (event: Event, newValue: number | number[]) => {
+  const handleVolumeChange = (_: Event, newValue: number | number[]) => {
     // Convert slider value (0-100) to volume range (0.0-1.0)
     const newVolume = (newValue as number) / 100;
     setVolume(newVolume);
