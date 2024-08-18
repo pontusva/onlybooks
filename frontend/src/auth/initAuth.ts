@@ -62,4 +62,4 @@ const uploadFile = (file: File, callback: any) => {
   );
 };
 
-export { firebaseApp, analytics, uploadFile, db, auth };
+export { firebaseApp, analytics, uploadFile, auth };

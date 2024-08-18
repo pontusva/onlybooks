@@ -1,36 +1,38 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { TextField, Button, Box } from "@mui/material";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { uploadFile } from "../../auth/initAuth";
 import { useAuthorIdStore } from "../../zustand/authorIdStore";
 import { CreateNewLibrary } from "../dialogs/CreateNewLibrary";
-import { useGetAuthorBooks } from "../../data/authors/useGetAuthorBooks";
+
 import { useProcessAudio } from "../../data/authors/useProcessAudio";
+
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 const schema = z.object({
   title: z.string().min(3),
   description: z.string().min(3),
-  file: z.instanceof(FileList),
-  imageFile: z.instanceof(FileList),
+  file: z.instanceof(FileList).optional(),
+  imageFile: z.instanceof(FileList).optional(),
 });
 
 type Schema = z.infer<typeof schema>;
 
 export const AuthorAccount = () => {
   const authorId = useAuthorIdStore((state) => state.authorId);
-  const { books } = useGetAuthorBooks({ authorId: authorId || "" });
+  // const { books } = useGetAuthorBooks({ authorId: authorId || "" });
   const { processAudio } = useProcessAudio();
-
-  console.log(books);
 
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<Schema>({ resolver: zodResolver(schema) });
   const onSubmit = async (data: Schema) => {
     // Ensure `data.file` contains at least one file
+    console.log(data);
     if (!data.file || data.file.length === 0) {
       console.error("No file provided");
       return;
@@ -39,18 +41,11 @@ export const AuthorAccount = () => {
     // Extract the first file
     const file = data.file[0];
     // const imageFile = data.imageFile[0];
-    console.log(data.imageFile[0]);
-    const docs = Array.from(data.imageFile).map((file) => ({
+    if (!data.imageFile) return null;
+    const docs = Array.from(data?.imageFile).map((file) => ({
       file, // This is where the file object goes
       docType: "profilePicture", // Or any docType relevant to your context
     }));
-
-    // try {
-    //   const response = await uploadImage({ variables: { docs } });
-    //   console.log(response);
-    // } catch (error) {
-    //   console.error("File upload failed", error);
-    // }
 
     try {
       // Call uploadFile and handle the result
@@ -88,56 +83,110 @@ export const AuthorAccount = () => {
   return (
     <>
       <CreateNewLibrary children={<Button>Create new library?</Button>} />
-      <form
-        className="flex flex-col  h-screen space-y-6 pt-24 p-5"
-        onSubmit={handleSubmit(onSubmit)}
+      <Box
+        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
-        <TextField
-          {...register("title")}
-          id="standard-basic"
-          label="Title"
-          variant="outlined"
-        />
-        {errors.title && (
-          <span className="text-red-500">{errors.title.message}</span>
-        )}
+        <form
+          className="flex flex-col w-96 h-screen space-y-6 pt-24 p-5"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <TextField
+            {...register("title")}
+            id="standard-basic"
+            label="Title"
+            variant="outlined"
+          />
+          {errors.title && (
+            <span className="text-red-500">{errors.title.message}</span>
+          )}
 
-        <TextField
-          {...register("description")}
-          id="filled-multiline-static"
-          label="Description"
-          multiline
-          rows={4}
-        />
-        {errors.description && (
-          <span className="text-red-500">{errors.description.message}</span>
-        )}
-        <Box sx={{ display: "flex", flexDirection: "column" }}>
-          <span>Upload audio file</span>
           <TextField
-            {...register("file")}
-            id="standard-basic"
-            type="file"
-            variant="outlined"
+            {...register("description")}
+            id="filled-multiline-static"
+            label="Description"
+            multiline
+            rows={4}
           />
-          {errors.file && (
-            <span className="text-red-500">{errors.file.message}</span>
+          {errors.description && (
+            <span className="text-red-500">{errors.description.message}</span>
           )}
-        </Box>
-        <Box sx={{ display: "flex", flexDirection: "column" }}>
-          <span>Upload book cover</span>
-          <TextField
-            {...register("imageFile")}
-            id="standard-basic"
-            type="file"
-            variant="outlined"
-          />
-          {errors.imageFile && (
-            <span className="text-red-500">{errors.imageFile.message}</span>
-          )}
-        </Box>
-        <Button type="submit">Submit</Button>
-      </form>
+
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <span>Upload audio file</span>
+            <input type="file" style={{ display: "none" }} />
+            <Controller
+              name="file"
+              control={control}
+              render={({ field: { onChange, onBlur, ref } }) => (
+                <>
+                  <Button
+                    component="label"
+                    role={undefined}
+                    variant="contained"
+                    tabIndex={-1}
+                    startIcon={<CloudUploadIcon />}
+                  >
+                    Upload audio file
+                    <input
+                      type="file"
+                      style={{ display: "none" }}
+                      onChange={(e) => {
+                        if (!e.target.files) return;
+                        if (e?.target?.files?.length > 0) {
+                          onChange(e.target.files);
+                        }
+                      }}
+                      onBlur={onBlur}
+                      ref={ref}
+                    />
+                  </Button>
+                </>
+              )}
+            />
+            {errors.file && (
+              <span className="text-red-500">{errors.file.message}</span>
+            )}
+          </Box>
+
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <span>Upload book cover</span>
+            <Controller
+              name="imageFile"
+              control={control}
+              render={({ field: { onChange, onBlur, ref } }) => (
+                <>
+                  <Button
+                    component="label"
+                    role={undefined}
+                    variant="contained"
+                    tabIndex={-1}
+                    startIcon={<CloudUploadIcon />}
+                  >
+                    Upload cover image
+                    <input
+                      type="file"
+                      style={{ display: "none" }}
+                      onChange={(e) => {
+                        if (!e.target.files) return;
+                        if (e.target.files.length > 0) {
+                          onChange(e.target.files);
+                        }
+                      }}
+                      onBlur={onBlur}
+                      ref={ref}
+                    />
+                  </Button>
+                </>
+              )}
+            />
+            {errors.imageFile && (
+              <span className="text-red-500">{errors.imageFile.message}</span>
+            )}
+          </Box>
+
+          <Button type="submit">Submit</Button>
+        </form>
+      </Box>
     </>
   );
 };

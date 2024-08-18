@@ -78,7 +78,7 @@ export const PlayList = () => {
 
       <div>
         <Typography
-          sx={{ marginTop: 4 }}
+          sx={{ marginTop: 4, color: "#fff" }}
           variant="h5"
           align="center"
           gutterBottom
@@ -106,6 +106,7 @@ export const PlayList = () => {
                   <Typography
                     className="text-left w-full"
                     variant="body1"
+                    sx={{ color: "#fff" }}
                     component="p"
                     gutterBottom
                   >

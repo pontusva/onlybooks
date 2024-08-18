@@ -83,7 +83,7 @@ export const AppBarTop = () => {
   }, [uid, user?.username]);
 
   return (
-    <AppBar color="primary" position="static">
+    <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -124,7 +124,7 @@ export const AppBarTop = () => {
                     textDecoration: "none",
                   }}
                 >
-                  OnlyBooks
+                  BookTree
                 </Typography>
               </Fade>
             )}
