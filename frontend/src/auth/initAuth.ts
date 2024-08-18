@@ -8,7 +8,6 @@ import {
   getDownloadURL,
   uploadBytesResumable,
 } from "firebase/storage";
-import { getFirestore } from "firebase/firestore";
 
 export const firebaseConfig = {
   apiKey: import.meta.env.VITE_REACT_APP_FIREBASE_API_KEY,
