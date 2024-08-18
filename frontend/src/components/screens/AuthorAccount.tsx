@@ -7,7 +7,7 @@ import { useAuthorIdStore } from "../../zustand/authorIdStore";
 import { CreateNewLibrary } from "../dialogs/CreateNewLibrary";
 import { useGetAuthorBooks } from "../../data/authors/useGetAuthorBooks";
 import { useProcessAudio } from "../../data/authors/useProcessAudio";
-import { useUploadImage } from "../../data/authors/useUploadImage";
+
 const schema = z.object({
   title: z.string().min(3),
   description: z.string().min(3),
@@ -21,7 +21,6 @@ export const AuthorAccount = () => {
   const authorId = useAuthorIdStore((state) => state.authorId);
   const { books } = useGetAuthorBooks({ authorId: authorId || "" });
   const { processAudio } = useProcessAudio();
-  const { uploadImage } = useUploadImage();
 
   console.log(books);
 

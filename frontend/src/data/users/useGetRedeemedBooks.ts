@@ -14,6 +14,7 @@ gql`
       file_name
       file_url
       hls_path
+      cover_image_url
       created_at
       purchased_at
     }

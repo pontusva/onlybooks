@@ -17,19 +17,14 @@ import {
   ApolloClient,
   InMemoryCache,
   ApolloProvider,
-  HttpLink,
   from,
 } from "@apollo/client";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Library } from "./components/screens/Library.tsx";
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 import { setContext } from "@apollo/client/link/context";
-import { firebaseApp, auth } from "./auth/initAuth.ts";
-const httpLink = new HttpLink({
-  uri: "http://localhost:4000/graphql", // Replace with your GraphQL server URI
-});
+import { auth } from "./auth/initAuth.ts";
 
-// Create a middleware link to set the Authorization header
 const authLink = setContext(async (_, { headers }) => {
   const user = auth.currentUser;
 
@@ -54,9 +49,11 @@ const authLink = setContext(async (_, { headers }) => {
     };
   }
 });
+
 const uploadLink = createUploadLink({
-  uri: "http://localhost:4000/", // Your GraphQL server URI
+  uri: "http://localhost:4000/",
 });
+
 const combinedLink = from([authLink, uploadLink]);
 const client = new ApolloClient({
   uri: "http://localhost:4000/",
