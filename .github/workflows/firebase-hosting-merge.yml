@@ -6,9 +6,11 @@ on:
   push:
     branches:
       - main
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
       - run: npm --prefix frontend ci && npm run build --prefix frontend
@@ -18,3 +20,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ONLYBOOKS_7F5D5 }}
           channelId: live
           projectId: onlybooks-7f5d5
+          entrypoint: /frontend
