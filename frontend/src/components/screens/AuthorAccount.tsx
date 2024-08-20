@@ -2,7 +2,7 @@ import { Controller, useForm } from "react-hook-form";
 import { TextField, Button, Box, Typography, Slider } from "@mui/material";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUploadFile } from "../../misc/useUploadFIle";
+import { useUploadFile } from "../../misc/useUploadFile";
 import { useAuthorIdStore } from "../../zustand/authorIdStore";
 import { CreateNewLibrary } from "../dialogs/CreateNewLibrary";
 import { useProcessAudio } from "../../data/authors/useProcessAudio";
