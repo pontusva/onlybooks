@@ -30,7 +30,7 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
   const setCoverImage = useCoverImage((state) => state.setCoverImage);
 
   const { redeemedBooks } = useGetRedeemedBooks({
-    firebaseUid: firebaseUid || "",
+    firebaseUid: auth.currentUser?.uid || "",
   });
 
   useEffect(() => {
