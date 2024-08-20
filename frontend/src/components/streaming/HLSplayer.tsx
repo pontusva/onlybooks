@@ -9,6 +9,7 @@ import { formatTime } from "../../utils";
 import Hls from "hls.js";
 import { useAudioStore } from "../../zustand/useAudioStore";
 import { useGetRedeemedBooks } from "../../data/users/useGetRedeemedBooks";
+import { auth } from "../../auth/initAuth";
 
 interface HLSPlayerProps {
   folder?: string;
@@ -22,7 +23,10 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1); // Default volume is 1 (100%)
-
+  const { redeemedBooks } = useGetRedeemedBooks({
+    firebaseUid: auth.currentUser?.uid || "",
+  });
+  console.log(redeemedBooks);
   useEffect(() => {
     const audio = audioRef.current;
 
