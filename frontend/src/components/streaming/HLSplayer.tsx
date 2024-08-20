@@ -9,7 +9,6 @@ import { formatTime } from "../../utils";
 import Hls from "hls.js";
 import { useAudioStore } from "../../zustand/useAudioStore";
 import { useGetRedeemedBooks } from "../../data/users/useGetRedeemedBooks";
-import { useUidStore } from "../../zustand/userStore";
 import { useCoverImage } from "../../zustand/useCoverImage";
 import { auth } from "../../auth/initAuth";
 
@@ -20,7 +19,6 @@ interface HLSPlayerProps {
 
 const HLSPlayer: React.FC<HLSPlayerProps> = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const firebaseUid = useUidStore((state) => state.uid);
 
   const { folder, filename, isPlaying, togglePlayPause, setIsPlaying } =
     useAudioStore();
