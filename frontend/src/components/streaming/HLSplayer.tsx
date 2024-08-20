@@ -11,6 +11,7 @@ import { useAudioStore } from "../../zustand/useAudioStore";
 import { useGetRedeemedBooks } from "../../data/users/useGetRedeemedBooks";
 import { useUidStore } from "../../zustand/userStore";
 import { useCoverImage } from "../../zustand/useCoverImage";
+import { auth } from "../../auth/initAuth";
 
 interface HLSPlayerProps {
   folder?: string;

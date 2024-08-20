@@ -23,7 +23,6 @@ export const PlayList = () => {
       play();
     }
   };
-  console.log(auth.currentUser?.uid);
   const { redeemedBooks } = useGetRedeemedBooks({
     firebaseUid: auth.currentUser?.uid || "",
   });
