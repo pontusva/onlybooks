@@ -8,6 +8,7 @@ import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import { formatTime } from "../../utils";
 import Hls from "hls.js";
 import { useAudioStore } from "../../zustand/useAudioStore";
+import { useGetRedeemedBooks } from "../../data/users/useGetRedeemedBooks";
 
 interface HLSPlayerProps {
   folder?: string;
@@ -94,7 +95,6 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
     const audio = audioRef.current;
 
     if (audio) {
-      // Ensure the volume value is a finite number between 0 and 1
       const validVolume = Number.isFinite(volume)
         ? Math.max(0, Math.min(1, volume))
         : 1;
@@ -113,7 +113,6 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
   };
 
   const handleVolumeChange = (_: Event, newValue: number | number[]) => {
-    // Convert slider value (0-100) to volume range (0.0-1.0)
     const newVolume = (newValue as number) / 100;
     setVolume(newVolume);
   };
@@ -165,9 +164,8 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
         >
           {volume === 0 ? <VolumeMuteIcon /> : <VolumeUpIcon />}
           <Slider
-            value={volume * 100} // Convert 0.0-1.0 to 0-100
+            value={volume * 100}
             onChange={handleVolumeChange}
-            // orientation="vertical"
             sx={{
               width: 75,
               height: 8,
