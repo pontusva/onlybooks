@@ -26,6 +26,7 @@ export type AudioFile = {
   audio_file_url: Scalars['String']['output'];
   audio_hls_path?: Maybe<Scalars['String']['output']>;
   audio_title: Scalars['String']['output'];
+  cover_image_url?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   purchase_code_id: Scalars['String']['output'];
   purchased_at: Scalars['String']['output'];

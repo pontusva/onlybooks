@@ -26,7 +26,7 @@ export const useGetRedeemedBooks = ({ firebaseUid }: Props) => {
     skip: !firebaseUid,
     variables: { firebaseUid },
   });
-  console.log(data);
+
   return {
     redeemedBooks: data?.getRedeemedBooks,
     loading,
