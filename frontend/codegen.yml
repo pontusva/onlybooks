@@ -1,5 +1,5 @@
 
-schema: "http://localhost:4000/"
+schema: "http://67.207.78.152:4000/"
 documents: "src/data/**/*.ts"
 config:
   noNamespaces: true
