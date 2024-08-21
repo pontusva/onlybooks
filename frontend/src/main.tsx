@@ -51,12 +51,12 @@ const authLink = setContext(async (_, { headers }) => {
 });
 
 const uploadLink = createUploadLink({
-  uri: "http://157.245.21.117:4000/",
+  uri: "https://pontus-abrahamsson.com/",
 });
 
 const combinedLink = from([authLink, uploadLink]);
 const client = new ApolloClient({
-  uri: "http://157.245.21.117:4000/",
+  uri: "https://pontus-abrahamsson.com/",
   cache: new InMemoryCache(),
   link: combinedLink,
 });
