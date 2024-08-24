@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Slider, Button, Typography } from "@mui/material";
+import { Box, Slider, Button, Typography, Container } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import StopIcon from "@mui/icons-material/Stop";
@@ -136,69 +136,72 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
   };
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        display: "flex",
-        alignItems: "center",
-        flexDirection: "column",
-      }}
-    >
-      <audio ref={audioRef} style={{ display: "none" }} />
-      <div className="flex flex-col">
-        <Box sx={{ width: "100%", display: "flex", alignItems: "center" }}>
-          <Button disabled={!folder || !filename} onClick={togglePlayPause}>
-            {!isPlaying ? <PlayCircleIcon /> : <StopIcon />}
-          </Button>
-          <Slider
-            value={(currentTime / duration) * 100}
-            onChange={handleSliderChange}
-            sx={{
-              height: 8,
-              width: 100,
-              "& .MuiSlider-thumb": {
-                bgcolor: "#0A122A",
-                width: 12,
-                height: 12,
-              },
-              "& .MuiSlider-track": { bgcolor: "#D3D3D3", border: "none" },
-              "& .MuiSlider-rail": { bgcolor: "lightgrey" },
-            }}
-          />
+    <div className="w-screen">
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          backgroundColor: "#F5F5DC",
+        }}
+      >
+        <audio ref={audioRef} style={{ display: "none" }} />
+        <div className="flex flex-col">
+          <Box sx={{ width: "100%", display: "flex", alignItems: "center" }}>
+            <Button disabled={!folder || !filename} onClick={togglePlayPause}>
+              {!isPlaying ? <PlayCircleIcon /> : <StopIcon />}
+            </Button>
+            <Slider
+              value={(currentTime / duration) * 100}
+              onChange={handleSliderChange}
+              sx={{
+                height: 8,
+                width: 100,
+                "& .MuiSlider-thumb": {
+                  bgcolor: "#0A122A",
+                  width: 12,
+                  height: 12,
+                },
+                "& .MuiSlider-track": { bgcolor: "#D3D3D3", border: "none" },
+                "& .MuiSlider-rail": { bgcolor: "lightgrey" },
+              }}
+            />
 
-          <Box sx={{ ml: 2, display: "flex", alignItems: "center" }}>
-            <AccessTimeIcon sx={{ color: "text.secondary", mr: 0.5 }} />
-            <Typography variant="body2" color="textSecondary">
-              {formatTime(currentTime)}
-            </Typography>
+            <Box sx={{ ml: 2, display: "flex", alignItems: "center" }}>
+              <AccessTimeIcon sx={{ color: "text.secondary", mr: 0.5 }} />
+              <Typography variant="body2" color="textSecondary">
+                {formatTime(currentTime)}
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "end",
-          }}
-        >
-          {volume === 0 ? <VolumeMuteIcon /> : <VolumeUpIcon />}
-          <Slider
-            value={volume * 100}
-            onChange={handleVolumeChange}
+          <Box
             sx={{
-              width: 75,
-              height: 8,
-              "& .MuiSlider-thumb": {
-                bgcolor: "#0A122A",
-                width: 12,
-                height: 12,
-              },
-              "& .MuiSlider-track": { bgcolor: "#F5F5DC", border: "none" },
-              "& .MuiSlider-rail": { bgcolor: "lightgrey" },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "end",
             }}
-          />
-        </Box>
-      </div>
-    </Box>
+          >
+            {volume === 0 ? <VolumeMuteIcon /> : <VolumeUpIcon />}
+            <Slider
+              value={volume * 100}
+              onChange={handleVolumeChange}
+              sx={{
+                width: 75,
+                height: 8,
+                "& .MuiSlider-thumb": {
+                  bgcolor: "#0A122A",
+                  width: 12,
+                  height: 12,
+                },
+                "& .MuiSlider-track": { bgcolor: "#F5F5DC", border: "none" },
+                "& .MuiSlider-rail": { bgcolor: "lightgrey" },
+              }}
+            />
+          </Box>
+        </div>
+      </Box>
+    </div>
   );
 };
 
