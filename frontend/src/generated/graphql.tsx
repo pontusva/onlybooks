@@ -33,18 +33,16 @@ export type AudioFile = {
   user_id: Scalars['String']['output'];
 };
 
-export type CombinedBook = {
-  __typename?: 'CombinedBook';
-  author_id?: Maybe<Scalars['ID']['output']>;
-  cover_image_url?: Maybe<Scalars['String']['output']>;
-  created_at: Scalars['String']['output'];
-  description?: Maybe<Scalars['String']['output']>;
-  file_name: Scalars['String']['output'];
-  file_url: Scalars['String']['output'];
-  hls_path?: Maybe<Scalars['String']['output']>;
+export type AuthPayload = {
+  __typename?: 'AuthPayload';
+  token: Scalars['String']['output'];
+  user: GraphqlUser;
+};
+
+export type GraphqlUser = {
+  __typename?: 'GraphqlUser';
+  email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  purchased_at?: Maybe<Scalars['String']['output']>;
-  title: Scalars['String']['output'];
 };
 
 export type ImageUploadInput = {
@@ -54,7 +52,6 @@ export type ImageUploadInput = {
 
 export type InsertBookResponse = {
   __typename?: 'InsertBookResponse';
-  file_url: Scalars['String']['output'];
   id: Scalars['ID']['output'];
 };
 
@@ -62,10 +59,11 @@ export type Mutation = {
   __typename?: 'Mutation';
   becomeAuthor?: Maybe<Response>;
   createUser?: Maybe<Response>;
-  insertBook?: Maybe<AudioFile>;
+  insertBook?: Maybe<InsertBookResponse>;
   insertHlsName?: Maybe<Response>;
   insertPurchaseCodes?: Maybe<Response>;
-  processAudio?: Maybe<AudioFile>;
+  login?: Maybe<AuthPayload>;
+  processAudio?: Maybe<ProcessAudioResponse>;
   redeemCode?: Maybe<Response>;
   requestAudio?: Maybe<RequestAudioResponse>;
 };
@@ -109,6 +107,12 @@ export type MutationInsertPurchaseCodesArgs = {
 };
 
 
+export type MutationLoginArgs = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
+
 export type MutationProcessAudioArgs = {
   authorId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
@@ -149,7 +153,6 @@ export type PurchaseCodes = {
 export type Query = {
   __typename?: 'Query';
   getAuthorBooks?: Maybe<Array<Maybe<UploadBook>>>;
-  getBookByAudioId?: Maybe<CombinedBook>;
   getPurchaseCodes?: Maybe<Array<Maybe<PurchaseCodes>>>;
   getRedeemedBooks?: Maybe<Array<Maybe<RedemeedBooks>>>;
   getUserAudioFiles?: Maybe<Array<Maybe<AudioFile>>>;
@@ -161,12 +164,6 @@ export type Query = {
 
 export type QueryGetAuthorBooksArgs = {
   author_id: Scalars['ID']['input'];
-};
-
-
-export type QueryGetBookByAudioIdArgs = {
-  firebase_uid: Scalars['String']['input'];
-  id: Scalars['String']['input'];
 };
 
 
@@ -293,7 +290,7 @@ export type ProcessAudioMutationVariables = Exact<{
 }>;
 
 
-export type ProcessAudioMutation = { __typename?: 'Mutation', processAudio?: { __typename?: 'AudioFile', hlsUrl?: string, book?: { __typename?: 'InsertBookResponse', id: string } } };
+export type ProcessAudioMutation = { __typename?: 'Mutation', processAudio?: { __typename?: 'ProcessAudioResponse', hlsUrl?: string, book?: { __typename?: 'InsertBookResponse', id: string } } };
 
 export type RequestAudioMutationVariables = Exact<{
   audioName: Scalars['String']['input'];

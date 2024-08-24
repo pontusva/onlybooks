@@ -1,15 +1,14 @@
 import { Chip, Typography } from "@mui/material";
-import { useUidStore } from "../../zustand/userStore";
 import { UserAccount } from "./UserAccounts";
 import { AuthorAccount } from "./AuthorAccount";
 import { Loader } from "../reuseable/Loader";
 import { useIsAuthor } from "../../data/authors/useIsAuthor";
+import { getAuth } from "firebase/auth";
 
 export const Account = () => {
-  const uid = useUidStore((state) => state.uid);
-
+  const auth = getAuth();
   const { isAuthor, loading } = useIsAuthor({
-    firebase_uid: uid || "",
+    firebase_uid: auth.currentUser?.uid || "",
   });
 
   return loading ? (
@@ -22,14 +21,15 @@ export const Account = () => {
         <Chip
           label={
             <Typography>
-              Account status: {isAuthor?.is_author ? "Author" : "User"}
+              Account status:{" "}
+              {isAuthor && isAuthor?.is_author ? "Author" : "User"}
             </Typography>
           }
           variant="outlined"
         />
       </div>
-      {isAuthor !== undefined &&
-        (isAuthor.is_author ? <AuthorAccount /> : <UserAccount />)}
+      {isAuthor !== null &&
+        (isAuthor?.is_author ? <AuthorAccount /> : <UserAccount />)}
     </>
   );
 };
