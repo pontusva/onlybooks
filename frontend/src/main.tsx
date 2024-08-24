@@ -28,7 +28,6 @@ import { onError } from "@apollo/client/link/error";
 
 const errorLink = onError(({ graphQLErrors }) => {
   if (graphQLErrors) {
-    console.log(graphQLErrors);
     graphQLErrors.forEach(({ message }) => {
       if (message.includes("Token has expired")) {
         localStorage.removeItem("authToken");

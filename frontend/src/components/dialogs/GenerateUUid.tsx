@@ -30,7 +30,7 @@ export const GenerateUuid = ({ children }: { children: React.ReactNode }) => {
   const handleClickOpen = () => {
     setOpen(true);
   };
-  console.log(booksData);
+
   const handleClose = () => {
     setOpen(false);
   };
