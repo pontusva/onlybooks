@@ -16,6 +16,7 @@ gql`
 
 export const useIsAuthor = ({ firebase_uid }: { firebase_uid: string }) => {
   const { data, loading, refetch } = useIsAuthorQuery({
+    skip: !firebase_uid,
     variables: {
       firebaseUid: firebase_uid,
     },
