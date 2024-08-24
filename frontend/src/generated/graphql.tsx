@@ -278,7 +278,7 @@ export type IsAuthorQueryVariables = Exact<{
 }>;
 
 
-export type IsAuthorQuery = { __typename?: 'Query', isAuthor?: { __typename?: 'User', username: string, id: string, is_author: boolean } };
+export type IsAuthorQuery = { __typename?: 'Query', isAuthor?: { __typename?: 'User', id: string, firebase_uid: string, username: string, email: string, is_author: boolean, created_at: string } };
 
 export type ProcessAudioMutationVariables = Exact<{
   authorId: Scalars['ID']['input'];
@@ -522,9 +522,12 @@ export type InsertPurchaseCodesMutationOptions = Apollo.BaseMutationOptions<Inse
 export const IsAuthorDocument = gql`
     query IsAuthor($firebaseUid: String!) {
   isAuthor(firebase_uid: $firebaseUid) {
-    username
     id
+    firebase_uid
+    username
+    email
     is_author
+    created_at
   }
 }
     `;

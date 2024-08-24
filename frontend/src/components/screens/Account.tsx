@@ -28,8 +28,7 @@ export const Account = () => {
           variant="outlined"
         />
       </div>
-      {isAuthor !== null &&
-        (isAuthor?.is_author ? <AuthorAccount /> : <UserAccount />)}
+      {isAuthor?.is_author ? <AuthorAccount /> : <UserAccount />}
     </>
   );
 };
