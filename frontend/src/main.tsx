@@ -26,7 +26,7 @@ import { setContext } from "@apollo/client/link/context";
 import { auth } from "./auth/initAuth.ts";
 import { onError } from "@apollo/client/link/error";
 
-const errorLink = onError(({ graphQLErrors, networkError }) => {
+const errorLink = onError(({ graphQLErrors }) => {
   if (graphQLErrors) {
     console.log(graphQLErrors);
     graphQLErrors.forEach(({ message }) => {
