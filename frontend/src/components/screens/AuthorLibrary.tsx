@@ -12,7 +12,14 @@ import { GenerateUuid } from "../dialogs/GenerateUUid";
 export const AuthorLibrary = () => {
   const navigate = useNavigate();
   return (
-    <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
+    <List
+      sx={{
+        width: "100%",
+        maxWidth: 360,
+        bgcolor: "background.paper",
+        marginTop: 10,
+      }}
+    >
       <ListItem>
         <ListItemAvatar>
           <Avatar>
