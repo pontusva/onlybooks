@@ -158,12 +158,22 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
                 height: 8,
                 width: 100,
                 "& .MuiSlider-thumb": {
-                  bgcolor: "#0A122A",
+                  bgcolor: "#0A122A", // Dark blue for thumb
                   width: 12,
                   height: 12,
+                  border: "2px solid #FFF", // White border for visibility
                 },
-                "& .MuiSlider-track": { bgcolor: "#D3D3D3", border: "none" },
-                "& .MuiSlider-rail": { bgcolor: "lightgrey" },
+                "& .MuiSlider-track": {
+                  bgcolor: "#3f51b5", // Soft blue for the track
+                  border: "none",
+                },
+                "& .MuiSlider-rail": {
+                  bgcolor: "#e0e0e0", // Light grey for the rail
+                },
+                "& .MuiSlider-thumb:hover, & .MuiSlider-thumb.Mui-focusVisible":
+                  {
+                    boxShadow: "0px 0px 0px 8px rgba(63, 81, 181, 0.16)", // Blue focus ring for accessibility
+                  },
               }}
             />
 
@@ -189,12 +199,22 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
                 width: 75,
                 height: 8,
                 "& .MuiSlider-thumb": {
-                  bgcolor: "#0A122A",
+                  bgcolor: "#333", // Dark grey for contrast
                   width: 12,
                   height: 12,
+                  border: "2px solid #FFF", // White border for better visibility
                 },
-                "& .MuiSlider-track": { bgcolor: "#F5F5DC", border: "none" },
-                "& .MuiSlider-rail": { bgcolor: "lightgrey" },
+                "& .MuiSlider-track": {
+                  bgcolor: "#3f51b5", // Soft blue for a nice contrast with white
+                  border: "none",
+                },
+                "& .MuiSlider-rail": {
+                  bgcolor: "#ddd", // Light grey for a subtle rail
+                },
+                "& .MuiSlider-thumb:hover, & .MuiSlider-thumb.Mui-focusVisible":
+                  {
+                    boxShadow: "0px 0px 0px 8px rgba(63, 81, 181, 0.16)", // Soft blue focus ring
+                  },
               }}
             />
           </Box>

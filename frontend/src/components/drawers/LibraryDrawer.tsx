@@ -17,7 +17,7 @@ export const LibraryDrawer = () => {
   };
 
   const DrawerList = (
-    <div className="bg-[url('/c5f4946c-e495-4003-aeff-20710a9a920a.png')] h-screen">
+    <div className="h-screen">
       <Box sx={{ width: 250 }} role="presentation">
         <PlayList />
         <Divider />
