@@ -139,7 +139,6 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
     <div className="w-screen">
       <Box
         sx={{
-          width: "100%",
           display: "flex",
           alignItems: "center",
           flexDirection: "column",

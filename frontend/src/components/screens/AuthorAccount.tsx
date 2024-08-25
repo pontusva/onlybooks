@@ -74,7 +74,7 @@ export const AuthorAccount = () => {
         sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
         <form
-          className="flex flex-col w-96 h-screen space-y-6 pt-24 p-5"
+          className="flex flex-col w-full h-screen space-y-6 pt-24 p-5"
           onSubmit={handleSubmit(onSubmit)}
         >
           <TextField

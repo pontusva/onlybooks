@@ -22,7 +22,7 @@ const settings = ["Profile", "Account", "Redeem", "Dashboard", "Logout"];
 
 export const AppBarTop = () => {
   const { openDrawer } = useDrawerStore();
-  const [_, setAnchorElNav] = useState<null | HTMLElement>(null);
+
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [skeletonLoading, setSkeletonLoading] = useState<boolean>(true);
@@ -35,10 +35,6 @@ export const AppBarTop = () => {
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
-
-  // const handleCloseNavMenu = () => {
-  //   setAnchorElNav(null);
-  // };
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
