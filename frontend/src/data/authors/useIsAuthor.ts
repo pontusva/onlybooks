@@ -22,7 +22,6 @@ export const useIsAuthor = ({ firebase_uid }: { firebase_uid: string }) => {
     },
   });
 
-  console.log(data);
   return {
     isAuthor: data?.isAuthor,
     loading,

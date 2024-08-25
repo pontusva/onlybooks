@@ -1,27 +1,46 @@
+import { useEffect, useState } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Chip, Typography } from "@mui/material";
 import { UserAccount } from "./UserAccounts";
 import { AuthorAccount } from "./AuthorAccount";
 import { Loader } from "../reuseable/Loader";
 import { useIsAuthor } from "../../data/authors/useIsAuthor";
-import { getAuth } from "firebase/auth";
 
 export const Account = () => {
+  const [firebaseUid, setFirebaseUid] = useState<string | null>(null);
   const auth = getAuth();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setFirebaseUid(user.uid);
+      } else {
+        setFirebaseUid(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [auth]);
+
   const { isAuthor, loading } = useIsAuthor({
-    firebase_uid: auth.currentUser?.uid || "",
+    firebase_uid: firebaseUid || "",
   });
 
-  return loading ? (
-    <div className="w-screen h-screen flex justify-center items-center">
-      <Loader />
-    </div>
-  ) : (
+  if (loading || !firebaseUid) {
+    return (
+      <div className="w-screen h-screen flex justify-center items-center">
+        <Loader />
+      </div>
+    );
+  }
+
+  return (
     <>
       <div className="mt-24">
         <Chip
           label={
             <Typography>
-              Account: {isAuthor && isAuthor?.is_author ? "Author" : "User"}
+              Account: {isAuthor && isAuthor.is_author ? "Author" : "User"}
             </Typography>
           }
           variant="outlined"
@@ -29,10 +48,10 @@ export const Account = () => {
             padding: "8px",
             margin: "8px",
             backgroundColor:
-              isAuthor && isAuthor?.is_author ? "lightgreen" : "lightblue",
+              isAuthor && isAuthor.is_author ? "lightgreen" : "lightblue",
             color: "black",
             borderRadius: "8px",
-            borderColor: isAuthor && isAuthor?.is_author ? "green" : "blue",
+            borderColor: isAuthor && isAuthor.is_author ? "green" : "blue",
           }}
         />
       </div>
