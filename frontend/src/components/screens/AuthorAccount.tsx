@@ -4,7 +4,6 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUploadFile } from "../../misc/useUploadFile";
 import { useAuthorIdStore } from "../../zustand/authorIdStore";
-import { CreateNewLibrary } from "../dialogs/CreateNewLibrary";
 import { useProcessAudio } from "../../data/authors/useProcessAudio";
 import ImageIcon from "@mui/icons-material/Image";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -71,7 +70,6 @@ export const AuthorAccount = () => {
 
   return (
     <>
-      <CreateNewLibrary children={<Button>Create new library?</Button>} />
       <Box
         sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >

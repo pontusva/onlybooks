@@ -25,6 +25,7 @@ import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 import { setContext } from "@apollo/client/link/context";
 import { auth } from "./auth/initAuth.ts";
 import { onError } from "@apollo/client/link/error";
+import { Profile } from "./components/screens/Profile.tsx";
 
 const errorLink = onError(({ graphQLErrors }) => {
   if (graphQLErrors) {
@@ -102,6 +103,10 @@ const router = createBrowserRouter([
       {
         path: "generated",
         element: <GeneratedCodes />,
+      },
+      {
+        path: "profile",
+        element: <Profile />,
       },
     ],
   },

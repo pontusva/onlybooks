@@ -143,7 +143,7 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
           display: "flex",
           alignItems: "center",
           flexDirection: "column",
-          backgroundColor: "#F5F5DC",
+          backgroundColor: "inherit",
         }}
       >
         <audio ref={audioRef} style={{ display: "none" }} />

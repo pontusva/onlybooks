@@ -55,7 +55,25 @@ export const GeneratedCodes = () => {
   return (
     !loading &&
     groupedCodes && (
-      <List style={{ padding: "10px", marginTop: 100 }}>
+      <List
+        sx={{
+          padding: "10px",
+          paddingTop: "100px",
+          display: "flex",
+          flexDirection: "column",
+          marginTop: "100px",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          width: {
+            xs: "100%",
+            sm: "80%",
+            md: "60%",
+            lg: "40%",
+            xl: "30%",
+          },
+          margin: "0 auto",
+        }}
+      >
         {Object.keys(groupedCodes).map((title) => (
           <Fragment key={title}>
             <Typography variant="h6" align="center" gutterBottom>
@@ -63,7 +81,14 @@ export const GeneratedCodes = () => {
             </Typography>
             {groupedCodes[title].map((code) => (
               <ListItem key={`${title}-${code.id}`}>
-                <ListItemText secondary={code.code} />
+                <ListItemText
+                  secondary={code.code}
+                  secondaryTypographyProps={{
+                    sx: {
+                      fontSize: "1.2rem",
+                    },
+                  }}
+                />
                 <Button
                   variant="contained"
                   size="small"
@@ -75,7 +100,7 @@ export const GeneratedCodes = () => {
                 </Button>
               </ListItem>
             ))}
-            <Divider />
+            <Divider sx={{ bgcolor: "grey.500", width: "100%" }} />
           </Fragment>
         ))}
       </List>

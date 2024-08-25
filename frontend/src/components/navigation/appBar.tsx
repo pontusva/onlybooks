@@ -7,7 +7,6 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import { useEffect, useState } from "react";
@@ -19,7 +18,6 @@ import { Fade, Skeleton } from "@mui/material";
 import { useGetUserById } from "../../data/users/useGetUserById";
 import { useDrawerStore } from "../../zustand/useDrawerStore";
 
-const pages = ["Library", "Pricing", "Blog"];
 const settings = ["Profile", "Account", "Redeem", "Dashboard", "Logout"];
 
 export const AppBarTop = () => {
@@ -38,9 +36,9 @@ export const AppBarTop = () => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  // const handleCloseNavMenu = () => {
+  //   setAnchorElNav(null);
+  // };
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
@@ -49,7 +47,7 @@ export const AppBarTop = () => {
   const handleSettingClick = (setting: string | null) => {
     switch (setting) {
       case "Profile":
-        // Handle profile click
+        navigate("/profile");
         break;
       case "Account":
         navigate("/account");
@@ -83,10 +81,10 @@ export const AppBarTop = () => {
   }, [uid, user?.username]);
 
   return (
-    <AppBar position="fixed">
+    <AppBar color="transparent" position="fixed">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "flex" } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -112,7 +110,6 @@ export const AppBarTop = () => {
                   sx={{
                     display: {
                       xs: "flex",
-                      md: "none",
                       flexDirection: "row",
                       justifyContent: "center",
                     },
@@ -124,22 +121,11 @@ export const AppBarTop = () => {
                     textDecoration: "none",
                   }}
                 >
-                  BookTree
+                  StoryTree
                 </Typography>
               </Fade>
             )}
           </div>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
