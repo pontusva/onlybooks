@@ -27,6 +27,7 @@ export const AuthorAccount = () => {
     control,
     formState: { errors },
   } = useForm<Schema>({ resolver: zodResolver(schema) });
+
   const onSubmit = async (data: Schema) => {
     if (!data.file || data.file.length === 0) {
       console.error("No file provided");
