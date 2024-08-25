@@ -35,14 +35,8 @@ export type AudioFile = {
 
 export type AuthPayload = {
   __typename?: 'AuthPayload';
-  token: Scalars['String']['output'];
-  user: GraphqlUser;
-};
-
-export type GraphqlUser = {
-  __typename?: 'GraphqlUser';
-  email: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
+  token?: Maybe<Scalars['String']['output']>;
+  user?: Maybe<User>;
 };
 
 export type ImageUploadInput = {
@@ -238,6 +232,7 @@ export type User = {
   firebase_uid: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   is_author: Scalars['Boolean']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   username: Scalars['String']['output'];
 };
 
