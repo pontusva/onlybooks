@@ -1,17 +1,6 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Avatar, Button, TextField, Typography } from "@mui/material";
-import { getAuth, updateEmail } from "firebase/auth";
+import { Avatar, Button, Typography } from "@mui/material";
 import { VerifyEmail } from "../VerifyEmail";
-
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { UpdateEmail } from "../dialogs/UpdateEmail";
-
-const schema = z.object({
-  email: z.string().email(),
-});
-
-type Schema = z.infer<typeof schema>;
 
 export const Profile = () => {
   return (
