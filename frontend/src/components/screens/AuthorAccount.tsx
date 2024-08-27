@@ -4,7 +4,6 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUploadFile } from "../../misc/useUploadFile";
 import { useAuthorIdStore } from "../../zustand/authorIdStore";
-import { CreateNewLibrary } from "../dialogs/CreateNewLibrary";
 import { useProcessAudio } from "../../data/authors/useProcessAudio";
 import ImageIcon from "@mui/icons-material/Image";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -28,6 +27,7 @@ export const AuthorAccount = () => {
     control,
     formState: { errors },
   } = useForm<Schema>({ resolver: zodResolver(schema) });
+
   const onSubmit = async (data: Schema) => {
     if (!data.file || data.file.length === 0) {
       console.error("No file provided");
@@ -71,12 +71,11 @@ export const AuthorAccount = () => {
 
   return (
     <>
-      <CreateNewLibrary children={<Button>Create new library?</Button>} />
       <Box
         sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
         <form
-          className="flex flex-col w-96 h-screen space-y-6 pt-24 p-5"
+          className="flex flex-col w-full h-screen space-y-6 pt-24 p-5"
           onSubmit={handleSubmit(onSubmit)}
         >
           <TextField

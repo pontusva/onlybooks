@@ -10,12 +10,8 @@ gql`
 
 export const useBecomeAuthor = () => {
   const [becomeAuthor, { loading }] = useBecomeAuthorMutation({
-    onCompleted: (data) => {
-      console.log(data);
-    },
-    onError: (error) => {
-      console.log(error);
-    },
+    onCompleted: () => {},
+    onError: () => {},
   });
 
   return {

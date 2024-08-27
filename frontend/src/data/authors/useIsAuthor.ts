@@ -4,9 +4,12 @@ import { useIsAuthorQuery } from "../../generated/graphql";
 gql`
   query IsAuthor($firebaseUid: String!) {
     isAuthor(firebase_uid: $firebaseUid) {
-      username
       id
+      firebase_uid
+      username
+      email
       is_author
+      created_at
     }
   }
 `;
@@ -18,6 +21,7 @@ export const useIsAuthor = ({ firebase_uid }: { firebase_uid: string }) => {
       firebaseUid: firebase_uid,
     },
   });
+
   return {
     isAuthor: data?.isAuthor,
     loading,

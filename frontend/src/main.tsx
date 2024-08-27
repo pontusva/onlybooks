@@ -24,18 +24,33 @@ import { Library } from "./components/screens/Library.tsx";
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 import { setContext } from "@apollo/client/link/context";
 import { auth } from "./auth/initAuth.ts";
+import { onError } from "@apollo/client/link/error";
+import { Profile } from "./components/screens/Profile.tsx";
+
+const errorLink = onError(({ graphQLErrors }) => {
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({ message }) => {
+      if (message.includes("Token has expired")) {
+        localStorage.removeItem("authToken");
+        window.location.href = "/login"; // Redirect to login page
+      }
+    });
+  }
+});
 
 const authLink = setContext(async (_, { headers }) => {
   const user = auth.currentUser;
-
   if (!user) {
+    // If no user is logged in, just return the existing headers
     return {
       headers,
     };
   }
-
   try {
-    const token = await user.getIdToken();
+    // Fetch the Firebase ID token (JWT) asynchronously
+    const token = await user.getIdToken(true); // `true` forces refresh
+
+    // Include the token in the Authorization header
     return {
       headers: {
         ...headers,
@@ -44,6 +59,7 @@ const authLink = setContext(async (_, { headers }) => {
     };
   } catch (error) {
     console.error("Error fetching ID token:", error);
+    // If there's an error fetching the token, return headers without the token
     return {
       headers,
     };
@@ -51,12 +67,12 @@ const authLink = setContext(async (_, { headers }) => {
 });
 
 const uploadLink = createUploadLink({
-  uri: "https://pontus-abrahamsson.com/",
+  uri: "https://pontus-abrahamsson.com",
 });
 
-const combinedLink = from([authLink, uploadLink]);
+const combinedLink = from([authLink, uploadLink, errorLink]);
 const client = new ApolloClient({
-  uri: "https://pontus-abrahamsson.com/",
+  uri: "https://pontus-abrahamsson.com",
   cache: new InMemoryCache(),
   link: combinedLink,
 });
@@ -87,6 +103,10 @@ const router = createBrowserRouter([
       {
         path: "generated",
         element: <GeneratedCodes />,
+      },
+      {
+        path: "profile",
+        element: <Profile />,
       },
     ],
   },

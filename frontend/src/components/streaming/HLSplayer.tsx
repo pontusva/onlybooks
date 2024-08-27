@@ -136,69 +136,91 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
   };
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        display: "flex",
-        alignItems: "center",
-        flexDirection: "column",
-      }}
-    >
-      <audio ref={audioRef} style={{ display: "none" }} />
-      <div className="flex flex-col">
-        <Box sx={{ width: "100%", display: "flex", alignItems: "center" }}>
-          <Button disabled={!folder || !filename} onClick={togglePlayPause}>
-            {!isPlaying ? <PlayCircleIcon /> : <StopIcon />}
-          </Button>
-          <Slider
-            value={(currentTime / duration) * 100}
-            onChange={handleSliderChange}
-            sx={{
-              height: 8,
-              width: 100,
-              "& .MuiSlider-thumb": {
-                bgcolor: "#0A122A",
-                width: 12,
-                height: 12,
-              },
-              "& .MuiSlider-track": { bgcolor: "#D3D3D3", border: "none" },
-              "& .MuiSlider-rail": { bgcolor: "lightgrey" },
-            }}
-          />
+    <div className="w-screen">
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          backgroundColor: "inherit",
+        }}
+      >
+        <audio ref={audioRef} style={{ display: "none" }} />
+        <div className="flex flex-col">
+          <Box sx={{ width: "100%", display: "flex", alignItems: "center" }}>
+            <Button disabled={!folder || !filename} onClick={togglePlayPause}>
+              {!isPlaying ? <PlayCircleIcon /> : <StopIcon />}
+            </Button>
+            <Slider
+              value={(currentTime / duration) * 100}
+              onChange={handleSliderChange}
+              sx={{
+                height: 8,
+                width: 100,
+                "& .MuiSlider-thumb": {
+                  bgcolor: "#0A122A", // Dark blue for thumb
+                  width: 12,
+                  height: 12,
+                  border: "2px solid #FFF", // White border for visibility
+                },
+                "& .MuiSlider-track": {
+                  bgcolor: "#3f51b5", // Soft blue for the track
+                  border: "none",
+                },
+                "& .MuiSlider-rail": {
+                  bgcolor: "#e0e0e0", // Light grey for the rail
+                },
+                "& .MuiSlider-thumb:hover, & .MuiSlider-thumb.Mui-focusVisible":
+                  {
+                    boxShadow: "0px 0px 0px 8px rgba(63, 81, 181, 0.16)", // Blue focus ring for accessibility
+                  },
+              }}
+            />
 
-          <Box sx={{ ml: 2, display: "flex", alignItems: "center" }}>
-            <AccessTimeIcon sx={{ color: "text.secondary", mr: 0.5 }} />
-            <Typography variant="body2" color="textSecondary">
-              {formatTime(currentTime)}
-            </Typography>
+            <Box sx={{ ml: 2, display: "flex", alignItems: "center" }}>
+              <AccessTimeIcon sx={{ color: "text.secondary", mr: 0.5 }} />
+              <Typography variant="body2" color="textSecondary">
+                {formatTime(currentTime)}
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "end",
-          }}
-        >
-          {volume === 0 ? <VolumeMuteIcon /> : <VolumeUpIcon />}
-          <Slider
-            value={volume * 100}
-            onChange={handleVolumeChange}
+          <Box
             sx={{
-              width: 75,
-              height: 8,
-              "& .MuiSlider-thumb": {
-                bgcolor: "#0A122A",
-                width: 12,
-                height: 12,
-              },
-              "& .MuiSlider-track": { bgcolor: "#F5F5DC", border: "none" },
-              "& .MuiSlider-rail": { bgcolor: "lightgrey" },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "end",
             }}
-          />
-        </Box>
-      </div>
-    </Box>
+          >
+            {volume === 0 ? <VolumeMuteIcon /> : <VolumeUpIcon />}
+            <Slider
+              value={volume * 100}
+              onChange={handleVolumeChange}
+              sx={{
+                width: 75,
+                height: 8,
+                "& .MuiSlider-thumb": {
+                  bgcolor: "#333", // Dark grey for contrast
+                  width: 12,
+                  height: 12,
+                  border: "2px solid #FFF", // White border for better visibility
+                },
+                "& .MuiSlider-track": {
+                  bgcolor: "#3f51b5", // Soft blue for a nice contrast with white
+                  border: "none",
+                },
+                "& .MuiSlider-rail": {
+                  bgcolor: "#ddd", // Light grey for a subtle rail
+                },
+                "& .MuiSlider-thumb:hover, & .MuiSlider-thumb.Mui-focusVisible":
+                  {
+                    boxShadow: "0px 0px 0px 8px rgba(63, 81, 181, 0.16)", // Soft blue focus ring
+                  },
+              }}
+            />
+          </Box>
+        </div>
+      </Box>
+    </div>
   );
 };
 
