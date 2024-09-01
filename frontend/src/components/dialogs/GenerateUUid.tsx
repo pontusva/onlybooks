@@ -81,7 +81,7 @@ export const GenerateUuid = ({
   }
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       if (!authorId || !booksData) return
       setBooks(
         booksData.map((book) => ({
