@@ -26,7 +26,8 @@ export type AudioFile = {
   audio_file_url: Scalars['String']['output'];
   audio_hls_path?: Maybe<Scalars['String']['output']>;
   audio_title: Scalars['String']['output'];
-  cover_image_url?: Maybe<Scalars['String']['output']>;
+  book?: Maybe<InsertBookResponse>;
+  hlsUrl?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   purchase_code_id: Scalars['String']['output'];
   purchased_at: Scalars['String']['output'];
@@ -35,8 +36,28 @@ export type AudioFile = {
 
 export type AuthPayload = {
   __typename?: 'AuthPayload';
-  token?: Maybe<Scalars['String']['output']>;
-  user?: Maybe<User>;
+  token: Scalars['String']['output'];
+  user: GraphqlUser;
+};
+
+export type CombinedBook = {
+  __typename?: 'CombinedBook';
+  author_id?: Maybe<Scalars['ID']['output']>;
+  cover_image_url?: Maybe<Scalars['String']['output']>;
+  created_at: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  file_name: Scalars['String']['output'];
+  file_url: Scalars['String']['output'];
+  hls_path?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  purchased_at?: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+};
+
+export type GraphqlUser = {
+  __typename?: 'GraphqlUser';
+  email: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
 };
 
 export type ImageUploadInput = {
@@ -46,6 +67,7 @@ export type ImageUploadInput = {
 
 export type InsertBookResponse = {
   __typename?: 'InsertBookResponse';
+  file_url: Scalars['String']['output'];
   id: Scalars['ID']['output'];
 };
 
@@ -53,13 +75,14 @@ export type Mutation = {
   __typename?: 'Mutation';
   becomeAuthor?: Maybe<Response>;
   createUser?: Maybe<Response>;
-  insertBook?: Maybe<InsertBookResponse>;
+  insertBook?: Maybe<AudioFile>;
   insertHlsName?: Maybe<Response>;
   insertPurchaseCodes?: Maybe<Response>;
-  login?: Maybe<AuthPayload>;
-  processAudio?: Maybe<ProcessAudioResponse>;
+  login: AuthPayload;
+  processAudio?: Maybe<AudioFile>;
   redeemCode?: Maybe<Response>;
   requestAudio?: Maybe<RequestAudioResponse>;
+  setCurrentAudioFile?: Maybe<Response>;
 };
 
 
@@ -127,6 +150,12 @@ export type MutationRequestAudioArgs = {
   audioName: Scalars['String']['input'];
 };
 
+
+export type MutationSetCurrentAudioFileArgs = {
+  audio_file_id: Scalars['ID']['input'];
+  user_id: Scalars['ID']['input'];
+};
+
 export type ProcessAudioResponse = {
   __typename?: 'ProcessAudioResponse';
   book?: Maybe<InsertBookResponse>;
@@ -147,6 +176,8 @@ export type PurchaseCodes = {
 export type Query = {
   __typename?: 'Query';
   getAuthorBooks?: Maybe<Array<Maybe<UploadBook>>>;
+  getBookByAudioId?: Maybe<CombinedBook>;
+  getCurrentAudioFile?: Maybe<AudioFile>;
   getPurchaseCodes?: Maybe<Array<Maybe<PurchaseCodes>>>;
   getRedeemedBooks?: Maybe<Array<Maybe<RedemeedBooks>>>;
   getUserAudioFiles?: Maybe<Array<Maybe<AudioFile>>>;
@@ -157,7 +188,18 @@ export type Query = {
 
 
 export type QueryGetAuthorBooksArgs = {
-  author_id: Scalars['ID']['input'];
+  firebase_uid: Scalars['ID']['input'];
+};
+
+
+export type QueryGetBookByAudioIdArgs = {
+  firebase_uid: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryGetCurrentAudioFileArgs = {
+  user_id: Scalars['ID']['input'];
 };
 
 
@@ -228,11 +270,11 @@ export type UploadBook = {
 export type User = {
   __typename?: 'User';
   created_at: Scalars['String']['output'];
+  current_audio_file?: Maybe<AudioFile>;
   email: Scalars['String']['output'];
   firebase_uid: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   is_author: Scalars['Boolean']['output'];
-  name?: Maybe<Scalars['String']['output']>;
   username: Scalars['String']['output'];
 };
 
@@ -244,11 +286,11 @@ export type BecomeAuthorMutationVariables = Exact<{
 export type BecomeAuthorMutation = { __typename?: 'Mutation', becomeAuthor?: { __typename?: 'Response', success: boolean } };
 
 export type GetAuthorBooksQueryVariables = Exact<{
-  authorId: Scalars['ID']['input'];
+  firebaseUid: Scalars['ID']['input'];
 }>;
 
 
-export type GetAuthorBooksQuery = { __typename?: 'Query', getAuthorBooks?: Array<{ __typename?: 'UploadBook', title: string, file_name: string, id: string, author_id: string, created_at: string, description?: string, file_url: string }> };
+export type GetAuthorBooksQuery = { __typename?: 'Query', getAuthorBooks?: Array<{ __typename?: 'UploadBook', id: string, author_id: string, title: string, description?: string, file_url: string, file_name: string, created_at: string }> };
 
 export type GetPurchaseCodesQueryVariables = Exact<{
   authorId: Scalars['String']['input'];
@@ -285,7 +327,7 @@ export type ProcessAudioMutationVariables = Exact<{
 }>;
 
 
-export type ProcessAudioMutation = { __typename?: 'Mutation', processAudio?: { __typename?: 'ProcessAudioResponse', hlsUrl?: string, book?: { __typename?: 'InsertBookResponse', id: string } } };
+export type ProcessAudioMutation = { __typename?: 'Mutation', processAudio?: { __typename?: 'AudioFile', hlsUrl?: string, book?: { __typename?: 'InsertBookResponse', id: string } } };
 
 export type RequestAudioMutationVariables = Exact<{
   audioName: Scalars['String']['input'];
@@ -381,15 +423,15 @@ export type BecomeAuthorMutationHookResult = ReturnType<typeof useBecomeAuthorMu
 export type BecomeAuthorMutationResult = Apollo.MutationResult<BecomeAuthorMutation>;
 export type BecomeAuthorMutationOptions = Apollo.BaseMutationOptions<BecomeAuthorMutation, BecomeAuthorMutationVariables>;
 export const GetAuthorBooksDocument = gql`
-    query GetAuthorBooks($authorId: ID!) {
-  getAuthorBooks(author_id: $authorId) {
-    title
-    file_name
+    query GetAuthorBooks($firebaseUid: ID!) {
+  getAuthorBooks(firebase_uid: $firebaseUid) {
     id
     author_id
-    created_at
+    title
     description
     file_url
+    file_name
+    created_at
   }
 }
     `;
@@ -406,7 +448,7 @@ export const GetAuthorBooksDocument = gql`
  * @example
  * const { data, loading, error } = useGetAuthorBooksQuery({
  *   variables: {
- *      authorId: // value for 'authorId'
+ *      firebaseUid: // value for 'firebaseUid'
  *   },
  * });
  */

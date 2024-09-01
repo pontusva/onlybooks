@@ -1,34 +1,41 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client'
 import {
   useGetAuthorBooksQuery,
-  GetAuthorBooksQuery,
-} from "../../generated/graphql";
+  GetAuthorBooksQuery
+} from '../../generated/graphql'
 
 gql`
-  query GetAuthorBooks($authorId: ID!) {
-    getAuthorBooks(author_id: $authorId) {
-      title
-      file_name
+  query GetAuthorBooks($firebaseUid: ID!) {
+    getAuthorBooks(firebase_uid: $firebaseUid) {
       id
       author_id
-      created_at
+      title
       description
       file_url
+      file_name
+      created_at
     }
   }
-`;
+`
 
-export const useGetAuthorBooks = ({ authorId }: { authorId: string }) => {
-  const { data, loading, refetch } = useGetAuthorBooksQuery({
-    skip: !authorId,
-    variables: { authorId },
-  });
+export const useGetAuthorBooks = ({
+  firebaseUid
+}: {
+  firebaseUid: string
+}) => {
+  const { data, loading, refetch } = useGetAuthorBooksQuery(
+    {
+      skip: !firebaseUid,
+      variables: { firebaseUid }
+    }
+  )
 
   return {
     books: data?.getAuthorBooks,
     loading,
-    refetch,
-  };
-};
+    refetch
+  }
+}
 
-export type AuthorBooks = GetAuthorBooksQuery["getAuthorBooks"];
+export type AuthorBooks =
+  GetAuthorBooksQuery['getAuthorBooks']

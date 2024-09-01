@@ -1,6 +1,5 @@
-
-schema: "https://pontus-abrahamsson.com"
-documents: "src/data/**/*.ts"
+schema: 'http://localhost:4000'
+documents: 'src/data/**/*.ts'
 config:
   noNamespaces: true
   strict: true
@@ -8,10 +7,10 @@ config:
 generates:
   src/generated/graphql.tsx:
     plugins:
-      - "typescript"
-      - "typescript-operations"
-      - "typescript-react-apollo"
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
   src/generated/fragment-matcher.ts:
     plugins:
-      - "fragment-matcher"
+      - 'fragment-matcher'
 overwrite: true
