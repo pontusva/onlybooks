@@ -10,6 +10,7 @@ import {
 import { useAuthorIdStore } from '../../zustand/authorIdStore'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { useGetPurchaseCodes } from '../../data/authors/useGetPurchaseCodes'
+import { getAuth } from 'firebase/auth'
 
 interface Code {
   id?: string
@@ -24,12 +25,13 @@ interface GroupedCodes {
 
 export const GeneratedCodes = () => {
   const [codes, setCodes] = useState<Code[]>([])
+  const auth = getAuth()
   const authorId = useAuthorIdStore(
     (state) => state.authorId
   )
 
   const { purchaseCodes, loading } = useGetPurchaseCodes({
-    authorId: authorId || ''
+    firebaseUid: auth.currentUser?.uid || ''
   })
 
   const groupedCodes: GroupedCodes | null =

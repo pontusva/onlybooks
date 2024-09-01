@@ -204,7 +204,7 @@ export type QueryGetCurrentAudioFileArgs = {
 
 
 export type QueryGetPurchaseCodesArgs = {
-  author_id: Scalars['String']['input'];
+  firebase_uid: Scalars['String']['input'];
 };
 
 
@@ -293,7 +293,7 @@ export type GetAuthorBooksQueryVariables = Exact<{
 export type GetAuthorBooksQuery = { __typename?: 'Query', getAuthorBooks?: Array<{ __typename?: 'UploadBook', id: string, author_id: string, title: string, description?: string, file_url: string, file_name: string, created_at: string }> };
 
 export type GetPurchaseCodesQueryVariables = Exact<{
-  authorId: Scalars['String']['input'];
+  firebaseUid: Scalars['String']['input'];
 }>;
 
 
@@ -469,8 +469,8 @@ export type GetAuthorBooksLazyQueryHookResult = ReturnType<typeof useGetAuthorBo
 export type GetAuthorBooksSuspenseQueryHookResult = ReturnType<typeof useGetAuthorBooksSuspenseQuery>;
 export type GetAuthorBooksQueryResult = Apollo.QueryResult<GetAuthorBooksQuery, GetAuthorBooksQueryVariables>;
 export const GetPurchaseCodesDocument = gql`
-    query GetPurchaseCodes($authorId: String!) {
-  getPurchaseCodes(author_id: $authorId) {
+    query GetPurchaseCodes($firebaseUid: String!) {
+  getPurchaseCodes(firebase_uid: $firebaseUid) {
     is_redeemed
     code
     author_id
@@ -493,7 +493,7 @@ export const GetPurchaseCodesDocument = gql`
  * @example
  * const { data, loading, error } = useGetPurchaseCodesQuery({
  *   variables: {
- *      authorId: // value for 'authorId'
+ *      firebaseUid: // value for 'firebaseUid'
  *   },
  * });
  */

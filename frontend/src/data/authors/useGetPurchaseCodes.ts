@@ -2,22 +2,22 @@ import { gql } from "@apollo/client";
 import { useGetPurchaseCodesQuery } from "../../generated/graphql";
 
 gql`
-  query GetPurchaseCodes($authorId: String!) {
-    getPurchaseCodes(author_id: $authorId) {
+query GetPurchaseCodes($firebaseUid: String!) {
+  getPurchaseCodes(firebase_uid: $firebaseUid) {
       is_redeemed
       code
       author_id
       expires_at
       audio_file_id
       title
-    }
   }
+}
 `;
 
-export const useGetPurchaseCodes = ({ authorId }: { authorId: string }) => {
+export const useGetPurchaseCodes = ({ firebaseUid }: { firebaseUid: string }) => {
   const { data, loading, refetch } = useGetPurchaseCodesQuery({
-    skip: !authorId,
-    variables: { authorId },
+    skip: !firebaseUid,
+    variables: { firebaseUid },
   });
 
   return {

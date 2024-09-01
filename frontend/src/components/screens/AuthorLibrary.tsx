@@ -10,16 +10,25 @@ import { useNavigate } from 'react-router-dom'
 import { GenerateUuid } from '../dialogs/GenerateUUid'
 import { getAuth } from 'firebase/auth'
 import { useGetAuthorBooks } from '../../data/authors/useGetAuthorBooks'
+import { useGetPurchaseCodes } from '../../data/authors/useGetPurchaseCodes'
 
 export const AuthorLibrary = () => {
   const navigate = useNavigate()
   const auth = getAuth()
+  const uid = auth.currentUser?.uid
+
   const { books } = useGetAuthorBooks({
-    firebaseUid: auth.currentUser?.uid || ''
+    firebaseUid: uid || ''
   })
 
+  const { purchaseCodes } = useGetPurchaseCodes({
+    firebaseUid: uid || ''
+  })
+
+
+
   return (
-    <div className=" h-screen items-center justify-center flex">
+    <div className="h-screen items-center justify-center flex">
       <List
         sx={{
           marginTop: 10,
@@ -44,7 +53,7 @@ export const AuthorLibrary = () => {
                 <WorkIcon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary="Sold" secondary="24" />
+            <ListItemText primary="Sold" secondary={purchaseCodes?.filter((code) => code.is_redeemed).length} />
           </ListItem>
         </div>
         <div>
@@ -72,7 +81,7 @@ export const AuthorLibrary = () => {
             <ListItemText
               onClick={() => navigate('/generated')}
               primary="Generated codes"
-              secondary="5"
+              secondary={purchaseCodes?.length}
             />
           </ListItem>
         </div>
