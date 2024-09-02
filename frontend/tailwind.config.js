@@ -1,16 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      colors: {
-        'background-default': '#121212 ', // Tailwind color for background
+      fontFamily: {
+        suse: ['suse'],
+        workSans: ['work-sans']
       },
-    },
+      colors: {
+        'background-default': '#121212 ' // Tailwind color for background
+      }
+    }
   },
-  plugins: [],
+  plugins: []
 }
-

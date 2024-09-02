@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: 'suse';
+  src: url('../public/fonts/SUSE-Medium.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'work-sans';
+  src: url('../public/fonts/WorkSans-Medium.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
