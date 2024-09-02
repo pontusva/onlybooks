@@ -93,10 +93,9 @@ export const AppBarTop = () => {
   return (
     <AppBar
       sx={{
-        borderBottom: '0.5px solid #19141433'
+        bgcolor: '#FEFCFF'
       }}
       elevation={0}
-      color="primary"
       position="fixed">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
@@ -107,8 +106,8 @@ export const AppBarTop = () => {
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
-              onClick={() => openDrawer('libraryDrawer')}
-              color="inherit">
+              color="primary"
+              onClick={() => openDrawer('libraryDrawer')}>
               <MenuIcon />
             </IconButton>
           </Box>
@@ -124,7 +123,7 @@ export const AppBarTop = () => {
               <Fade in={!skeletonLoading}>
                 <p
                   onClick={() => navigate('/')}
-                  className="font-workSans tracking-widest text-2xl">
+                  className="font-workSans text-[#1C0E06] tracking-widest text-2xl">
                   StoryTree
                 </p>
               </Fade>
@@ -145,7 +144,11 @@ export const AppBarTop = () => {
                   />
                 ) : (
                   <Fade in={!skeletonLoading}>
-                    <Avatar>
+                    <Avatar
+                      sx={{
+                        bgcolor: (theme) =>
+                          `${theme.palette.primary.main}`
+                      }}>
                       {username &&
                         username[0].toUpperCase()}
                     </Avatar>
@@ -154,7 +157,11 @@ export const AppBarTop = () => {
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{
+                mt: '45px',
+                bgColor: (theme) =>
+                  `${theme.palette.primary.main}`
+              }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -166,6 +173,7 @@ export const AppBarTop = () => {
                 vertical: 'top',
                 horizontal: 'right'
               }}
+              color="secondary"
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}>
               {settings.map((setting) => (

@@ -8,7 +8,7 @@ export default {
         workSans: ['work-sans']
       },
       colors: {
-        'background-default': '#121212 ' // Tailwind color for background
+        'background-default': '#FEFCFF'
       }
     }
   },

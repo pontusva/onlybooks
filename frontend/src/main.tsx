@@ -32,6 +32,8 @@ import { setContext } from '@apollo/client/link/context'
 import { auth } from './auth/initAuth.ts'
 import { onError } from '@apollo/client/link/error'
 import { Profile } from './components/screens/Profile.tsx'
+import { ThemeProvider } from '@mui/material/styles'
+import theme from './theme.ts'
 
 const errorLink = onError(({ graphQLErrors }) => {
   if (graphQLErrors) {
@@ -132,7 +134,9 @@ ReactDOM.createRoot(
   <React.StrictMode>
     <ApolloProvider client={client}>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <ThemeProvider theme={theme}>
+          <RouterProvider router={router} />
+        </ThemeProvider>
       </QueryClientProvider>
     </ApolloProvider>
   </React.StrictMode>
