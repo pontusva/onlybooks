@@ -1,15 +1,20 @@
-import { Button, Typography, Box } from "@mui/material";
-import PlayCircleIcon from "@mui/icons-material/PlayCircle";
-import StopIcon from "@mui/icons-material/Stop";
-import { useGetRedeemedBooks } from "../../data/users/useGetRedeemedBooks";
-import { useAudioStore } from "../../zustand/useAudioStore";
-import { RedeemCodeDialog } from "../dialogs/RedeemCode";
-import { auth } from "../../auth/initAuth";
-import { Loader } from "../reuseable/Loader";
+import { Button, Typography } from '@mui/material'
+import PlayCircleIcon from '@mui/icons-material/PlayCircle'
+import StopIcon from '@mui/icons-material/Stop'
+import { useGetRedeemedBooks } from '../../data/users/useGetRedeemedBooks'
+import { useAudioStore } from '../../zustand/useAudioStore'
+import { RedeemCodeDialog } from '../dialogs/RedeemCode'
+import { auth } from '../../auth/initAuth'
+import { Loader } from '../reuseable/Loader'
 
 export const PlayList = () => {
-  const { setFolderAndFilename, play, stop, currentBookId, isPlaying } =
-    useAudioStore();
+  const {
+    setFolderAndFilename,
+    play,
+    stop,
+    currentBookId,
+    isPlaying
+  } = useAudioStore()
 
   const handlePlayClick = (
     folder: string,
@@ -17,16 +22,16 @@ export const PlayList = () => {
     bookId: string
   ) => {
     if (currentBookId === bookId) {
-      isPlaying ? stop() : play();
+      isPlaying ? stop() : play()
     } else {
-      stop();
-      setFolderAndFilename(folder, filename, bookId);
-      play();
+      stop()
+      setFolderAndFilename(folder, filename, bookId)
+      play()
     }
-  };
+  }
   const { redeemedBooks, loading } = useGetRedeemedBooks({
-    firebaseUid: auth.currentUser?.uid || "",
-  });
+    firebaseUid: auth.currentUser?.uid || ''
+  })
 
   return (
     <>
@@ -35,64 +40,62 @@ export const PlayList = () => {
       ) : (
         <div>
           <Typography
-            sx={{ marginTop: 4, color: "#fff" }}
+            sx={{ marginTop: 4, color: '#fff' }}
             variant="h5"
             color="inherit"
             align="center"
-            gutterBottom
-          >
+            gutterBottom>
             Library
           </Typography>
 
           <RedeemCodeDialog>
-            <Button>Redeem Code</Button>
+            <Button>
+              <span className="font-workSans">
+                Redeem Code
+              </span>
+            </Button>
           </RedeemCodeDialog>
 
           <div className="flex flex-col p-1 justify-center">
             {redeemedBooks &&
               redeemedBooks.length > 0 &&
               redeemedBooks.map((book) => {
-                const folder = book.hls_path ? book.hls_path.split("/")[0] : "";
+                const folder = book.hls_path
+                  ? book.hls_path.split('/')[0]
+                  : ''
                 const filename = book.hls_path
-                  ? book.hls_path.split("/")[1]
-                  : "";
+                  ? book.hls_path.split('/')[1]
+                  : ''
                 return (
-                  <Box
-                    key={book.id}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      marginBottom: 1,
-                    }}
-                  >
-                    <Typography
-                      className="text-left w-full"
-                      variant="body1"
-                      color="inherit"
-                      component="p"
-                      gutterBottom
-                    >
+                  <div
+                    className="flex justify-center items-center  space-y-7"
+                    key={book.id}>
+                    <p className="text-left self-end w-full font-workSans">
                       {book.title}
-                    </Typography>
+                    </p>
 
                     <Button
                       sx={{ padding: 0, margin: 0 }}
                       onClick={() => {
-                        handlePlayClick(folder, filename, book.id);
-                      }}
-                    >
-                      {currentBookId === book.id && isPlaying ? (
+                        handlePlayClick(
+                          folder,
+                          filename,
+                          book.id
+                        )
+                      }}>
+                      {currentBookId === book.id &&
+                      isPlaying ? (
                         <StopIcon />
                       ) : (
                         <PlayCircleIcon />
                       )}
                     </Button>
-                  </Box>
-                );
+                  </div>
+                )
               })}
           </div>
         </div>
       )}
     </>
-  );
-};
+  )
+}
