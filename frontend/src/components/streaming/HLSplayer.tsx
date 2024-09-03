@@ -16,7 +16,6 @@ import { useAudioStore } from '../../zustand/useAudioStore'
 import { useGetRedeemedBooks } from '../../data/users/useGetRedeemedBooks'
 import { useCoverImage } from '../../zustand/useCoverImage'
 import { auth } from '../../auth/initAuth'
-import { set } from 'react-hook-form'
 
 interface HLSPlayerProps {
   folder?: string
