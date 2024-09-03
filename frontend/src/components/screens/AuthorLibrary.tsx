@@ -25,13 +25,10 @@ export const AuthorLibrary = () => {
     firebaseUid: uid || ''
   })
 
-
-
   return (
     <div className="h-screen items-center justify-center flex">
       <List
         sx={{
-          marginTop: 10,
           display: { md: 'flex' }
         }}>
         <div>
@@ -53,7 +50,14 @@ export const AuthorLibrary = () => {
                 <WorkIcon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary="Sold" secondary={purchaseCodes?.filter((code) => code.is_redeemed).length} />
+            <ListItemText
+              primary="Sold"
+              secondary={
+                purchaseCodes?.filter(
+                  (code) => code.is_redeemed
+                ).length
+              }
+            />
           </ListItem>
         </div>
         <div>

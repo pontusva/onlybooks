@@ -40,7 +40,10 @@ export const PlayList = () => {
       ) : (
         <div>
           <Typography
-            sx={{ marginTop: 4, color: '#fff' }}
+            sx={{
+              marginTop: 4,
+              color: (theme) => theme.palette.primary.main
+            }}
             variant="h5"
             color="inherit"
             align="center"
@@ -68,9 +71,9 @@ export const PlayList = () => {
                   : ''
                 return (
                   <div
-                    className="flex justify-center items-center  space-y-7"
+                    className="flex justify-center items-center space-y-7"
                     key={book.id}>
-                    <p className="text-left self-end w-full font-workSans">
+                    <p className="self-end ml-5  w-full font-workSans">
                       {book.title}
                     </p>
 

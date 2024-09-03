@@ -1,6 +1,15 @@
 import { createTheme } from '@mui/material/styles'
 
 const theme = createTheme({
+  components: {
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          background: '#FEFCFF'
+        }
+      }
+    }
+  },
   palette: {
     primary: {
       main: '#1C0E06',

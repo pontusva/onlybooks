@@ -158,11 +158,11 @@ export const AppBarTop = () => {
             </Tooltip>
             <Menu
               sx={{
-                mt: '45px',
-                bgColor: (theme) =>
-                  `${theme.palette.primary.main}`
+                mt: '45px'
               }}
-              id="menu-appbar"
+              classes={{
+                paper: '#0A122A'
+              }}
               anchorEl={anchorElUser}
               anchorOrigin={{
                 vertical: 'top',
@@ -173,11 +173,13 @@ export const AppBarTop = () => {
                 vertical: 'top',
                 horizontal: 'right'
               }}
-              color="secondary"
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}>
               {settings.map((setting) => (
                 <MenuItem
+                  sx={{
+                    width: '150px'
+                  }}
                   key={setting}
                   onClick={() => {
                     handleSettingClick(setting)
