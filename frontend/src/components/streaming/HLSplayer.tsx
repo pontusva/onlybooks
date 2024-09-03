@@ -16,6 +16,7 @@ import { useAudioStore } from '../../zustand/useAudioStore'
 import { useGetRedeemedBooks } from '../../data/users/useGetRedeemedBooks'
 import { useCoverImage } from '../../zustand/useCoverImage'
 import { auth } from '../../auth/initAuth'
+import { set } from 'react-hook-form'
 
 interface HLSPlayerProps {
   folder?: string
@@ -52,7 +53,7 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
         setCoverImage(audioFile[0].cover_image_url || null)
       }
     }
-  }, [redeemedBooks, folder, filename])
+  }, [redeemedBooks, folder, filename, setCoverImage])
 
   useEffect(() => {
     const audio = audioRef.current
@@ -133,7 +134,7 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
         audio.removeEventListener('ended', handleAudioEnd)
       }
     }
-  }, [])
+  }, [setIsPlaying])
 
   useEffect(() => {
     const audio = audioRef.current
