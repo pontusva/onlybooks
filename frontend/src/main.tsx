@@ -12,7 +12,7 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import CreateAccount from './publicAuth/CreateAccount.tsx'
-import { SignIn } from './publicAuth/SignIn.tsx'
+import { SignInPage } from './publicAuth/SignIn.tsx'
 import { Account } from './components/screens/Account.tsx'
 import { Books } from './components/author/Books.tsx'
 import { GeneratedCodes } from './components/author/GeneratedCodes.tsx'
@@ -120,7 +120,7 @@ const router = createBrowserRouter([
   },
   {
     path: 'login',
-    element: <SignIn />
+    element: <SignInPage />
   },
   {
     path: 'create-account',

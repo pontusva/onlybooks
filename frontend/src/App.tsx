@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { AppBarTop } from './components/navigation/AppBar.tsx'
 import { Outlet } from 'react-router-dom'
 import { onAuthStateChanged } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
@@ -11,6 +10,7 @@ import { useIsAuthor } from './data/authors/useIsAuthor.ts'
 import { firebaseApp, auth } from './auth/initAuth.ts'
 import HLSPlayer from './components/streaming/HLSplayer.tsx'
 import { LibraryDrawer } from './components/drawers/LibraryDrawer.tsx'
+import { Navbar } from './components/navbar.tsx'
 firebaseApp
 
 function App() {
@@ -58,7 +58,7 @@ function App() {
 
   return (
     <div className="bg-background-default">
-      <AppBarTop />
+      <Navbar />
       <Outlet />
       <LibraryDrawer />
       <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50">
