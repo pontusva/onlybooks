@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { Chip, Typography } from '@mui/material'
 import { UserAccount } from './UserAccounts'
-import { AuthorAccount } from './AuthorAccount'
 import { Loader } from '../reuseable/Loader'
 import { useIsAuthor } from '../../data/authors/useIsAuthor'
+import { AuthorPage } from '@/components/author-page'
 
 export const Account = () => {
   const [firebaseUid, setFirebaseUid] = useState<
@@ -38,34 +37,8 @@ export const Account = () => {
 
   return (
     <>
-      <div className="mt-24 flex justify-center">
-        <Chip
-          label={
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 'medium' }}>
-              Account:{' '}
-              {isAuthor && isAuthor.is_author
-                ? 'Author'
-                : 'User'}
-            </Typography>
-          }
-          variant="outlined"
-          sx={{
-            padding: '4px 6px', // Reduced padding for a more subtle look
-            margin: '8px',
-            backgroundColor: (theme) =>
-              isAuthor && isAuthor.is_author
-                ? theme.palette.primary.main
-                : theme.palette.secondary.main, // Softer background colors
-            color: (theme) =>
-              theme.palette.primary.contrastText,
-            borderRadius: '6px' // Slightly less rounded corners
-          }}
-        />
-      </div>
       {isAuthor?.is_author ? (
-        <AuthorAccount />
+        <AuthorPage />
       ) : (
         <UserAccount />
       )}

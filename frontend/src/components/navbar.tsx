@@ -79,7 +79,7 @@ export function Navbar() {
       <h1
         onClick={() => navigate('/')}
         className="flex font-workSans text-xl justify-center w-full">
-        StoryTree
+        a-books
       </h1>
       <div className="ml-auto flex items-center gap-4">
         <DropdownMenu>

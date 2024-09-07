@@ -6,6 +6,7 @@ import { useAudioStore } from '../../zustand/useAudioStore'
 import { RedeemCodeDialog } from '../dialogs/RedeemCode'
 import { auth } from '../../auth/initAuth'
 import { Loader } from '../reuseable/Loader'
+import { RedeemBookCode } from '@/components/redeem-book-code'
 
 export const PlayList = () => {
   const {
@@ -50,14 +51,9 @@ export const PlayList = () => {
             gutterBottom>
             Library
           </Typography>
-
-          <RedeemCodeDialog>
-            <Button>
-              <span className="font-workSans">
-                Redeem Code
-              </span>
-            </Button>
-          </RedeemCodeDialog>
+          <div className="flex justify-center">
+            <RedeemBookCode />
+          </div>
 
           <div className="flex flex-col p-1 justify-center">
             {redeemedBooks &&

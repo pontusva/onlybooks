@@ -4,14 +4,14 @@
 
 @font-face {
   font-family: 'suse';
-  src: url('../public/fonts/SUSE-Medium.ttf');
+  src: url('/fonts/SUSE-Medium.ttf');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'work-sans';
-  src: url('../public/fonts/WorkSans-Medium.ttf');
+  src: url('/fonts/WorkSans-Medium.ttf');
   font-weight: normal;
   font-style: normal;
 }
