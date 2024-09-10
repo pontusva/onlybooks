@@ -1,16 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
-import {
-  Box,
-  Slider,
-  Button,
-  Typography
-} from '@mui/material'
-import AccessTimeIcon from '@mui/icons-material/AccessTime'
-import PlayCircleIcon from '@mui/icons-material/PlayCircle'
-import StopIcon from '@mui/icons-material/Stop'
-import VolumeUpIcon from '@mui/icons-material/VolumeUp'
-import VolumeMuteIcon from '@mui/icons-material/VolumeMute'
-import { formatTime } from '../../utils'
+import { Button } from '@/components/ui/button'
+import { Slider } from '@/components/ui/slider'
+import { Play, Pause, Volume2 } from 'lucide-react'
 import Hls from 'hls.js'
 import { useAudioStore } from '../../zustand/useAudioStore'
 import { useGetRedeemedBooks } from '../../data/users/useGetRedeemedBooks'
@@ -146,136 +137,68 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
     }
   }, [volume])
 
-  const handleSliderChange = (
-    _: Event,
-    newValue: number | number[]
-  ) => {
+  const handleVolumeChange = (newVolume: number[]) => {
     const audio = audioRef.current
-    const newTime = ((newValue as number) / 100) * duration
     if (audio) {
-      setDuration(audio.duration)
-      audio.currentTime = newTime
-      setCurrentTime(newTime)
+      audio.volume = newVolume[0]
+      setVolume(newVolume[0])
     }
   }
 
-  const handleVolumeChange = (
-    _: Event,
-    newValue: number | number[]
-  ) => {
-    const newVolume = (newValue as number) / 100
-    setVolume(newVolume)
+  const handleTimeChange = (newTime: number[]) => {
+    const audio = audioRef.current
+    if (audio) {
+      audio.currentTime = newTime[0]
+      setCurrentTime(newTime[0])
+    }
+  }
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60)
+    const seconds = Math.floor(time % 60)
+    return `${minutes}:${seconds
+      .toString()
+      .padStart(2, '0')}`
   }
 
   return (
-    <div className="w-screen">
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          flexDirection: 'column',
-          backgroundColor: (theme) =>
-            theme.palette.primary.main
-        }}>
-        <audio ref={audioRef} style={{ display: 'none' }} />
-        <div className="flex flex-col">
-          <Box
-            sx={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center'
-            }}>
-            <Button
-              disabled={!folder || !filename}
-              onClick={togglePlayPause}>
-              {!isPlaying ? (
-                <PlayCircleIcon color="secondary" />
-              ) : (
-                <StopIcon color="secondary" />
-              )}
-            </Button>
-            <Slider
-              value={(currentTime / duration) * 100}
-              onChange={handleSliderChange}
-              sx={{
-                height: 8,
-                width: 100,
-                '& .MuiSlider-thumb': {
-                  bgcolor: '#0A122A', // Dark blue for thumb
-                  width: 12,
-                  height: 12,
-                  border: '2px solid #FFF' // White border for visibility
-                },
-                '& .MuiSlider-track': {
-                  bgcolor: '#3f51b5', // Soft blue for the track
-                  border: 'none'
-                },
-                '& .MuiSlider-rail': {
-                  bgcolor: '#e0e0e0' // Light grey for the rail
-                },
-                '& .MuiSlider-thumb:hover, & .MuiSlider-thumb.Mui-focusVisible':
-                  {
-                    boxShadow:
-                      '0px 0px 0px 8px rgba(63, 81, 181, 0.16)' // Blue focus ring for accessibility
-                  }
-              }}
-            />
-
-            <Box
-              sx={{
-                ml: 2,
-                display: 'flex',
-                alignItems: 'center'
-              }}>
-              <AccessTimeIcon
-                color="secondary"
-                sx={{ mr: 0.5 }}
-              />
-              <Typography variant="body2" color="secondary">
-                {formatTime(currentTime)}
-              </Typography>
-            </Box>
-          </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'end'
-            }}>
-            {volume === 0 ? (
-              <VolumeMuteIcon color="secondary" />
-            ) : (
-              <VolumeUpIcon color="secondary" />
-            )}
-            <Slider
-              value={volume * 100}
-              onChange={handleVolumeChange}
-              sx={{
-                width: 75,
-                height: 8,
-                '& .MuiSlider-thumb': {
-                  bgcolor: '#333', // Dark grey for contrast
-                  width: 12,
-                  height: 12,
-                  border: '2px solid #FFF' // White border for better visibility
-                },
-                '& .MuiSlider-track': {
-                  bgcolor: '#3f51b5', // Soft blue for a nice contrast with white
-                  border: 'none'
-                },
-                '& .MuiSlider-rail': {
-                  bgcolor: '#ddd' // Light grey for a subtle rail
-                },
-                '& .MuiSlider-thumb:hover, & .MuiSlider-thumb.Mui-focusVisible':
-                  {
-                    boxShadow:
-                      '0px 0px 0px 8px rgba(63, 81, 181, 0.16)' // Soft blue focus ring
-                  }
-              }}
-            />
-          </Box>
+    <div className="w-screen mx-auto p-2 px-5 bg-background rounded-lg shadow-md">
+      <audio ref={audioRef} src="/placeholder.mp3" />
+      <div className="flex items-center justify-between mb-4">
+        <Button
+          onClick={togglePlayPause}
+          variant="outline"
+          size="icon"
+          aria-label={isPlaying ? 'Pause' : 'Play'}>
+          {isPlaying ? (
+            <Pause className="h-4 w-4" />
+          ) : (
+            <Play className="h-4 w-4" />
+          )}
+        </Button>
+        <div className="text-sm font-medium">
+          {formatTime(currentTime)} / {formatTime(duration)}
         </div>
-      </Box>
+      </div>
+      <Slider
+        value={[currentTime]}
+        max={duration}
+        step={1}
+        onValueChange={handleTimeChange}
+        className="mb-4"
+        aria-label="Seek time"
+      />
+      <div className="flex items-center">
+        <Volume2 className="h-4 w-4 mr-2" />
+        <Slider
+          value={[volume]}
+          max={1}
+          step={0.01}
+          onValueChange={handleVolumeChange}
+          className="w-24"
+          aria-label="Adjust volume"
+        />
+      </div>
     </div>
   )
 }

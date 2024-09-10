@@ -189,7 +189,7 @@ export function AuthorPage() {
                             />
                           </FormControl>
                           <FormDescription>
-                            Here is wher you upload your
+                            Here is where you upload your
                             audio file
                           </FormDescription>
                           <FormMessage />
