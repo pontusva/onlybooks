@@ -83,6 +83,7 @@ export type Mutation = {
   redeemCode?: Maybe<Response>;
   requestAudio?: Maybe<RequestAudioResponse>;
   setCurrentAudioFile?: Maybe<Response>;
+  updatePlaybackProgress?: Maybe<Response>;
 };
 
 
@@ -154,6 +155,13 @@ export type MutationRequestAudioArgs = {
 export type MutationSetCurrentAudioFileArgs = {
   audio_file_id: Scalars['ID']['input'];
   user_id: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdatePlaybackProgressArgs = {
+  audio_file_id: Scalars['ID']['input'];
+  firebase_uid: Scalars['ID']['input'];
+  progress_seconds: Scalars['Int']['input'];
 };
 
 export type ProcessAudioResponse = {
@@ -259,6 +267,7 @@ export type SuccessResult = {
 export type UploadBook = {
   __typename?: 'UploadBook';
   author_id: Scalars['ID']['output'];
+  cover_image_url?: Maybe<Scalars['String']['output']>;
   created_at: Scalars['String']['output'];
   description?: Maybe<Scalars['String']['output']>;
   file_name: Scalars['String']['output'];
@@ -290,7 +299,7 @@ export type GetAuthorBooksQueryVariables = Exact<{
 }>;
 
 
-export type GetAuthorBooksQuery = { __typename?: 'Query', getAuthorBooks?: Array<{ __typename?: 'UploadBook', id: string, author_id: string, title: string, description?: string, file_url: string, file_name: string, created_at: string }> };
+export type GetAuthorBooksQuery = { __typename?: 'Query', getAuthorBooks?: Array<{ __typename?: 'UploadBook', id: string, author_id: string, title: string, description?: string, file_url: string, file_name: string, created_at: string, cover_image_url?: string }> };
 
 export type GetPurchaseCodesQueryVariables = Exact<{
   firebaseUid: Scalars['String']['input'];
@@ -432,6 +441,7 @@ export const GetAuthorBooksDocument = gql`
     file_url
     file_name
     created_at
+    cover_image_url
   }
 }
     `;

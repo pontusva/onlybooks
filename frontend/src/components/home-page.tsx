@@ -1,4 +1,11 @@
+import { useGetAuthorBooks } from '@/data/authors/useGetAuthorBooks'
+import { getAuth } from 'firebase/auth'
 export function HomePage() {
+  const auth = getAuth()
+  const { books } = useGetAuthorBooks({
+    firebaseUid: auth.currentUser?.uid || ''
+  })
+
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <section className="relative w-full h-[70vh] bg-cover bg-center ">
@@ -16,71 +23,27 @@ export function HomePage() {
         </div>
       </section>
       <section className="w-full flex justify-center py-12 md:py-24 lg:py-32">
-        <div className="container justify-center grid grid-cols-2 md:grid-cols-4 gap-4 px-4 md:px-6">
-          <div className="flex flex-col items-center gap-2">
-            <img
-              src="/placeholder.svg"
-              width="150"
-              height="200"
-              alt="Book Cover"
-              className="rounded-lg shadow-md"
-              style={{
-                aspectRatio: '150/200',
-                objectFit: 'cover'
-              }}
-            />
-            <h3 className="text-lg font-semibold text-foreground">
-              The Great Gatsby
-            </h3>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <img
-              src="/placeholder.svg"
-              width="150"
-              height="200"
-              alt="Book Cover"
-              className="rounded-lg shadow-md"
-              style={{
-                aspectRatio: '150/200',
-                objectFit: 'cover'
-              }}
-            />
-            <h3 className="text-lg font-semibold text-foreground">
-              To Kill a Mockingbird
-            </h3>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <img
-              src="/placeholder.svg"
-              width="150"
-              height="200"
-              alt="Book Cover"
-              className="rounded-lg shadow-md"
-              style={{
-                aspectRatio: '150/200',
-                objectFit: 'cover'
-              }}
-            />
-            <h3 className="text-lg font-semibold text-foreground">
-              1984
-            </h3>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <img
-              src="/placeholder.svg"
-              width="150"
-              height="200"
-              alt="Book Cover"
-              className="rounded-lg shadow-md"
-              style={{
-                aspectRatio: '150/200',
-                objectFit: 'cover'
-              }}
-            />
-            <h3 className="text-lg font-semibold text-foreground">
-              Pride and Prejudice
-            </h3>
-          </div>
+        <div className="container grid grid-cols-2 md:grid-cols-4 gap-4 px-4 md:px-6">
+          {books?.map((book) => (
+            <div
+              key={book.id}
+              className="flex flex-col items-center gap-2">
+              <img
+                src={book.cover_image_url}
+                width="250"
+                height="300"
+                alt="Book Cover"
+                className="rounded-lg shadow-md"
+                style={{
+                  aspectRatio: '150/200',
+                  objectFit: 'cover'
+                }}
+              />
+              <h3 className="text-lg font-semibold text-foreground">
+                {book.title}
+              </h3>
+            </div>
+          ))}
         </div>
       </section>
       <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">

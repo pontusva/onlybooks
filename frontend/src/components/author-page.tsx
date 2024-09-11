@@ -29,6 +29,8 @@ import { useProcessAudio } from '@/data/authors/useProcessAudio'
 import { useUploadFile } from '@/misc/useUploadFile'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuthorIdStore } from '@/zustand/authorIdStore'
+import { useGetAuthorBooks } from '@/data/authors/useGetAuthorBooks'
+import { getAuth } from 'firebase/auth'
 
 const schema = z.object({
   title: z.string().min(3),
@@ -47,9 +49,12 @@ export function AuthorPage() {
   const form = useForm<Schema>({
     resolver: zodResolver(schema)
   })
-
+  const auth = getAuth()
   const { processAudio } = useProcessAudio()
   const { uploadProgress, startUpload } = useUploadFile()
+  const { books } = useGetAuthorBooks({
+    firebaseUid: auth.currentUser?.uid || ''
+  })
 
   const onSubmit = async (data: Schema) => {
     console.log(data)
@@ -214,64 +219,47 @@ export function AuthorPage() {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
-                <div className="grid grid-cols-[100px_1fr_auto] items-center gap-4">
-                  <img
-                    src="/placeholder.svg"
-                    alt="Book Cover"
-                    width={100}
-                    height={150}
-                    className="rounded-md object-cover"
-                    style={{
-                      aspectRatio: '100/150',
-                      objectFit: 'cover'
-                    }}
-                  />
-                  <div className="grid gap-1">
-                    <h3 className="text-lg font-semibold">
-                      The Joke Tax Chronicles
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      A hilarious tale of a lazy king and a
-                      mischievous jokester.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm">
-                      Edit
-                    </Button>
-                    <Button variant="destructive" size="sm">
-                      Delete
-                    </Button>
-                  </div>
-                </div>
-                <div className="grid grid-cols-[100px_1fr_auto] items-center gap-4">
-                  <img
-                    src="/placeholder.svg"
-                    alt="Book Cover"
-                    width={100}
-                    height={150}
-                    className="rounded-md object-cover"
-                    style={{
-                      aspectRatio: '100/150',
-                      objectFit: 'cover'
-                    }}
-                  />
-                  <div className="grid gap-1">
-                    <h3 className="text-lg font-semibold">
-                      The Rise of the Robots
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      An exploration of the future of
-                      artificial intelligence.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm">
-                      Edit
-                    </Button>
-                    <Button variant="destructive" size="sm">
-                      Delete
-                    </Button>
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="grid gap-4">
+                    {books?.map((book) => {
+                      return (
+                        <div
+                          key={book.id}
+                          className="grid grid-cols-[100px_1fr_auto] items-center gap-4">
+                          <img
+                            src={book.cover_image_url}
+                            alt="Book Cover"
+                            width={100}
+                            height={150}
+                            className="rounded-md object-cover"
+                            style={{
+                              aspectRatio: '100/150',
+                              objectFit: 'cover'
+                            }}
+                          />
+                          <div className="grid gap-1">
+                            <h3 className="text-lg font-semibold">
+                              {book.title}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                              {book.description}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm">
+                              Edit
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm">
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
               </div>

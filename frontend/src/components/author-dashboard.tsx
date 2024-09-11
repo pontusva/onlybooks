@@ -33,7 +33,7 @@ import {
 } from '@/data/authors/useGetAuthorBooks'
 import { useGetPurchaseCodes } from '@/data/authors/useGetPurchaseCodes'
 import { useInsertPurchaseCodes } from '@/data/authors/useInsertPurchaseCodes'
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface Books {
   author_id: string
@@ -43,6 +43,7 @@ interface Books {
   id: number
   title: string
   uuid?: string
+  cover_image_url: string
 }
 type CombinedBooks = Books & AuthorBooks
 
@@ -243,11 +244,11 @@ export function AuthorDashboard() {
                           <CardContent className="flex flex-col items-center gap-2">
                             <div className="" key={book.id}>
                               <img
-                                src={book.file_url}
-                                width={150}
-                                height={200}
+                                src={book.cover_image_url}
+                                // width={150}
+                                // height={200}
                                 alt="Book Cover"
-                                className="rounded-md"
+                                className="pt-5 w-full h-full object-cover rounded-md"
                                 style={{
                                   aspectRatio: '150/200',
                                   objectFit: 'cover'

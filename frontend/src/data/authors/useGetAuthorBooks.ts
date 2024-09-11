@@ -14,6 +14,7 @@ gql`
       file_url
       file_name
       created_at
+      cover_image_url
     }
   }
 `
