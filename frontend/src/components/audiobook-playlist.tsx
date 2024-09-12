@@ -25,13 +25,11 @@ export function AudiobookPlaylist() {
   const handlePlayClick = (
     folder: string,
     filename: string,
-    bookId: number // Updated to number
+    bookId: string
   ) => {
     if (currentBookId === bookId) {
-      // If the clicked book is the one currently playing, toggle play/pause
       isPlaying ? stop() : play()
     } else {
-      // If a different book is clicked, stop current, set new, and play
       stop()
       setFolderAndFilename(folder, filename, bookId)
       play()
