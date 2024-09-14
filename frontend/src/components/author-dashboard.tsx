@@ -245,8 +245,6 @@ export function AuthorDashboard() {
                             <div className="" key={book.id}>
                               <img
                                 src={book.cover_image_url}
-                                // width={150}
-                                // height={200}
                                 alt="Book Cover"
                                 className="pt-5 w-full h-full object-cover rounded-md"
                                 style={{

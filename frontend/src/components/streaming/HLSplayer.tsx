@@ -164,7 +164,10 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
   return (
     <div className="w-screen mx-auto p-2 px-5 bg-background rounded-lg shadow-md">
       <audio ref={audioRef} src="/placeholder.mp3" />
+
+      {/* Flex container for play button, slider, and time */}
       <div className="flex items-center justify-between mb-4">
+        {/* Play button on the left */}
         <Button
           onClick={togglePlayPause}
           variant="outline"
@@ -176,18 +179,24 @@ const HLSPlayer: React.FC<HLSPlayerProps> = () => {
             <Play className="h-4 w-4" />
           )}
         </Button>
+
+        {/* Slider in the middle */}
+        <Slider
+          value={[currentTime]}
+          max={duration}
+          step={1}
+          onValueChange={handleTimeChange}
+          className="flex-1 mx-4" // Adjust flex-1 to take available space and margin for space between elements
+          aria-label="Seek time"
+        />
+
+        {/* Time on the right */}
         <div className="text-sm font-medium">
           {formatTime(currentTime)} / {formatTime(duration)}
         </div>
       </div>
-      <Slider
-        value={[currentTime]}
-        max={duration}
-        step={1}
-        onValueChange={handleTimeChange}
-        className="mb-4"
-        aria-label="Seek time"
-      />
+
+      {/* Volume control */}
       <div className="flex items-center">
         <Volume2 className="h-4 w-4 mr-2" />
         <Slider
