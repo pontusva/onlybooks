@@ -31,6 +31,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuthorIdStore } from '@/zustand/authorIdStore'
 import { useGetAuthorBooks } from '@/data/authors/useGetAuthorBooks'
 import { getAuth } from 'firebase/auth'
+import FieldDisplayComponent from '@/components/field-display'
+import { useState } from 'react'
 
 const schema = z.object({
   title: z.string().min(3),
@@ -45,6 +47,55 @@ export function AuthorPage() {
   const authorId = useAuthorIdStore(
     (state) => state.authorId
   )
+
+  const [sections, setSections] = useState([
+    {
+      label: 'About Olivia Davis',
+      value:
+        'Olivia Davis is a prolific author and storyteller. She has been writing for over a decade, captivating readers with her unique voice and imaginative narratives.',
+      isEditing: false,
+      textArea: true,
+      tempValue: ''
+    },
+    {
+      label: 'Contact',
+      value:
+        'Email: olivia.davis@example.com\nTwitter: @oliviadavis\nInstagram: @oliviadavis',
+      isEditing: false,
+      tempValue: ''
+    }
+  ])
+
+  // Toggle edit mode for a specific section
+  const handleEdit = (index) => {
+    const newSections = [...sections]
+    newSections[index].isEditing = true
+    newSections[index].tempValue = newSections[index].value
+    setSections(newSections)
+  }
+
+  // Cancel editing
+  const handleCancel = (index) => {
+    const newSections = [...sections]
+    newSections[index].isEditing = false
+    newSections[index].tempValue = ''
+    setSections(newSections)
+  }
+
+  // Save changes
+  const handleSave = (index) => {
+    const newSections = [...sections]
+    newSections[index].value = newSections[index].tempValue
+    newSections[index].isEditing = false
+    setSections(newSections)
+  }
+
+  // Update temp value for input
+  const handleInputChange = (index, value) => {
+    const newSections = [...sections]
+    newSections[index].tempValue = value
+    setSections(newSections)
+  }
 
   const form = useForm<Schema>({
     resolver: zodResolver(schema)
@@ -267,6 +318,13 @@ export function AuthorPage() {
           </Card>
         </div>
         <div>
+          <FieldDisplayComponent
+            sections={sections}
+            onEdit={handleEdit}
+            onCancel={handleCancel}
+            onSave={handleSave}
+            onInputChange={handleInputChange}
+          />
           <Card className="mb-24 md:mb-0">
             <CardHeader>
               <CardTitle>Author Bio</CardTitle>
