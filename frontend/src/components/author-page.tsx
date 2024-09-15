@@ -1,9 +1,5 @@
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback
-} from '@/components/ui/avatar'
-import { useForm } from 'react-hook-form'
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useForm, SubmitHandler } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -11,144 +7,138 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
-} from '@/components/ui/form'
-import { Button } from '@/components/ui/button'
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
-  CardContent
-} from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import z from 'zod'
-import { useProcessAudio } from '@/data/authors/useProcessAudio'
-import { useUploadFile } from '@/misc/useUploadFile'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useAuthorIdStore } from '@/zustand/authorIdStore'
-import { useGetAuthorBooks } from '@/data/authors/useGetAuthorBooks'
-import { getAuth } from 'firebase/auth'
-import FieldDisplayComponent from '@/components/field-display'
-import { useEffect, useState } from 'react'
-import { useGetAuthor } from '@/data/authors/useGetAuthor'
-import { useUpdateAuthor } from '@/data/authors/useUpdateAuthor'
+  CardContent,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import z from "zod";
+import { useProcessAudio } from "@/data/authors/useProcessAudio";
+import { useUploadFile } from "@/misc/useUploadFile";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuthorIdStore } from "@/zustand/authorIdStore";
+import { useGetAuthorBooks } from "@/data/authors/useGetAuthorBooks";
+import { getAuth } from "firebase/auth";
+import FieldDisplayComponent from "@/components/field-display";
+import { useEffect, useState } from "react";
+import { useGetAuthor } from "@/data/authors/useGetAuthor";
+import { useUpdateAuthor } from "@/data/authors/useUpdateAuthor";
 
 const schema = z.object({
   title: z.string().min(3),
   description: z.string().min(3),
   file: z.instanceof(FileList).optional(),
-  imageFile: z.instanceof(FileList).optional()
-})
+  imageFile: z.instanceof(FileList).optional(),
+});
 
-type Schema = z.infer<typeof schema>
+type Schema = z.infer<typeof schema>;
+
+interface Section {
+  label: string;
+  value: string;
+  isEditing: boolean;
+  textArea?: boolean;
+  tempValue: string;
+}
 
 export function AuthorPage() {
-  const authorId = useAuthorIdStore(
-    (state) => state.authorId
-  )
+  const authorId = useAuthorIdStore((state) => state.authorId);
+  const auth = getAuth();
+  const { updateAuthor } = useUpdateAuthor();
+  const { data } = useGetAuthor({ firebase_uid: auth.currentUser?.uid || "" });
 
-  const auth = getAuth()
-
-  const { updateAuthor } = useUpdateAuthor()
-  const { data } = useGetAuthor({
-    firebase_uid: auth.currentUser?.uid || ''
-  })
-
-  const [sections, setSections] = useState([
+  const [sections, setSections] = useState<Section[]>([
     {
-      label: 'About Olivia Davis',
-      value: data?.getAuthor?.bio,
+      label: "About Olivia Davis",
+      value: data?.getAuthor?.bio || "",
       isEditing: false,
       textArea: true,
-      tempValue: ''
+      tempValue: "",
     },
     {
-      label: 'Contact',
-      value: data?.getAuthor?.contact_info,
+      label: "Contact",
+      value: data?.getAuthor?.contact_info || "",
       isEditing: false,
-      tempValue: ''
-    }
-  ])
+      tempValue: "",
+    },
+  ]);
 
-  // Toggle edit mode for a specific section
-  const handleEdit = (index) => {
-    const newSections = [...sections]
-    newSections[index].isEditing = true
-    newSections[index].tempValue = newSections[index].value
-    setSections(newSections)
-  }
+  const handleEdit = (index: number) => {
+    const newSections = [...sections];
+    newSections[index].isEditing = true;
+    newSections[index].tempValue = newSections[index].value || "";
+    setSections(newSections);
+  };
 
-  // Cancel editing
-  const handleCancel = (index) => {
-    const newSections = [...sections]
-    newSections[index].isEditing = false
-    newSections[index].tempValue = ''
-    setSections(newSections)
-  }
+  const handleCancel = (index: number) => {
+    const newSections = [...sections];
+    newSections[index].isEditing = false;
+    newSections[index].tempValue = "";
+    setSections(newSections);
+  };
 
-  // Save changes
-  const handleSave = async (index) => {
+  const handleSave = async (index: number) => {
     try {
-      const newSections = [...sections]
-      newSections[index].value =
-        newSections[index].tempValue
-      newSections[index].isEditing = false
-
-      setSections(newSections)
+      const newSections = [...sections];
+      newSections[index].value = newSections[index].tempValue;
+      newSections[index].isEditing = false;
+      setSections(newSections);
 
       const updateVariables = {
-        firebaseUid: auth.currentUser?.uid || '',
+        firebaseUid: auth.currentUser?.uid || "",
         bio: newSections[0].value,
-        profilePictureUrl: '',
-        contactInfo: JSON.stringify(newSections[1].value)
-      }
+        profilePictureUrl: "",
+        contactInfo: JSON.stringify(newSections[1].value),
+      };
 
-      await updateAuthor({ variables: updateVariables })
+      await updateAuthor({ variables: updateVariables });
     } catch (error) {
-      // Handle errors, e.g., show an error message
-      console.error('Error saving data:', error)
+      console.error("Error saving data:", error);
     }
-  }
+  };
 
-  // Update temp value for input
-  const handleInputChange = (index, value) => {
-    const newSections = [...sections]
-    newSections[index].tempValue = value
-    setSections(newSections)
-  }
+  const handleInputChange = (index: number, value: string) => {
+    const newSections = [...sections];
+    newSections[index].tempValue = value;
+    setSections(newSections);
+  };
 
   const form = useForm<Schema>({
-    resolver: zodResolver(schema)
-  })
+    resolver: zodResolver(schema),
+  });
 
-  const { processAudio } = useProcessAudio()
-  const { uploadProgress, startUpload } = useUploadFile()
+  const { processAudio } = useProcessAudio();
+  const { startUpload } = useUploadFile();
   const { books } = useGetAuthorBooks({
-    firebaseUid: auth.currentUser?.uid || ''
-  })
+    firebaseUid: auth.currentUser?.uid || "",
+  });
 
-  const onSubmit = async (data: Schema) => {
-    console.log(data)
+  const onSubmit: SubmitHandler<Schema> = async (data) => {
     if (!data.file || data.file.length === 0) {
-      console.error('No file provided')
-      return
+      console.error("No file provided");
+      return;
     }
-    const file = data.file[0]
-    if (!data.imageFile) return
+    const file = data.file[0];
+    if (!data.imageFile) return;
 
     const docs = Array.from(data.imageFile).map((file) => ({
       file,
-      docType: 'profilePicture'
-    }))
+      docType: "profilePicture",
+    }));
 
     try {
       startUpload(file, async (audio: string) => {
         try {
           if (!authorId) {
-            throw new Error('Author ID is missing')
+            throw new Error("Author ID is missing");
           }
 
           const result = await processAudio({
@@ -158,58 +148,51 @@ export function AuthorPage() {
               description: data.description,
               fileUrl: audio,
               fileName: file.name,
-              docs
-            }
-          })
+              docs,
+            },
+          });
 
-          console.log('Process Audio Result:', result)
+          console.log("Process Audio Result:", result);
         } catch (error) {
-          console.error('Error processing audio:', error)
+          console.error("Error processing audio:", error);
         }
-      })
+      });
     } catch (error) {
-      console.error('Error uploading file:', error)
+      console.error("Error uploading file:", error);
     }
-  }
+  };
 
   useEffect(() => {
     if (data?.getAuthor) {
       setSections([
         {
-          label: 'About Olivia Davis',
-          value: data.getAuthor.bio || '',
+          label: "About Olivia Davis",
+          value: data.getAuthor.bio || "",
           isEditing: false,
           textArea: true,
-          tempValue: ''
+          tempValue: "",
         },
         {
-          label: 'Contact',
-          value: data.getAuthor.contact_info || '',
+          label: "Contact",
+          value: data.getAuthor.contact_info || "",
           isEditing: false,
-          tempValue: ''
-        }
-      ])
+          tempValue: "",
+        },
+      ]);
     }
-  }, [data])
+  }, [data]);
 
   return (
     <div className="flex flex-col min-h-screen bg-muted">
       <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b bg-background px-4 sm:px-6">
         <div className="flex items-center gap-4">
           <Avatar>
-            <AvatarImage
-              src="/placeholder-user.jpg"
-              alt="@shadcn"
-            />
+            <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="grid gap-1">
-            <h1 className="text-lg font-semibold">
-              Olivia Davis
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Author
-            </p>
+            <h1 className="text-lg font-semibold">Olivia Davis</h1>
+            <p className="text-sm text-muted-foreground">Author</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -232,13 +215,12 @@ export function AuthorPage() {
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="grid gap-6">
+                  className="grid gap-6"
+                >
                   <div className="grid gap-2">
-                    <Label htmlFor="cover-image">
-                      Cover Image
-                    </Label>
+                    <Label htmlFor="cover-image">Cover Image</Label>
                     <Input
-                      {...form.register('imageFile')}
+                      {...form.register("imageFile")}
                       id="cover-image"
                       type="file"
                     />
@@ -246,18 +228,16 @@ export function AuthorPage() {
                   <div className="grid gap-2">
                     <Label htmlFor="title">Title</Label>
                     <Input
-                      {...form.register('title')}
+                      {...form.register("title")}
                       id="title"
                       type="text"
                       placeholder="Enter book title"
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="description">
-                      Description
-                    </Label>
+                    <Label htmlFor="description">Description</Label>
                     <Textarea
-                      {...form.register('description')}
+                      {...form.register("description")}
                       id="description"
                       placeholder="Enter book description"
                       className="min-h-[120px]"
@@ -273,14 +253,9 @@ export function AuthorPage() {
                           <FormControl>
                             <Input
                               onChange={(e) => {
-                                if (!e.target.files) return
-                                if (
-                                  e?.target?.files?.length >
-                                  0
-                                ) {
-                                  field.onChange(
-                                    e.target.files
-                                  )
+                                if (!e.target.files) return;
+                                if (e?.target?.files?.length > 0) {
+                                  field.onChange(e.target.files);
                                 }
                               }}
                               type="file"
@@ -288,8 +263,7 @@ export function AuthorPage() {
                             />
                           </FormControl>
                           <FormDescription>
-                            Here is where you upload your
-                            audio file
+                            Here is where you upload your audio file
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -307,53 +281,44 @@ export function AuthorPage() {
             <CardHeader>
               <CardTitle>Your Books</CardTitle>
               <CardDescription>
-                Manage the books you have uploaded to your
-                author page.
+                Manage the books you have uploaded to your author page.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
                 <div className="grid grid-cols-1 gap-4">
                   <div className="grid gap-4">
-                    {books?.map((book) => {
-                      return (
-                        <div
-                          key={book.id}
-                          className="grid grid-cols-[100px_1fr_auto] items-center gap-4">
-                          <img
-                            src={book.cover_image_url}
-                            alt="Book Cover"
-                            width={100}
-                            height={150}
-                            className="rounded-md object-cover"
-                            style={{
-                              aspectRatio: '100/150',
-                              objectFit: 'cover'
-                            }}
-                          />
-                          <div className="grid gap-1">
-                            <h3 className="text-lg font-semibold">
-                              {book.title}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                              {book.description}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm">
-                              Edit
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm">
-                              Delete
-                            </Button>
-                          </div>
+                    {books?.map((book) => (
+                      <div
+                        key={book.id}
+                        className="grid grid-cols-[100px_1fr_auto] items-center gap-4"
+                      >
+                        <img
+                          src={book.cover_image_url}
+                          alt="Book Cover"
+                          width={100}
+                          height={150}
+                          className="rounded-md object-cover"
+                          style={{ aspectRatio: "100/150", objectFit: "cover" }}
+                        />
+                        <div className="grid gap-1">
+                          <h3 className="text-lg font-semibold">
+                            {book.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {book.description}
+                          </p>
                         </div>
-                      )
-                    })}
+                        <div className="flex items-center gap-2">
+                          <Button variant="outline" size="sm">
+                            Edit
+                          </Button>
+                          <Button variant="destructive" size="sm">
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -371,5 +336,5 @@ export function AuthorPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }
