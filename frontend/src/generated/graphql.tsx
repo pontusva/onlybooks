@@ -40,6 +40,14 @@ export type AuthPayload = {
   user: GraphqlUser;
 };
 
+export type AuthorInput = {
+  __typename?: 'AuthorInput';
+  authorid: Scalars['ID']['output'];
+  bio?: Maybe<Scalars['String']['output']>;
+  contact_info?: Maybe<Scalars['String']['output']>;
+  profile_picture_url?: Maybe<Scalars['String']['output']>;
+};
+
 export type CombinedBook = {
   __typename?: 'CombinedBook';
   author_id?: Maybe<Scalars['ID']['output']>;
@@ -83,6 +91,7 @@ export type Mutation = {
   redeemCode?: Maybe<Response>;
   requestAudio?: Maybe<RequestAudioResponse>;
   setCurrentAudioFile?: Maybe<Response>;
+  updateAuthor?: Maybe<AuthorInput>;
   updatePlaybackProgress?: Maybe<Response>;
 };
 
@@ -158,6 +167,14 @@ export type MutationSetCurrentAudioFileArgs = {
 };
 
 
+export type MutationUpdateAuthorArgs = {
+  bio?: InputMaybe<Scalars['String']['input']>;
+  contact_info?: InputMaybe<Scalars['String']['input']>;
+  firebase_uid: Scalars['String']['input'];
+  profile_picture_url?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationUpdatePlaybackProgressArgs = {
   audio_file_id: Scalars['ID']['input'];
   firebase_uid: Scalars['ID']['input'];
@@ -183,6 +200,7 @@ export type PurchaseCodes = {
 
 export type Query = {
   __typename?: 'Query';
+  getAuthor?: Maybe<AuthorInput>;
   getAuthorBooks?: Maybe<Array<Maybe<UploadBook>>>;
   getBookByAudioId?: Maybe<CombinedBook>;
   getCurrentAudioFile?: Maybe<AudioFile>;
@@ -192,6 +210,11 @@ export type Query = {
   isAuthor?: Maybe<User>;
   userById?: Maybe<User>;
   users?: Maybe<Array<Maybe<User>>>;
+};
+
+
+export type QueryGetAuthorArgs = {
+  firebase_uid: Scalars['String']['input'];
 };
 
 
@@ -294,6 +317,13 @@ export type BecomeAuthorMutationVariables = Exact<{
 
 export type BecomeAuthorMutation = { __typename?: 'Mutation', becomeAuthor?: { __typename?: 'Response', success: boolean } };
 
+export type GetAuthorQueryVariables = Exact<{
+  firebaseUid: Scalars['String']['input'];
+}>;
+
+
+export type GetAuthorQuery = { __typename?: 'Query', getAuthor?: { __typename?: 'AuthorInput', bio?: string, contact_info?: string, profile_picture_url?: string, authorid: string } };
+
 export type GetAuthorBooksQueryVariables = Exact<{
   firebaseUid: Scalars['ID']['input'];
 }>;
@@ -344,6 +374,16 @@ export type RequestAudioMutationVariables = Exact<{
 
 
 export type RequestAudioMutation = { __typename?: 'Mutation', requestAudio?: { __typename?: 'RequestAudioResponse', hlsUrl: string } };
+
+export type UpdateAuthorMutationVariables = Exact<{
+  firebaseUid: Scalars['String']['input'];
+  bio?: InputMaybe<Scalars['String']['input']>;
+  profilePictureUrl?: InputMaybe<Scalars['String']['input']>;
+  contactInfo?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type UpdateAuthorMutation = { __typename?: 'Mutation', updateAuthor?: { __typename?: 'AuthorInput', authorid: string } };
 
 export type CreateUserMutationVariables = Exact<{
   firebaseUid: Scalars['String']['input'];
@@ -431,6 +471,49 @@ export function useBecomeAuthorMutation(baseOptions?: Apollo.MutationHookOptions
 export type BecomeAuthorMutationHookResult = ReturnType<typeof useBecomeAuthorMutation>;
 export type BecomeAuthorMutationResult = Apollo.MutationResult<BecomeAuthorMutation>;
 export type BecomeAuthorMutationOptions = Apollo.BaseMutationOptions<BecomeAuthorMutation, BecomeAuthorMutationVariables>;
+export const GetAuthorDocument = gql`
+    query GetAuthor($firebaseUid: String!) {
+  getAuthor(firebase_uid: $firebaseUid) {
+    bio
+    contact_info
+    profile_picture_url
+    authorid
+  }
+}
+    `;
+
+/**
+ * __useGetAuthorQuery__
+ *
+ * To run a query within a React component, call `useGetAuthorQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAuthorQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAuthorQuery({
+ *   variables: {
+ *      firebaseUid: // value for 'firebaseUid'
+ *   },
+ * });
+ */
+export function useGetAuthorQuery(baseOptions: Apollo.QueryHookOptions<GetAuthorQuery, GetAuthorQueryVariables> & ({ variables: GetAuthorQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAuthorQuery, GetAuthorQueryVariables>(GetAuthorDocument, options);
+      }
+export function useGetAuthorLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAuthorQuery, GetAuthorQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAuthorQuery, GetAuthorQueryVariables>(GetAuthorDocument, options);
+        }
+export function useGetAuthorSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetAuthorQuery, GetAuthorQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAuthorQuery, GetAuthorQueryVariables>(GetAuthorDocument, options);
+        }
+export type GetAuthorQueryHookResult = ReturnType<typeof useGetAuthorQuery>;
+export type GetAuthorLazyQueryHookResult = ReturnType<typeof useGetAuthorLazyQuery>;
+export type GetAuthorSuspenseQueryHookResult = ReturnType<typeof useGetAuthorSuspenseQuery>;
+export type GetAuthorQueryResult = Apollo.QueryResult<GetAuthorQuery, GetAuthorQueryVariables>;
 export const GetAuthorBooksDocument = gql`
     query GetAuthorBooks($firebaseUid: ID!) {
   getAuthorBooks(firebase_uid: $firebaseUid) {
@@ -692,6 +775,47 @@ export function useRequestAudioMutation(baseOptions?: Apollo.MutationHookOptions
 export type RequestAudioMutationHookResult = ReturnType<typeof useRequestAudioMutation>;
 export type RequestAudioMutationResult = Apollo.MutationResult<RequestAudioMutation>;
 export type RequestAudioMutationOptions = Apollo.BaseMutationOptions<RequestAudioMutation, RequestAudioMutationVariables>;
+export const UpdateAuthorDocument = gql`
+    mutation UpdateAuthor($firebaseUid: String!, $bio: String, $profilePictureUrl: String, $contactInfo: String) {
+  updateAuthor(
+    firebase_uid: $firebaseUid
+    bio: $bio
+    profile_picture_url: $profilePictureUrl
+    contact_info: $contactInfo
+  ) {
+    authorid
+  }
+}
+    `;
+export type UpdateAuthorMutationFn = Apollo.MutationFunction<UpdateAuthorMutation, UpdateAuthorMutationVariables>;
+
+/**
+ * __useUpdateAuthorMutation__
+ *
+ * To run a mutation, you first call `useUpdateAuthorMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateAuthorMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateAuthorMutation, { data, loading, error }] = useUpdateAuthorMutation({
+ *   variables: {
+ *      firebaseUid: // value for 'firebaseUid'
+ *      bio: // value for 'bio'
+ *      profilePictureUrl: // value for 'profilePictureUrl'
+ *      contactInfo: // value for 'contactInfo'
+ *   },
+ * });
+ */
+export function useUpdateAuthorMutation(baseOptions?: Apollo.MutationHookOptions<UpdateAuthorMutation, UpdateAuthorMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateAuthorMutation, UpdateAuthorMutationVariables>(UpdateAuthorDocument, options);
+      }
+export type UpdateAuthorMutationHookResult = ReturnType<typeof useUpdateAuthorMutation>;
+export type UpdateAuthorMutationResult = Apollo.MutationResult<UpdateAuthorMutation>;
+export type UpdateAuthorMutationOptions = Apollo.BaseMutationOptions<UpdateAuthorMutation, UpdateAuthorMutationVariables>;
 export const CreateUserDocument = gql`
     mutation CreateUser($firebaseUid: String!, $username: String!, $email: String!, $isAuthor: Boolean!) {
   createUser(

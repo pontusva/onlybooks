@@ -32,7 +32,9 @@ import { useAuthorIdStore } from '@/zustand/authorIdStore'
 import { useGetAuthorBooks } from '@/data/authors/useGetAuthorBooks'
 import { getAuth } from 'firebase/auth'
 import FieldDisplayComponent from '@/components/field-display'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useGetAuthor } from '@/data/authors/useGetAuthor'
+import { useUpdateAuthor } from '@/data/authors/useUpdateAuthor'
 
 const schema = z.object({
   title: z.string().min(3),
@@ -48,19 +50,24 @@ export function AuthorPage() {
     (state) => state.authorId
   )
 
+  const auth = getAuth()
+
+  const { updateAuthor } = useUpdateAuthor()
+  const { data } = useGetAuthor({
+    firebase_uid: auth.currentUser?.uid || ''
+  })
+
   const [sections, setSections] = useState([
     {
       label: 'About Olivia Davis',
-      value:
-        'Olivia Davis is a prolific author and storyteller. She has been writing for over a decade, captivating readers with her unique voice and imaginative narratives.',
+      value: data?.getAuthor?.bio,
       isEditing: false,
       textArea: true,
       tempValue: ''
     },
     {
       label: 'Contact',
-      value:
-        'Email: olivia.davis@example.com\nTwitter: @oliviadavis\nInstagram: @oliviadavis',
+      value: data?.getAuthor?.contact_info,
       isEditing: false,
       tempValue: ''
     }
@@ -83,11 +90,27 @@ export function AuthorPage() {
   }
 
   // Save changes
-  const handleSave = (index) => {
-    const newSections = [...sections]
-    newSections[index].value = newSections[index].tempValue
-    newSections[index].isEditing = false
-    setSections(newSections)
+  const handleSave = async (index) => {
+    try {
+      const newSections = [...sections]
+      newSections[index].value =
+        newSections[index].tempValue
+      newSections[index].isEditing = false
+
+      setSections(newSections)
+
+      const updateVariables = {
+        firebaseUid: auth.currentUser?.uid || '',
+        bio: newSections[0].value,
+        profilePictureUrl: '',
+        contactInfo: JSON.stringify(newSections[1].value)
+      }
+
+      await updateAuthor({ variables: updateVariables })
+    } catch (error) {
+      // Handle errors, e.g., show an error message
+      console.error('Error saving data:', error)
+    }
   }
 
   // Update temp value for input
@@ -100,7 +123,7 @@ export function AuthorPage() {
   const form = useForm<Schema>({
     resolver: zodResolver(schema)
   })
-  const auth = getAuth()
+
   const { processAudio } = useProcessAudio()
   const { uploadProgress, startUpload } = useUploadFile()
   const { books } = useGetAuthorBooks({
@@ -148,6 +171,26 @@ export function AuthorPage() {
       console.error('Error uploading file:', error)
     }
   }
+
+  useEffect(() => {
+    if (data?.getAuthor) {
+      setSections([
+        {
+          label: 'About Olivia Davis',
+          value: data.getAuthor.bio || '',
+          isEditing: false,
+          textArea: true,
+          tempValue: ''
+        },
+        {
+          label: 'Contact',
+          value: data.getAuthor.contact_info || '',
+          isEditing: false,
+          tempValue: ''
+        }
+      ])
+    }
+  }, [data])
 
   return (
     <div className="flex flex-col min-h-screen bg-muted">
@@ -325,37 +368,6 @@ export function AuthorPage() {
             onSave={handleSave}
             onInputChange={handleInputChange}
           />
-          <Card className="mb-24 md:mb-0">
-            <CardHeader>
-              <CardTitle>Author Bio</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <h3 className="text-lg font-semibold">
-                    About Olivia Davis
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Olivia Davis is a prolific author and
-                    storyteller. She has been writing for
-                    over a decade, captivating readers with
-                    her unique voice and imaginative
-                    narratives.
-                  </p>
-                </div>
-                <div className="grid gap-2">
-                  <h3 className="text-lg font-semibold">
-                    Contact
-                  </h3>
-                  <div className="flex flex-col gap-1 text-sm text-muted-foreground">
-                    <p>Email: olivia.davis@example.com</p>
-                    <p>Twitter: @oliviadavis</p>
-                    <p>Instagram: @oliviadavis</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </main>
     </div>
