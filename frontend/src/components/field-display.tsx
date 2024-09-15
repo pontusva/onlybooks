@@ -4,6 +4,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Pencil, X, Check } from "lucide-react";
 import { useForm, Controller, Control } from "react-hook-form";
+import { Form } from "@/components/ui/form";
+
+interface FormData {
+  [key: string]: string;
+}
+
+interface Section {
+  label: string;
+  value: string;
+  isEditing: boolean;
+  textArea?: boolean;
+  tempValue: string;
+}
 
 interface EditableSectionProps {
   label: string;
@@ -16,7 +29,7 @@ interface EditableSectionProps {
   onInputChange: (index: number, value: string) => void;
   index: number;
   textArea?: boolean;
-  control: Control<any>;
+  control: Control<FormData>;
 }
 
 const EditableSection: React.FC<EditableSectionProps> = ({
@@ -101,7 +114,7 @@ interface CardComponentProps {
   sections: Section[];
   onEdit: (index: number) => void;
   onCancel: (index: number) => void;
-  onSave: (index: number) => void;
+  onSave: (index: number, value: string) => void;
   onInputChange: (index: number, value: string) => void;
 }
 
